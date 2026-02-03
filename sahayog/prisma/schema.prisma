@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum CasteCategory {
+  SC
+  ST
+  OBC
+  EWS
+  GENERAL
+}
+
+enum EducationLevel {
+  BELOW_10TH
+  CLASS_10TH
+  CLASS_12TH
+  UNDERGRADUATE
+  POSTGRADUATE
+  DOCTORATE
+}
+
+enum Occupation {
+  STUDENT
+  FARMER
+  ENTREPRENEUR
+  SALARIED
+  UNEMPLOYED
+  OTHER
+}
+
+enum SchemeType {
+  CENTRAL
+  STATE
+  PRIVATE
+  NGO
+}
+
+enum SchemeCategory {
+  EDUCATION
+  AGRICULTURE
+  HEALTHCARE
+  HOUSING
+  ENTREPRENEURSHIP
+  WOMEN
+  DISABILITY
+  SENIOR_CITIZEN
+  OTHER
+}
+
+enum ApplicationMode {
+  ONLINE
+  OFFLINE
+  BOTH
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  DISBURSED
+}
+
+// Models
+
+model User {
+  id              String    @id @default(uuid())
+  phone           String    @unique
+  email           String?   @unique
+  password        String
+  fullName        String
+  dateOfBirth     DateTime
+  gender          Gender
+  profilePicture  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  userProfile     UserProfile?
+  schemeMatches   UserSchemeMatch[]
+  applications    Application[]
+
+  @@map("users")
+  @@index([phone])
+}
+
+model UserProfile {
+  id                          String          @id @default(uuid())
+  userId                      String          @unique
+  user                        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  casteCategory               CasteCategory
+  annualIncome                Int
+  state                       String
+  district                    String
+  educationLevel              EducationLevel
+  occupation                  Occupation
+  disabilityStatus            Boolean
+  disabilityType              String?
+  bankAccount                 String?         // Encrypted
+  bankIFSC                    String?
+  profileCompletionPercentage Int             @default(0)
+  createdAt                   DateTime        @default(now())
+  updatedAt                   DateTime        @updatedAt
+
+  @@map("user_profiles")
+}
+
+model Scheme {
+  id                  String          @id @default(uuid())
+  schemeName          String
+  schemeType          SchemeType
+  ministryDepartment  String
+  category            SchemeCategory
+  targetBeneficiary   String          @db.Text
+  eligibilityCriteria Json
+  financialBenefit    String          @db.Text
+  benefitAmount       Int?
+  requiredDocuments   String[]
+  applicationDeadline DateTime?
+  applicationMode     ApplicationMode
+  officialLink        String
+  guidelinesPDF       String?
+  state               String?
+  activeStatus        Boolean         @default(true)
+  lastVerified        DateTime
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  schemeMatches       UserSchemeMatch[]
+  applications        Application[]
+
+  @@map("schemes")
+  @@index([schemeName])
+  // Note: Full-text search index requires specific DB capabilities or raw SQL migration, 
+  // standard Prisma index provided for now.
+}
+
+model UserSchemeMatch {
+  id                  String   @id @default(uuid())
+  userId              String
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schemeId            String
+  scheme              Scheme   @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  matchScore          Int      // 0-100
+  eligibilityBreakdown Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([userId, schemeId])
+  @@map("user_scheme_matches")
+}
+
+model Application {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schemeId        String
+  scheme          Scheme            @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  status          ApplicationStatus @default(DRAFT)
+  applicationData Json
+  submittedAt     DateTime?
+  lastUpdatedAt   DateTime          @updatedAt
+  rejectionReason String?           @db.Text
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@map("applications")
+  @@index([userId])
+}
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  phone     String
+  otp       String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("otp_verifications")
+  @@index([phone])
+}
