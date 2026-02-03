@@ -1,0 +1,231 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id            String    @id @default(cuid())
+  mobile        String    @unique
+  mobileVerified DateTime?
+  aadhaarHash   String?   @unique
+  name          String
+  email         String?
+  dateOfBirth   DateTime
+  gender        Gender
+  category      Category
+  state         String
+  district      String?
+  pincode       String?
+  annualIncome  Int?
+  education     Education?
+  occupation    String?
+  disability    Boolean   @default(false)
+  disabilityType String?
+  
+  // Relations
+  familyMembers FamilyMember[]
+  applications  Application[]
+  documents     Document[]
+  profile       UserProfile?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@index([mobile])
+  @@index([state])
+  @@index([category])
+}
+
+model UserProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  maritalStatus   String?
+  religion        String?
+  bankAccount     String?
+  ifscCode        String?
+  panNumber       String?
+  
+  consentData     Boolean  @default(false)
+  consentMarketing Boolean @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FamilyMember {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  name          String
+  relationship  String
+  dateOfBirth   DateTime
+  gender        Gender
+  education     Education?
+  occupation    String?
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+// Scheme Management
+model Scheme {
+  id                String   @id @default(cuid())
+  schemeId          String   @unique
+  name              String
+  nameHindi         String?
+  description       String   @db.Text
+  ministry          String
+  schemeType        SchemeType
+  category          SchemeCategory
+  
+  // Eligibility
+  eligibilityCriteria Json
+  minAge            Int?
+  maxAge            Int?
+  genderEligible    Gender?
+  categoryEligible  Category[]
+  stateEligible     String[]
+  incomeLimit       Int?
+  
+  // Benefits
+  benefitType       String
+  benefitAmount     Int?
+  benefitDescription String @db.Text
+  
+  // Application
+  requiredDocuments String[]
+  applicationLink   String
+  deadline          DateTime?
+  isRolling         Boolean  @default(false)
+  
+  // Metadata
+  successRate       Float?
+  totalBeneficiaries Int?
+  isActive          Boolean  @default(true)
+  
+  applications      Application[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([schemeType])
+  @@index([category])
+  @@index([isActive])
+}
+
+// Application Management
+model Application {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schemeId        String
+  scheme          Scheme   @relation(fields: [schemeId], references: [id])
+  
+  status          ApplicationStatus @default(DRAFT)
+  eligibilityScore Float?
+  
+  formData        Json?
+  submittedAt     DateTime?
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+  
+  trackingId      String?  @unique
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([schemeId])
+  @@index([status])
+}
+
+// Document Management
+model Document {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  documentType    String
+  documentName    String
+  fileUrl         String
+  fileSize        Int
+  mimeType        String
+  
+  isVerified      Boolean  @default(false)
+  verifiedAt      DateTime?
+  expiryDate      DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([documentType])
+}
+
+// Enums
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Category {
+  GENERAL
+  SC
+  ST
+  OBC
+  EWS
+}
+
+enum Education {
+  BELOW_10TH
+  CLASS_10TH
+  CLASS_12TH
+  UNDERGRADUATE
+  GRADUATE
+  POSTGRADUATE
+  DOCTORATE
+}
+
+enum SchemeType {
+  CENTRAL
+  STATE
+  PRIVATE
+  NGO
+}
+
+enum SchemeCategory {
+  EDUCATION
+  AGRICULTURE
+  HEALTHCARE
+  HOUSING
+  ENTREPRENEURSHIP
+  WOMEN_CHILD
+  SENIOR_CITIZEN
+  DISABILITY
+  EMPLOYMENT
+  SKILL_DEVELOPMENT
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  DISBURSED
+}
