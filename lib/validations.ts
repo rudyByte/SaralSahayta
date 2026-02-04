@@ -1,81 +1,81 @@
 import { z } from 'zod';
+// We'll update the Schema to match the new comprehensive requirements
 
-// User Registration Schema
-export const registerSchema = z.object({
-    mobile: z.string()
-        .regex(/^[6-9]\d{9}$/, 'Invalid mobile number'),
-    name: z.string()
-        .min(2, 'Name must be at least 2 characters')
-        .max(100, 'Name must not exceed 100 characters'),
-    dateOfBirth: z.date()
-        .max(new Date(), 'Date of birth cannot be in the future'),
+// Re-export common schemas
+export const mobileSchema = z.string().regex(/^[6-9]\d{9}$/, 'Invalid mobile number');
+
+/* -------------------------------------------------------------------------- */
+/*                            Tab 1: Basic Details                            */
+/* -------------------------------------------------------------------------- */
+export const profileBasicSchema = z.object({
+    name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+    email: z.string().email('Invalid email address').optional().or(z.literal('')),
+    dateOfBirth: z.string().refine((date) => {
+        if (!date) return false;
+        return new Date(date) <= new Date();
+    }, 'Date of birth cannot be in the future'),
     gender: z.enum(['MALE', 'FEMALE', 'OTHER']),
+});
+
+/* -------------------------------------------------------------------------- */
+/*                         Tab 2: Eligibility Details                         */
+/* -------------------------------------------------------------------------- */
+// Base Object (for merging)
+const profileEligibilityBase = z.object({
     category: z.enum(['GENERAL', 'SC', 'ST', 'OBC', 'EWS']),
-    state: z.string()
-        .min(1, 'State is required'),
-    password: z.string()
-        .min(8, 'Password must be at least 8 characters')
-        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-        .regex(/[0-9]/, 'Password must contain at least one number'),
-});
-
-// User Login Schema
-export const loginSchema = z.object({
-    mobile: z.string()
-        .regex(/^[6-9]\d{9}$/, 'Invalid mobile number'),
-    password: z.string()
-        .min(1, 'Password is required'),
-});
-
-// Profile Update Schema
-export const profileUpdateSchema = z.object({
-    name: z.string()
-        .min(2, 'Name must be at least 2 characters')
-        .max(100, 'Name must not exceed 100 characters')
-        .optional(),
-    email: z.string()
-        .email('Invalid email address')
-        .optional(),
-    district: z.string().optional(),
-    pincode: z.string()
-        .regex(/^\d{6}$/, 'Invalid pincode')
-        .optional(),
-    annualIncome: z.number()
+    annualIncome: z.coerce.number()
         .min(0, 'Income cannot be negative')
-        .optional(),
+        .max(5000000, 'Income cannot exceed ₹50,00,000'),
+    state: z.string().min(1, 'State is required'),
+    district: z.string().min(1, 'District is required'),
     education: z.enum([
-        'BELOW_10TH',
-        'CLASS_10TH',
-        'CLASS_12TH',
-        'UNDERGRADUATE',
-        'GRADUATE',
-        'POSTGRADUATE',
-        'DOCTORATE'
-    ]).optional(),
-    occupation: z.string().optional(),
-    disability: z.boolean().optional(),
+        'BELOW_10TH', 'CLASS_10TH', 'CLASS_12TH',
+        'UNDERGRADUATE', 'GRADUATE', 'POSTGRADUATE', 'DOCTORATE'
+    ]),
+    occupation: z.enum([
+        'STUDENT', 'FARMER', 'ENTREPRENEUR',
+        'SALARIED', 'UNEMPLOYED', 'OTHER'
+    ]),
+    disability: z.boolean().default(false),
     disabilityType: z.string().optional(),
 });
 
-// Scheme Filter Schema
-export const schemeFilterSchema = z.object({
-    category: z.string().optional(),
-    schemeType: z.string().optional(),
-    state: z.string().optional(),
-    minBenefit: z.number().optional(),
-    maxBenefit: z.number().optional(),
-    search: z.string().optional(),
+// Refined Schema (for independent validation)
+export const profileEligibilitySchema = profileEligibilityBase.refine((data) => {
+    if (data.disability && !data.disabilityType) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Disability type is required when disability status is Yes",
+    path: ["disabilityType"],
 });
 
-// Application Schema
-export const applicationSchema = z.object({
-    schemeId: z.string(),
-    formData: z.record(z.any()).optional(),
+/* -------------------------------------------------------------------------- */
+/*                             Tab 3: Bank Details                            */
+/* -------------------------------------------------------------------------- */
+export const profileBankSchema = z.object({
+    bankAccount: z.string()
+        .min(9, 'Account number must be at least 9 digits')
+        .max(18, 'Account number cannot exceed 18 digits')
+        .regex(/^\d+$/, 'Account number must contain only digits'),
+    ifscCode: z.string()
+        .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC format (e.g., SBIN0001234)'),
+    bankName: z.string().optional(), // Populated by API
+    branch: z.string().optional(),   // Populated by API
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>;
-export type LoginInput = z.infer<typeof loginSchema>;
-export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
-export type SchemeFilterInput = z.infer<typeof schemeFilterSchema>;
-export type ApplicationInput = z.infer<typeof applicationSchema>;
+/* -------------------------------------------------------------------------- */
+/*                            Full Profile Update                             */
+/* -------------------------------------------------------------------------- */
+// Combine all for API validation
+// We use the BASE object for merging, because .refine() returns a ZodEffects which cannot be merged
+export const fullProfileUpdateSchema = profileBasicSchema
+    .merge(profileEligibilityBase)
+    .merge(profileBankSchema.partial()) // Bank details can be partial/empty initially
+    .partial(); // API allows partial updates
+
+export type ProfileBasicInput = z.infer<typeof profileBasicSchema>;
+export type ProfileEligibilityInput = z.infer<typeof profileEligibilitySchema>;
+export type ProfileBankInput = z.infer<typeof profileBankSchema>;
+export type FullProfileUpdateInput = z.infer<typeof fullProfileUpdateSchema>;
