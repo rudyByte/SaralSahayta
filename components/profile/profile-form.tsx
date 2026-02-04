@@ -155,11 +155,13 @@ export default function ProfileForm() {
                 // Reset dirty state with current data
                 reset(data);
             } else {
-                alert('Failed to save profile.');
+                const result = await res.json();
+                console.error("Save failed:", result);
+                alert(`Failed to save profile: ${result.error || 'Unknown error'}`);
             }
         } catch (error) {
             console.error(error);
-            alert('Error saving profile.');
+            alert('Error saving profile (Network or Client error).');
         } finally {
             setSaving(false);
         }
@@ -277,7 +279,7 @@ export default function ProfileForm() {
                                 </div>
                                 <div className="space-y-2 opacity-70">
                                     <label className="text-sm font-medium">Phone Number (Verified)</label>
-                                    <Input disabled value={form.getValues('mobile') || 'Not loaded'} className="bg-muted" />
+                                    <Input disabled value={(form.getValues() as any).mobile || 'Not loaded'} className="bg-muted" />
                                 </div>
                             </CardContent>
                         </Card>

@@ -10,6 +10,7 @@ export const mobileSchema = z.string().regex(/^[6-9]\d{9}$/, 'Invalid mobile num
 export const profileBasicSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').max(100),
     email: z.string().email('Invalid email address').optional().or(z.literal('')),
+    mobile: z.string().optional(), // Read-only in form but part of schema
     dateOfBirth: z.string().refine((date) => {
         if (!date) return false;
         return new Date(date) <= new Date();

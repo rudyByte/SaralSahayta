@@ -36,12 +36,10 @@ export async function GET() {
             .single();
 
         if (profileError) {
-            // If profile doesn't exist (e.g. created before trigger was set up), fallback to auth metadata
-            // Or return empty structure
+            console.log("Fetch Profile Notice (Expected if first time):", profileError.message);
             return NextResponse.json({
                 id: user.id,
-                mobile: user.user_metadata.mobile,
-                // Allow frontend to handle missing profile gracefully
+                mobile: (user.user_metadata as any).mobile,
                 profile: null
             });
         }
@@ -150,7 +148,10 @@ export async function PUT(request: Request) {
             .select()
             .single();
 
-        if (updateError) throw updateError;
+        if (updateError) {
+            console.error("Supabase Save Error:", updateError);
+            return NextResponse.json({ error: updateError.message }, { status: 500 });
+        }
 
         return NextResponse.json({ profile: updatedProfile, completion: percentage });
 
