@@ -43,6 +43,68 @@ export default function LoginPage() {
         }
     };
 
+    const handleDemoLogin = async () => {
+        setLoading(true);
+        setError('');
+        console.log("🚀 Starting Demo Login Process...");
+
+        try {
+            const randomId = Math.floor(Math.random() * 100000);
+            const demoEmail = `visitor.${randomId}@sahayog.app`;
+            const demoPassword = 'DemoUser123!';
+
+            console.log(`👤 Attempting to create demo user: ${demoEmail}`);
+
+            const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+                email: demoEmail,
+                password: demoPassword,
+                options: {
+                    data: {
+                        mobile: '9876543210',
+                        name: `Visitor ${randomId}`,
+                        date_of_birth: '1995-01-01',
+                        gender: 'NB',
+                        category: 'GENERAL',
+                        state: 'Delhi',
+                    },
+                },
+            });
+
+            if (signUpError) {
+                console.error("❌ SignUp Error:", signUpError);
+                if (signUpError.message.includes('rate limit')) {
+                    throw new Error('System busy (Rate Limit). Please wait 60 seconds.');
+                }
+                throw signUpError;
+            }
+
+            console.log("✅ SignUp Successful. User Data:", signUpData);
+
+            if (signUpData.user) {
+                if (!signUpData.session) {
+                    console.error("❌ No Session Created. Email Confirm is likely ON.");
+                    const msg = 'Demo User Created but NOT LOGGED IN. Reason: "Confirm Email" is ENABLED in Supabase. Please disable it in Supabase -> Auth -> Providers -> Email.';
+                    setError(msg);
+                    alert(msg); // Force alert so user sees it
+                    return;
+                }
+
+                console.log("🎉 Session Active! Redirecting to /discover...");
+                window.location.href = '/discover';
+            } else {
+                console.error("❌ No user returned from SignUp");
+            }
+
+        } catch (err: any) {
+            console.error('❌ Demo login exception:', err);
+            const msg = err.message || 'Failed to initialize demo mode.';
+            setError(msg);
+            alert(msg); // Force alert
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8">
             <div className="text-center mb-8">
@@ -106,6 +168,26 @@ export default function LoginPage() {
                         </>
                     )}
                 </Button>
+
+                <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-white px-2 text-gray-400">Testing Access</span>
+                    </div>
+                </div>
+
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-dashed border-2 hover:bg-gray-50 text-gray-600"
+                    onClick={handleDemoLogin}
+                    disabled={loading}
+                >
+                    Login as Demo User
+                </Button>
+
             </form>
 
             <div className="mt-6 text-center">
