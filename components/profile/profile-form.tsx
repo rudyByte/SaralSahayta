@@ -48,15 +48,36 @@ export default function ProfileForm() {
         resolver: zodResolver(fullProfileUpdateSchema),
         mode: 'onChange',
         defaultValues: {
-            disability: false,
-            disabilityType: '',
+            name: '',
+            email: '',
+            dateOfBirth: '',
+            gender: 'MALE',
+            category: 'GENERAL',
+            annualIncome: 0,
             state: '',
             district: '',
-            annualIncome: 0
+            education: 'BELOW_10TH',
+            occupation: 'STUDENT',
+            disability: false,
+            disabilityType: '',
+            bankAccount: '',
+            ifscCode: '',
+            bankName: '',
+            branch: '',
         }
     });
 
-    const { control, handleSubmit, watch, setValue, reset, formState: { errors, isDirty, isValid } } = form;
+    const { control, handleSubmit, watch, setValue, reset, formState: { errors, isDirty, isValid, isSubmitting } } = form;
+
+    // DEBUG: Log form state for troubleshooting
+    useEffect(() => {
+        if (Object.keys(errors).length > 0) {
+            // Log EXACT error messages for EACH field
+            const errorMessages = Object.entries(errors).map(([field, err]: [string, any]) => `${field}: ${err.message}`);
+            console.warn("❌ Profile Form Validation Errors:", errorMessages);
+        }
+        console.log("ℹ️ Form State:", { isDirty, isValid, isSubmitting });
+    }, [errors, isDirty, isValid, isSubmitting]);
 
     // Watch for dependent fields
     const watchedState = watch('state');
@@ -138,7 +159,30 @@ export default function ProfileForm() {
         return () => clearTimeout(timer);
     }, [watchedIfsc, setValue, form]);
 
-    // Auto-Save Logic (Simple implementation: Trigger save on submit, dirty check handled by user manual save first for V1 reliability)
+    // Navigation Guard: Warn on unsaved changes
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isDirty]);
+
+    // Auto-Save Logic (Debounced 3s)
+    useEffect(() => {
+        if (!isDirty || !isValid || saving) return;
+
+        const timer = setTimeout(() => {
+            handleSubmit(onSubmit)();
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [isDirty, isValid, watchedState, watchedIfsc, watchedDisability, handleSubmit]);
+
+    // Manual Save Logic
     const onSubmit = async (data: FullProfileUpdateInput) => {
         setSaving(true);
         try {
@@ -157,7 +201,13 @@ export default function ProfileForm() {
             } else {
                 const result = await res.json();
                 console.error("Save failed:", result);
-                alert(`Failed to save profile: ${result.error || 'Unknown error'}`);
+
+                // If it's a schema cache error, we can try to tell the user what to do
+                if (result.error?.includes('schema cache')) {
+                    alert(`Supabase Error: ${result.error}. Please try refreshing the page or waiting 10 seconds.`);
+                } else {
+                    alert(`Failed to save profile: ${result.error || 'Unknown error'}`);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -212,7 +262,7 @@ export default function ProfileForm() {
                                 Saved {lastSaved.toLocaleTimeString()}
                             </span>
                         )}
-                        <Button type="submit" disabled={saving || !isDirty}>
+                        <Button type="submit" disabled={saving}>
                             {saving ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -245,17 +295,48 @@ export default function ProfileForm() {
                             <CardContent className="grid gap-6 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Full Name</label>
-                                    <Input {...form.register('name')} placeholder="Enter your full name" />
+                                    <Controller
+                                        control={control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                value={field.value ?? ''}
+                                                placeholder="Enter your full name"
+                                            />
+                                        )}
+                                    />
                                     {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Email Address</label>
-                                    <Input {...form.register('email')} placeholder="email@example.com" type="email" />
+                                    <Controller
+                                        control={control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                value={field.value ?? ''}
+                                                placeholder="email@example.com"
+                                                type="email"
+                                            />
+                                        )}
+                                    />
                                     {errors.email && <p className="text-xs text-red-500">{errors.email.message}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Date of Birth</label>
-                                    <Input {...form.register('dateOfBirth')} type="date" />
+                                    <Controller
+                                        control={control}
+                                        name="dateOfBirth"
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                value={field.value ?? ''}
+                                                type="date"
+                                            />
+                                        )}
+                                    />
                                     {errors.dateOfBirth && <p className="text-xs text-red-500">{errors.dateOfBirth.message}</p>}
                                 </div>
                                 <div className="space-y-2">
@@ -264,7 +345,7 @@ export default function ProfileForm() {
                                         control={control}
                                         name="gender"
                                         render={({ field }) => (
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select gender" />
                                                 </SelectTrigger>
@@ -299,7 +380,7 @@ export default function ProfileForm() {
                                         control={control}
                                         name="category"
                                         render={({ field }) => (
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select Category" />
                                                 </SelectTrigger>
@@ -314,7 +395,18 @@ export default function ProfileForm() {
                                     <label className="text-sm font-medium">Annual Family Income (₹)</label>
                                     <div className="relative">
                                         <span className="absolute left-3 top-2.5 text-gray-400">₹</span>
-                                        <Input {...form.register('annualIncome')} type="number" className="pl-7" />
+                                        <Controller
+                                            control={control}
+                                            name="annualIncome"
+                                            render={({ field }) => (
+                                                <Input
+                                                    type="number"
+                                                    className="pl-7"
+                                                    value={field.value}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                />
+                                            )}
+                                        />
                                     </div>
                                     {errors.annualIncome && <p className="text-xs text-red-500">{errors.annualIncome.message}</p>}
                                 </div>
@@ -328,7 +420,7 @@ export default function ProfileForm() {
                                             <Select onValueChange={(val) => {
                                                 field.onChange(val);
                                                 setValue('district', ''); // Reset district
-                                            }} defaultValue={field.value}>
+                                            }} value={field.value}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select State" />
                                                 </SelectTrigger>
@@ -347,7 +439,7 @@ export default function ProfileForm() {
                                         control={control}
                                         name="district"
                                         render={({ field }) => (
-                                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!watchedState}>
+                                            <Select onValueChange={field.onChange} value={field.value} disabled={!watchedState}>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder={watchedState ? "Select District" : "Select State First"} />
                                                 </SelectTrigger>
@@ -366,7 +458,7 @@ export default function ProfileForm() {
                                         control={control}
                                         name="education"
                                         render={({ field }) => (
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <SelectTrigger><SelectValue placeholder="Select Education" /></SelectTrigger>
                                                 <SelectContent>
                                                     {EDUCATION_LEVELS.map(e => <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>)}
@@ -382,7 +474,7 @@ export default function ProfileForm() {
                                         control={control}
                                         name="occupation"
                                         render={({ field }) => (
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={field.onChange} value={field.value}>
                                                 <SelectTrigger><SelectValue placeholder="Select Occupation" /></SelectTrigger>
                                                 <SelectContent>
                                                     {OCCUPATIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
@@ -413,7 +505,17 @@ export default function ProfileForm() {
                                 {watchedDisability && (
                                     <div className="space-y-2 md:col-span-2 animation-fade-in">
                                         <label className="text-sm font-medium">Disability Type / Percentage</label>
-                                        <Input {...form.register('disabilityType')} placeholder="e.g. Visual Impairment, 40%" />
+                                        <Controller
+                                            control={control}
+                                            name="disabilityType"
+                                            render={({ field }) => (
+                                                <Input
+                                                    {...field}
+                                                    value={field.value ?? ''}
+                                                    placeholder="e.g. Visual Impairment, 40%"
+                                                />
+                                            )}
+                                        />
                                         {errors.disabilityType && <p className="text-xs text-red-500">{errors.disabilityType.message}</p>}
                                     </div>
                                 )}
@@ -431,7 +533,13 @@ export default function ProfileForm() {
                             <CardContent className="grid gap-6 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Account Number</label>
-                                    <Input {...form.register('bankAccount')} placeholder="Enter Account Number" type="password" />
+                                    <Controller
+                                        control={control}
+                                        name="bankAccount"
+                                        render={({ field }) => (
+                                            <Input {...field} placeholder="Enter Account Number" type="password" />
+                                        )}
+                                    />
                                     <p className="text-xs text-muted-foreground">We mask this for security.</p>
                                     {errors.bankAccount && <p className="text-xs text-red-500">{errors.bankAccount.message}</p>}
                                 </div>
@@ -442,7 +550,18 @@ export default function ProfileForm() {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">IFSC Code</label>
-                                    <Input {...form.register('ifscCode')} placeholder="e.g. SBIN0001234" className="uppercase" maxLength={11} />
+                                    <Controller
+                                        control={control}
+                                        name="ifscCode"
+                                        render={({ field }) => (
+                                            <Input
+                                                {...field}
+                                                placeholder="e.g. SBIN0001234"
+                                                className="uppercase"
+                                                maxLength={11}
+                                            />
+                                        )}
+                                    />
                                     {errors.ifscCode && <p className="text-xs text-red-500">{errors.ifscCode.message}</p>}
                                 </div>
                                 <div className="space-y-2 md:col-span-2 grid grid-cols-2 gap-4">
@@ -460,6 +579,6 @@ export default function ProfileForm() {
                     </TabsContent>
                 </Tabs>
             </form>
-        </div>
+        </div >
     );
 }

@@ -11,8 +11,8 @@ export const profileBasicSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').max(100),
     email: z.string().email('Invalid email address').optional().or(z.literal('')),
     mobile: z.string().optional(), // Read-only in form but part of schema
-    dateOfBirth: z.string().refine((date) => {
-        if (!date) return false;
+    dateOfBirth: z.string().optional().refine((date) => {
+        if (!date) return true;
         return new Date(date) <= new Date();
     }, 'Date of birth cannot be in the future'),
     gender: z.enum(['MALE', 'FEMALE', 'OTHER']),
@@ -59,9 +59,13 @@ export const profileBankSchema = z.object({
     bankAccount: z.string()
         .min(9, 'Account number must be at least 9 digits')
         .max(18, 'Account number cannot exceed 18 digits')
-        .regex(/^\d+$/, 'Account number must contain only digits'),
+        .regex(/^\d+$/, 'Account number must contain only digits')
+        .optional()
+        .or(z.literal('')),
     ifscCode: z.string()
-        .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC format (e.g., SBIN0001234)'),
+        .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC format (e.g., SBIN0001234)')
+        .optional()
+        .or(z.literal('')),
     bankName: z.string().optional(), // Populated by API
     branch: z.string().optional(),   // Populated by API
 });

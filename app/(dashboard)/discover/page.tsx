@@ -1,174 +1,262 @@
-'use client';
+"use client";
 
-import { useAuth } from '@/lib/auth-context';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+    Search,
+    SlidersHorizontal,
+    ArrowUpDown,
+    LayoutGrid,
+    List,
+    Loader2,
+    AlertCircle
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LogOut, User, Search, FileText, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SchemeCard } from '@/components/scheme/scheme-card';
+import { SchemeFilter, FilterState } from '@/components/scheme/scheme-filter';
+import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
+import { useAuth } from '@/lib/auth-context';
+import { cn } from '@/lib/utils';
+
+type SortOption = 'relevance' | 'matchScore' | 'deadline' | 'benefit' | 'recent';
 
 export default function DiscoverPage() {
-    const { user, signOut, loading } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
 
-    const handleSignOut = async () => {
-        await signOut();
-        router.push('/');
+    // -- State --
+    const [schemes, setSchemes] = useState<(Scheme & { matchScore?: number | null })[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [sortBy, setSortBy] = useState<SortOption>('relevance');
+
+    // -- Filters --
+    const [filters, setFilters] = useState<FilterState>({
+        search: searchParams.get('search') || '',
+        category: (searchParams.getAll('category') as SchemeCategory[]) || [],
+        schemeType: (searchParams.get('schemeType') as SchemeType | 'ALL') || 'ALL',
+        state: searchParams.get('state') || 'All States',
+        minBenefit: searchParams.get('minBenefit') ? parseInt(searchParams.get('minBenefit')!) : 0,
+        maxBenefit: searchParams.get('maxBenefit') ? parseInt(searchParams.get('maxBenefit')!) : 500000,
+        deadline: (searchParams.get('deadline') as any) || 'all',
+    });
+
+    // -- Debounced Search --
+    const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(filters.search);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [filters.search]);
+
+    // -- Fetch Data --
+    const fetchSchemes = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const queryParams = new URLSearchParams();
+            if (debouncedSearch) queryParams.set('search', debouncedSearch);
+            filters.category.forEach(cat => queryParams.append('category', cat));
+            if (filters.schemeType !== 'ALL') queryParams.set('schemeType', filters.schemeType);
+            if (filters.state !== 'All States') queryParams.set('state', filters.state);
+            queryParams.set('minBenefit', filters.minBenefit.toString());
+            queryParams.set('maxBenefit', filters.maxBenefit.toString());
+            if (filters.deadline !== 'all') queryParams.set('deadline', filters.deadline);
+            queryParams.set('sortBy', sortBy);
+            queryParams.set('page', page.toString());
+
+            const response = await fetch(`/api/schemes?${queryParams.toString()}`);
+            if (!response.ok) throw new Error('Failed to fetch schemes');
+
+            const data = await response.json();
+            setSchemes(data.schemes);
+            setTotal(data.total);
+            setTotalPages(data.totalPages);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }, [debouncedSearch, filters, sortBy, page]);
+
+    useEffect(() => {
+        fetchSchemes();
+    }, [fetchSchemes]);
+
+    // -- Counter for active filters --
+    const activeFilterCount = [
+        filters.category.length > 0,
+        filters.schemeType !== 'ALL',
+        filters.state !== 'All States',
+        filters.maxBenefit < 500000,
+        filters.deadline !== 'all'
+    ].filter(Boolean).length;
+
+    const handleReset = () => {
+        setFilters({
+            search: '',
+            category: [],
+            schemeType: 'ALL',
+            state: 'All States',
+            minBenefit: 0,
+            maxBenefit: 500000,
+            deadline: 'all'
+        });
+        setSortBy('relevance');
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-gray-600">Loading...</p>
-                </div>
-            </div>
-        );
-    }
+    if (authLoading) return <div className="p-8 text-center text-slate-500">Authenticating...</div>;
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white border-b border-gray-200">
-                <div className="container mx-auto px-4 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-8">
-                            <Link href="/discover" className="text-2xl font-bold text-primary">
-                                SahayoG
-                            </Link>
-                            <nav className="hidden md:flex space-x-6">
-                                <Link href="/discover" className="text-primary font-semibold">
-                                    Discover
-                                </Link>
-                                <Link href="/profile" className="text-gray-600 hover:text-primary">
-                                    Profile
-                                </Link>
-                                <Link href="/applications" className="text-gray-600 hover:text-primary">
-                                    Applications
-                                </Link>
-                            </nav>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                <User className="h-4 w-4" />
-                                <span>{user?.user_metadata?.name || user?.email}</span>
-                            </div>
-                            <Button variant="outline" size="sm" onClick={handleSignOut}>
-                                <LogOut className="h-4 w-4 mr-2" />
-                                Sign Out
-                            </Button>
-                        </div>
+        <div className="min-h-screen bg-slate-50/50">
+            <main className="container mx-auto px-4 py-8">
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+                    <div>
+                        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
+                            Discover Schemes
+                        </h1>
+                        <p className="text-slate-500 mt-1 max-w-2xl">
+                            Browse and find government programs, scholarships, and grants tailored to your profile.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-slate-500">Sort by:</span>
+                        <Select value={sortBy} onValueChange={(val: SortOption) => setSortBy(val)}>
+                            <SelectTrigger className="w-[180px] bg-white">
+                                <SelectValue placeholder="Sort order" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="relevance">Relevance</SelectItem>
+                                <SelectItem value="matchScore">Highest Match</SelectItem>
+                                <SelectItem value="benefit">Benefit Amount</SelectItem>
+                                <SelectItem value="deadline">Soonest Deadline</SelectItem>
+                                <SelectItem value="recent">Recently Added</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
-            </header>
 
-            {/* Main Content */}
-            <main className="container mx-auto px-4 py-8">
-                {/* Welcome Section */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                        Welcome back, {user?.user_metadata?.name || 'User'}! 👋
-                    </h1>
-                    <p className="text-gray-600">
-                        Discover government schemes and scholarships you're eligible for
-                    </p>
-                </div>
-
-                {/* Stats Cards */}
-                <div className="grid md:grid-cols-3 gap-6 mb-8">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">
-                                Matched Schemes
-                            </CardTitle>
-                            <Search className="h-4 w-4 text-primary" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-gray-900">0</div>
-                            <p className="text-xs text-gray-500 mt-1">Complete your profile to discover schemes</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">
-                                Applications
-                            </CardTitle>
-                            <FileText className="h-4 w-4 text-primary" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-gray-900">0</div>
-                            <p className="text-xs text-gray-500 mt-1">No applications yet</p>
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-sm font-medium text-gray-600">
-                                Success Rate
-                            </CardTitle>
-                            <TrendingUp className="h-4 w-4 text-success" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-gray-900">--</div>
-                            <p className="text-xs text-gray-500 mt-1">Apply to see your success rate</p>
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* User Profile Info */}
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle>Your Profile</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid md:grid-cols-2 gap-4 text-sm">
-                            <div>
-                                <span className="text-gray-600">Mobile:</span>{' '}
-                                <span className="font-medium">{user?.user_metadata?.mobile || 'Not provided'}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-600">Gender:</span>{' '}
-                                <span className="font-medium">{user?.user_metadata?.gender || 'Not provided'}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-600">Category:</span>{' '}
-                                <span className="font-medium">{user?.user_metadata?.category || 'Not provided'}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-600">State:</span>{' '}
-                                <span className="font-medium">{user?.user_metadata?.state || 'Not provided'}</span>
-                            </div>
-                            <div>
-                                <span className="text-gray-600">Date of Birth:</span>{' '}
-                                <span className="font-medium">{user?.user_metadata?.date_of_birth || 'Not provided'}</span>
-                            </div>
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Left Sidebar: Filters (30%) */}
+                    <aside className="lg:w-1/4">
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sticky top-8">
+                            <SchemeFilter
+                                filters={filters}
+                                onChange={setFilters}
+                                onReset={handleReset}
+                                activeCount={activeFilterCount}
+                            />
                         </div>
-                        <div className="mt-4">
-                            <Link href="/profile">
-                                <Button variant="outline">
-                                    <User className="h-4 w-4 mr-2" />
-                                    Complete Profile
+                    </aside>
+
+                    {/* Main Content: Results (70%) */}
+                    <section className="lg:w-3/4 space-y-6">
+                        {/* Top Bar: Search */}
+                        <div className="relative group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-primary transition-colors" />
+                            <Input
+                                placeholder="Search schemes by name, keyword, or beneficiary..."
+                                className="pl-12 h-14 bg-white border-slate-200 rounded-2xl shadow-sm text-lg focus-visible:ring-primary focus-visible:border-primary transition-all"
+                                value={filters.search}
+                                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                            />
+                        </div>
+
+                        {/* Results Info */}
+                        <div className="flex items-center justify-between text-sm text-slate-500 font-medium px-2">
+                            <p>
+                                Showing <span className="text-slate-900 font-bold">{schemes.length}</span> of <span className="text-slate-900 font-bold">{total}</span> schemes
+                            </p>
+                        </div>
+
+                        {/* Grid of Cards */}
+                        {loading ? (
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {[1, 2, 4, 5, 6].map(i => (
+                                    <div key={i} className="bg-white rounded-2xl h-[300px] animate-pulse border border-slate-100 shadow-sm" />
+                                ))}
+                            </div>
+                        ) : error ? (
+                            <div className="bg-red-50 p-8 rounded-2xl border border-red-100 text-center">
+                                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+                                <h3 className="text-lg font-bold text-red-900 mb-1">Failed to load schemes</h3>
+                                <p className="text-red-600 mb-4">{error}</p>
+                                <Button variant="outline" onClick={fetchSchemes}>Try Again</Button>
+                            </div>
+                        ) : schemes.length === 0 ? (
+                            <div className="bg-white py-16 px-8 rounded-2xl border border-slate-200 text-center">
+                                <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">No schemes found</h3>
+                                <p className="text-slate-500 mb-6 max-w-xs mx-auto">
+                                    We couldn't find any schemes matching your current filters. Try adjusting them or resetting.
+                                </p>
+                                <Button onClick={handleReset} variant="secondary">
+                                    <RotateCcw className="h-4 w-4 mr-2" />
+                                    Reset All Filters
                                 </Button>
-                            </Link>
-                        </div>
-                    </CardContent>
-                </Card>
+                            </div>
+                        ) : (
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {schemes.map((scheme) => (
+                                    <SchemeCard key={scheme.id} scheme={scheme} />
+                                ))}
+                            </div>
+                        )}
 
-                {/* Coming Soon */}
-                <Card>
-                    <CardContent className="py-12 text-center">
-                        <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                            Scheme Discovery Coming Soon
-                        </h3>
-                        <p className="text-gray-600">
-                            We're building an AI-powered matching engine to find schemes you're eligible for.
-                        </p>
-                    </CardContent>
-                </Card>
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="flex justify-center items-center gap-2 pt-8">
+                                <Button
+                                    variant="outline"
+                                    disabled={page === 1}
+                                    onClick={() => setPage(page - 1)}
+                                >
+                                    Previous
+                                </Button>
+                                <span className="text-sm font-medium px-4">
+                                    Page {page} of {totalPages}
+                                </span>
+                                <Button
+                                    variant="outline"
+                                    disabled={page === totalPages}
+                                    onClick={() => setPage(page + 1)}
+                                >
+                                    Next
+                                </Button>
+                            </div>
+                        )}
+                    </section>
+                </div>
             </main>
         </div>
+    );
+}
+
+function RotateCcw(props: any) {
+    return (
+        <svg
+            {...props}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        >
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+        </svg>
     );
 }

@@ -144,6 +144,8 @@ export async function PUT(request: Request) {
             .upsert({
                 user_id: user.id,
                 ...dbUpdates
+            }, {
+                onConflict: 'user_id'
             })
             .select()
             .single();
