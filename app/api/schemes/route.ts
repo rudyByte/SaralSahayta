@@ -1,10 +1,9 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { buildSchemeQuery } from '@/lib/scheme-filters';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { calculateMatchScore } from '@/lib/matching-algorithm';
-import { SchemeType, SchemeCategory, Gender, Category, Education } from '@prisma/client';
+import { Gender, Category, Education } from '@prisma/client';
 
 const getSupabase = () => {
     const cookieStore = cookies();
@@ -25,48 +24,86 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
 
-        // 1. Get user and profile (from Supabase/Auth)
-        const supabase = getSupabase();
-        const { data: { user } } = await supabase.auth.getUser();
+        // 1. Get user and profile
+        let user = null;
+        try {
+            const supabase = getSupabase();
+            const { data: authData } = await supabase.auth.getUser();
+            user = authData?.user;
+        } catch (authErr) {
+            console.warn("⚠️ Auth Check Failed:", authErr);
+        }
 
         // 2. Parse filters
-        const filters = {
-            search: searchParams.get('search') || undefined,
-            category: (searchParams.getAll('category').length > 0 ? searchParams.getAll('category') : undefined) as SchemeCategory[] | undefined,
-            schemeType: searchParams.get('schemeType') as SchemeType || undefined,
-            state: searchParams.get('state') || undefined,
-            minBenefit: searchParams.get('minBenefit') ? parseInt(searchParams.get('minBenefit')!) : undefined,
-            maxBenefit: searchParams.get('maxBenefit') ? parseInt(searchParams.get('maxBenefit')!) : undefined,
-            deadline: searchParams.get('deadline') as any || undefined,
-        };
-
+        const search = searchParams.get('search');
+        const categories = searchParams.getAll('category');
+        const schemeType = searchParams.get('schemeType');
+        const state = searchParams.get('state');
+        const minBenefit = parseInt(searchParams.get('minBenefit') || '0');
+        const maxBenefit = parseInt(searchParams.get('maxBenefit') || '1000000');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '20');
         const sortBy = searchParams.get('sortBy') || 'relevance';
 
-        // 3. Build Prisma Query
-        const where = buildSchemeQuery(filters);
+        // 3. Build Supabase Query
+        let query = supabaseAdmin
+            .from('Scheme')
+            .select('*', { count: 'exact' })
+            .eq('isActive', true);
 
-        // 4. Fetch Schemes
-        const schemes = await prisma.scheme.findMany({
-            where,
-            orderBy: sortBy === 'benefit' ? { benefitAmount: 'desc' } :
-                sortBy === 'deadline' ? { deadline: 'asc' } :
-                    { createdAt: 'desc' },
-            skip: (page - 1) * limit,
-            take: limit,
-        });
+        // Apply Search
+        if (search) {
+            query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,benefitDescription.ilike.%${search}%`);
+        }
 
-        const total = await prisma.scheme.count({ where });
+        // Apply Category
+        if (categories.length > 0) {
+            query = query.in('category', categories);
+        }
 
-        // 5. Calculate Match Scores (if user is logged in)
-        let results = schemes.map(scheme => ({
+        // Apply Scheme Type
+        if (schemeType && schemeType !== 'ALL') {
+            query = query.eq('schemeType', schemeType);
+        }
+
+        // Apply State
+        if (state && state !== 'All States') {
+            query = query.or(`schemeType.eq.CENTRAL,stateEligible.cs.{"${state}"}`);
+        }
+
+        // Apply Benefit Range
+        query = query.gte('benefitAmount', minBenefit).lte('benefitAmount', maxBenefit);
+
+        // Apply Sorting
+        if (sortBy === 'benefit') {
+            query = query.order('benefitAmount', { ascending: false });
+        } else if (sortBy === 'deadline') {
+            query = query.order('deadline', { ascending: true, nullsFirst: false });
+        } else {
+            query = query.order('created_at', { ascending: false });
+        }
+
+        // Apply Pagination
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
+        query = query.range(from, to);
+
+        const { data: schemes, count: total, error: fetchError } = await query;
+
+        if (fetchError) {
+            console.error("❌ Supabase Fetch Error:", fetchError);
+            throw fetchError;
+        }
+
+        // 4. Calculate Match Scores
+        let results = (schemes || []).map(scheme => ({
             ...scheme,
             matchScore: null as number | null
         }));
 
-        if (user) {
-            const { data: profile } = await supabase
+        if (user && schemes && schemes.length > 0) {
+            const clientSupabase = getSupabase();
+            const { data: profile } = await clientSupabase
                 .from('user_profiles')
                 .select('*')
                 .eq('user_id', user.id)
@@ -88,7 +125,7 @@ export async function GET(request: Request) {
 
                 results = schemes.map(scheme => ({
                     ...scheme,
-                    matchScore: calculateMatchScore(scheme, userProfileForMatching)
+                    matchScore: calculateMatchScore(scheme as any, userProfileForMatching)
                 }));
 
                 if (sortBy === 'matchScore' || sortBy === 'relevance') {
@@ -99,13 +136,16 @@ export async function GET(request: Request) {
 
         return NextResponse.json({
             schemes: results,
-            total,
+            total: total || 0,
             page,
-            totalPages: Math.ceil(total / limit),
+            totalPages: Math.ceil((total || 0) / limit),
         });
 
     } catch (error: any) {
-        console.error("Scheme Fetch Error:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error("❌ Final API Error:", error);
+        return NextResponse.json({
+            error: error.message,
+            hint: "Check terminal logs for details."
+        }, { status: 500 });
     }
 }
