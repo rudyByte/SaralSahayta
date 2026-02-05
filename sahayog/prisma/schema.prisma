@@ -4,10 +4,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-// Enums
+
+
 enum Gender {
   MALE
   FEMALE
@@ -74,6 +74,32 @@ enum ApplicationStatus {
   DISBURSED
 }
 
+enum DocumentCategory {
+  IDENTITY
+  ADDRESS
+  INCOME
+  CASTE
+  EDUCATION
+  BANK
+  AGRICULTURAL
+  BUSINESS
+  DISABILITY
+  OTHER
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
+}
+
+enum DocumentStatus {
+  NOT_STARTED
+  INCOMPLETE
+  COMPLETE
+}
+
 // Models
 
 model User {
@@ -91,6 +117,7 @@ model User {
   userProfile     UserProfile?
   schemeMatches   UserSchemeMatch[]
   applications    Application[]
+  userDocuments   UserDocument[]
 
   @@map("users")
   @@index([phone])
@@ -118,33 +145,32 @@ model UserProfile {
 }
 
 model Scheme {
-  id                  String          @id @default(uuid())
-  schemeName          String
-  schemeType          SchemeType
-  ministryDepartment  String
-  category            SchemeCategory
-  targetBeneficiary   String          @db.Text
-  eligibilityCriteria Json
-  financialBenefit    String          @db.Text
-  benefitAmount       Int?
-  requiredDocuments   String[]
-  applicationDeadline DateTime?
-  applicationMode     ApplicationMode
-  officialLink        String
-  guidelinesPDF       String?
-  state               String?
-  activeStatus        Boolean         @default(true)
-  lastVerified        DateTime
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+  id                      String          @id @default(uuid())
+  schemeName              String
+  schemeType              SchemeType
+  ministryDepartment      String
+  category                SchemeCategory
+  targetBeneficiary       String          @db.Text
+  eligibilityCriteria     Json
+  financialBenefit        String          @db.Text
+  benefitAmount           Int?
+  requiredDocuments       String[]
+  applicationDeadline     DateTime?
+  applicationMode         ApplicationMode
+  officialLink            String
+  guidelinesPDF           String?
+  state                   String?
+  activeStatus            Boolean         @default(true)
+  lastVerified            DateTime
+  applicationFormTemplate Json?           // Template defining the form structure
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
 
-  schemeMatches       UserSchemeMatch[]
-  applications        Application[]
+  schemeMatches           UserSchemeMatch[]
+  applications            Application[]
 
   @@map("schemes")
   @@index([schemeName])
-  // Note: Full-text search index requires specific DB capabilities or raw SQL migration, 
-  // standard Prisma index provided for now.
 }
 
 model UserSchemeMatch {
@@ -163,21 +189,120 @@ model UserSchemeMatch {
 }
 
 model Application {
-  id              String            @id @default(uuid())
-  userId          String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  schemeId        String
-  scheme          Scheme            @relation(fields: [schemeId], references: [id], onDelete: Cascade)
-  status          ApplicationStatus @default(DRAFT)
-  applicationData Json
-  submittedAt     DateTime?
-  lastUpdatedAt   DateTime          @updatedAt
-  rejectionReason String?           @db.Text
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  id                       String            @id @default(uuid())
+  userId                   String
+  user                     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  schemeId                 String
+  scheme                   Scheme            @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  status                   ApplicationStatus @default(DRAFT)
+  documentStatus           DocumentStatus    @default(NOT_STARTED)
+  documentChecklistData    Json?             // { required: [], uploaded: [], missing: [] }
+  formData                 Json?             // Previously applicationData
+  submittedAt              DateTime?
+  lastUpdatedAt            DateTime          @updatedAt
+  rejectionReason          String?           @db.Text
+  reviewedBy               String?           // admin userId
+  reviewedAt               DateTime?
+  approvalDate             DateTime?
+  disbursementAmount       Decimal?          @db.Decimal(12, 2)
+  disbursementDate         DateTime?
+  disbursementReferenceId  String?
+  createdAt                DateTime          @default(now())
+  updatedAt                DateTime          @updatedAt
+
+  applicationDocuments     ApplicationDocument[]
+  history                  ApplicationHistory[]
 
   @@map("applications")
   @@index([userId])
+  @@index([status])
+}
+
+model MasterDocument {
+  id                       String           @id @default(uuid())
+  documentName             String           @unique
+  documentCode             String           @unique
+  category                 DocumentCategory
+  description              String?          @db.Text
+  isCommon                 Boolean          @default(false)
+  procurementGuideOnline   Json?            // { steps: [], processingTime: "", fees: "" }
+  procurementGuideOffline  Json?            // { steps: [], officeType: "", processingTime: "", fees: "" }
+  stateSpecific            Boolean          @default(false)
+  createdAt                DateTime         @default(now())
+  updatedAt                DateTime         @updatedAt
+
+  userDocuments            UserDocument[]
+  officeAddresses          DocumentOfficeAddress[]
+
+  @@map("documents")
+}
+
+model DocumentOfficeAddress {
+  id            String         @id @default(uuid())
+  documentId    String
+  document      MasterDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  state         String
+  district      String?
+  officeType    String
+  officeName    String
+  address       String         @db.Text
+  contactNumber String?
+  officeHours   String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([documentId, state, district])
+  @@map("document_office_addresses")
+}
+
+model UserDocument {
+  id                String             @id @default(uuid())
+  userId            String
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documentId        String
+  document          MasterDocument     @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  fileName          String
+  fileType          String
+  fileSize          Int
+  fileUrl           String
+  uploadedAt        DateTime           @default(now())
+  verificationStatus VerificationStatus @default(PENDING)
+  verifiedBy        String?
+  verifiedAt        DateTime?
+  expiryDate        DateTime?
+  metadata          Json?              // OCR data, etc.
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  applicationDocuments ApplicationDocument[]
+
+  @@unique([userId, documentId])
+  @@map("user_documents")
+}
+
+model ApplicationDocument {
+  id             String       @id @default(uuid())
+  applicationId  String
+  application    Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  userDocumentId String
+  userDocument   UserDocument @relation(fields: [userDocumentId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+
+  @@unique([applicationId, userDocumentId])
+  @@map("application_documents")
+}
+
+model ApplicationHistory {
+  id            String            @id @default(uuid())
+  applicationId String
+  application   Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  status        ApplicationStatus
+  changedBy     String            // userId or "SYSTEM"
+  comment       String?           @db.Text
+  createdAt     DateTime          @default(now())
+
+  @@index([applicationId])
+  @@map("application_history")
 }
 
 model OtpVerification {
