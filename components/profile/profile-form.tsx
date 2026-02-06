@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Save, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { useSWRConfig } from 'swr';
 import { fullProfileUpdateSchema, type FullProfileUpdateInput } from '@/lib/validations';
 import { INDIA_DATA, getStates, getDistricts } from '@/lib/india-data';
 import { validateIFSC } from '@/lib/ifsc';
@@ -37,6 +38,7 @@ const OCCUPATIONS = [
 ];
 
 export default function ProfileForm() {
+    const { mutate } = useSWRConfig();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -198,6 +200,8 @@ export default function ProfileForm() {
                 setLastSaved(new Date());
                 // Reset dirty state with current data
                 reset(data);
+                // Sync Navbar Name
+                mutate('/api/profile');
             } else {
                 const result = await res.json();
                 console.error("Save failed:", result);

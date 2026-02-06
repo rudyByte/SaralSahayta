@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import useSWR from 'swr';
 import {
     Menu,
     X,
@@ -25,6 +26,10 @@ export function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+    // Fetch profile data for the name
+    const { data: profileData } = useSWR(user ? '/api/profile' : null);
+    const profileName = profileData?.profile?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0];
 
     useEffect(() => {
         const handleScroll = () => {
@@ -94,10 +99,10 @@ export function Navbar() {
                                     className="flex items-center gap-2 p-1.5 pr-3 hover:bg-slate-100 rounded-full transition-colors"
                                 >
                                     <div className="h-8 w-8 rounded-full bg-primary-100 text-primary flex items-center justify-center font-bold text-xs ring-2 ring-white">
-                                        {user.email?.charAt(0).toUpperCase()}
+                                        {profileName?.charAt(0).toUpperCase()}
                                     </div>
                                     <span className="text-sm font-medium text-slate-700 max-w-[120px] truncate">
-                                        {user.email?.split('@')[0]}
+                                        {profileName}
                                     </span>
                                     <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform", isProfileOpen && "rotate-180")} />
                                 </button>
