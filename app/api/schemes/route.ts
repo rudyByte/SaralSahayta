@@ -134,12 +134,21 @@ export async function GET(request: Request) {
             }
         }
 
-        return NextResponse.json({
+        const responsePayload = {
             schemes: results,
             total: total || 0,
             page,
             totalPages: Math.ceil((total || 0) / limit),
-        });
+        };
+
+        const response = NextResponse.json(responsePayload);
+
+        // Add caching for non-personalized responses (guest users)
+        if (!user) {
+            response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=30');
+        }
+
+        return response;
 
     } catch (error: any) {
         console.error("❌ Final API Error:", error);

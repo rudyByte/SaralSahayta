@@ -35,7 +35,7 @@ const CATEGORY_ICONS: Partial<Record<SchemeCategory, React.ReactNode>> = {
     HEALTHCARE: <Info className="h-3 w-3 mr-1" />,
 };
 
-export function SchemeCard({ scheme }: SchemeCardProps) {
+export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
     const getMatchColor = (score: number) => {
         if (score >= 80) return 'bg-green-500';
         if (score >= 60) return 'bg-yellow-500';
@@ -137,4 +137,7 @@ export function SchemeCard({ scheme }: SchemeCardProps) {
             </CardFooter>
         </Card>
     );
-}
+});
+
+SchemeCard.displayName = 'SchemeCard';
+

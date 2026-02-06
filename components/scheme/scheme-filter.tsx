@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     X,
     ChevronDown,
@@ -53,7 +53,7 @@ const SCHEME_TYPES: { label: string; value: SchemeType | 'ALL' }[] = [
     { label: 'NGO', value: 'NGO' },
 ];
 
-export function SchemeFilter({ filters, onChange, onReset, activeCount }: SchemeFilterProps) {
+export const SchemeFilter = React.memo(({ filters, onChange, onReset, activeCount }: SchemeFilterProps) => {
     const [expanded, setExpanded] = React.useState<Record<string, boolean>>({
         category: true,
         type: true,
@@ -250,4 +250,7 @@ export function SchemeFilter({ filters, onChange, onReset, activeCount }: Scheme
             </div>
         </div>
     );
-}
+});
+
+SchemeFilter.displayName = 'SchemeFilter';
+

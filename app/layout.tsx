@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
+import { SWRProvider } from '@/lib/swr-config';
+import { Navbar } from '@/components/navigation/navbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,9 +27,14 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className}>
-                <AuthProvider>
-                    {children}
-                </AuthProvider>
+                <SWRProvider>
+                    <AuthProvider>
+                        <Navbar />
+                        <main className="pt-20">
+                            {children}
+                        </main>
+                    </AuthProvider>
+                </SWRProvider>
             </body>
         </html>
     );

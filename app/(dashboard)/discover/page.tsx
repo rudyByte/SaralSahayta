@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import useSWR from 'swr';
 import {
     Search,
     SlidersHorizontal,
@@ -28,12 +29,7 @@ export default function DiscoverPage() {
     const searchParams = useSearchParams();
 
     // -- State --
-    const [schemes, setSchemes] = useState<(Scheme & { matchScore?: number | null })[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [sortBy, setSortBy] = useState<SortOption>('relevance');
 
     // -- Filters --
@@ -47,60 +43,52 @@ export default function DiscoverPage() {
         deadline: (searchParams.get('deadline') as any) || 'all',
     });
 
-    // -- Debounced Search --
-    const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
+    // -- Search Input State (Local to prevent full-page re-renders) --
+    const [searchInput, setSearchInput] = useState(filters.search);
 
+    // -- Debounced Search (Sync local input to filter state) --
     useEffect(() => {
         const timer = setTimeout(() => {
-            setDebouncedSearch(filters.search);
+            setFilters(prev => ({ ...prev, search: searchInput }));
         }, 500);
         return () => clearTimeout(timer);
-    }, [filters.search]);
+    }, [searchInput]);
 
-    // -- Fetch Data --
-    const fetchSchemes = useCallback(async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const queryParams = new URLSearchParams();
-            if (debouncedSearch) queryParams.set('search', debouncedSearch);
-            filters.category.forEach(cat => queryParams.append('category', cat));
-            if (filters.schemeType !== 'ALL') queryParams.set('schemeType', filters.schemeType);
-            if (filters.state !== 'All States') queryParams.set('state', filters.state);
-            queryParams.set('minBenefit', filters.minBenefit.toString());
-            queryParams.set('maxBenefit', filters.maxBenefit.toString());
-            if (filters.deadline !== 'all') queryParams.set('deadline', filters.deadline);
-            queryParams.set('sortBy', sortBy);
-            queryParams.set('page', page.toString());
+    // -- API URL --
+    const getQueryUrl = useMemo(() => {
+        const queryParams = new URLSearchParams();
+        if (filters.search) queryParams.set('search', filters.search);
+        filters.category.forEach(cat => queryParams.append('category', cat));
+        if (filters.schemeType !== 'ALL') queryParams.set('schemeType', filters.schemeType);
+        if (filters.state !== 'All States') queryParams.set('state', filters.state);
+        queryParams.set('minBenefit', filters.minBenefit.toString());
+        queryParams.set('maxBenefit', filters.maxBenefit.toString());
+        if (filters.deadline !== 'all') queryParams.set('deadline', filters.deadline);
+        queryParams.set('sortBy', sortBy);
+        queryParams.set('page', page.toString());
+        return `/api/schemes?${queryParams.toString()}`;
+    }, [filters, sortBy, page]);
 
-            const response = await fetch(`/api/schemes?${queryParams.toString()}`);
-            if (!response.ok) throw new Error('Failed to fetch schemes');
+    const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR(getQueryUrl);
 
-            const data = await response.json();
-            setSchemes(data.schemes);
-            setTotal(data.total);
-            setTotalPages(data.totalPages);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    }, [debouncedSearch, filters, sortBy, page]);
+    const schemes = data?.schemes || [];
+    const total = data?.total || 0;
+    const totalPages = data?.totalPages || 1;
+    const loading = swrLoading;
+    const error = swrError?.message || null;
 
-    useEffect(() => {
-        fetchSchemes();
-    }, [fetchSchemes]);
 
     // -- Counter for active filters --
-    const activeFilterCount = [
+    const activeFilterCount = useMemo(() => [
         filters.category.length > 0,
         filters.schemeType !== 'ALL',
         filters.state !== 'All States',
         filters.maxBenefit < 500000,
         filters.deadline !== 'all'
-    ].filter(Boolean).length;
+    ].filter(Boolean).length, [filters]);
 
     const handleReset = () => {
+        setSearchInput('');
         setFilters({
             search: '',
             category: [],
@@ -166,8 +154,8 @@ export default function DiscoverPage() {
                             <Input
                                 placeholder="Search schemes by name, keyword, or beneficiary..."
                                 className="pl-12 h-14 bg-white border-slate-200 rounded-2xl shadow-sm text-lg focus-visible:ring-primary focus-visible:border-primary transition-all"
-                                value={filters.search}
-                                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
                             />
                         </div>
 
@@ -190,7 +178,7 @@ export default function DiscoverPage() {
                                 <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                                 <h3 className="text-lg font-bold text-red-900 mb-1">Failed to load schemes</h3>
                                 <p className="text-red-600 mb-4">{error}</p>
-                                <Button variant="outline" onClick={fetchSchemes}>Try Again</Button>
+                                <Button variant="outline" onClick={() => mutate()}>Try Again</Button>
                             </div>
                         ) : schemes.length === 0 ? (
                             <div className="bg-white py-16 px-8 rounded-2xl border border-slate-200 text-center">
@@ -206,7 +194,7 @@ export default function DiscoverPage() {
                             </div>
                         ) : (
                             <div className="grid md:grid-cols-2 gap-6">
-                                {schemes.map((scheme) => (
+                                {schemes.map((scheme: any) => (
                                     <SchemeCard key={scheme.id} scheme={scheme} />
                                 ))}
                             </div>
