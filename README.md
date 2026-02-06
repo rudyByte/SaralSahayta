@@ -10,11 +10,12 @@ SahayoG (Saral Sahayta) is an AI-powered platform designed to democratize access
 
 - **Frontend**: Next.js 14 (App Router), React 18, TypeScript
 - **Styling**: TailwindCSS with custom design system
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: NextAuth.js
-- **Validation**: Zod
-- **UI Components**: Radix UI
-- **Icons**: Lucide React
+- **Backend & Auth**: Supabase (PostgreSQL, Auth, Storage, Real-time)
+- **Data Fetching**: SWR (Stale-While-Revalidate)
+- **Forms**: React Hook Form + Zod
+- **Intelligence**: Tesseract.js (OCR), Custom Matching Algorithm
+- **Animation**: Framer Motion
+- **UI Components**: Radix UI + Lucide Icons
 
 ## 📦 Installation
 
@@ -24,15 +25,21 @@ npm install
 
 # Set up environment variables
 cp .env.local.example .env.local
-# Edit .env.local with your actual values
+# Edit .env.local with your actual Supabase credentials
 
-# Set up database
+# Set up local Prisma types
 npx prisma generate
-npx prisma db push
 
 # Run development server
 npm run dev
 ```
+
+## 🛠️ Database & Storage Setup
+For collaborators setting up the project for the first time:
+1. Ensure your `.env.local` has the correct `NEXT_PUBLIC_SUPABASE_URL` and keys.
+2. Run the SQL scripts located in the `/scripts` directory in your Supabase SQL Editor:
+   - `optimize-db.sql`: For performance indexes.
+   - `phase_8_setup.sql`: For Storage buckets, RLS policies, and application tables.
 
 ## 🏗️ Project Structure
 
@@ -66,26 +73,18 @@ sahayog/
 
 ## 📝 Development Phases
 
-### Phase 1: Foundation & MVP Core ✅
-- [x] Project initialization
-- [ ] Authentication system
-- [ ] Database schema
-- [ ] Core UI components
+### Phase 1-7: Foundation & Core Experience ✅
+- [x] Supabase Auth & Session Management
+- [x] AI-Powered Scheme Matching Engine
+- [x] Scheme Discovery & Filtering (SWR Optimized)
+- [x] Responsive Global Navigation
+- [x] Reactive Profile Management
 
-### Phase 2: Scheme Discovery
-- [ ] Scheme database integration
-- [ ] AI-powered matching engine
-- [ ] Search and filter functionality
-
-### Phase 3: Document Intelligence
-- [ ] Document tracking system
-- [ ] Procurement guides
-- [ ] Document vault
-
-### Phase 4: Application Management
-- [ ] Application workflow
-- [ ] Form pre-filling
-- [ ] Status tracking
+### Phase 8: Document Intelligence & Advanced Features [/]
+- [x] Supabase Storage Infrastructure
+- [ ] OCR-based Document Verification
+- [ ] Multi-step Application Workflow
+- [ ] Real-time Status Tracking
 
 ## 🔒 Environment Variables
 
