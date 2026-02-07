@@ -1,10 +1,10 @@
-# SahayoG - Universal Scheme Gateway
+# Saral Sahayta - Universal Scheme Gateway
 
 A comprehensive scholarship and government scheme aggregation platform connecting eligible citizens with financial assistance programs across India.
 
 ## 🎯 Project Overview
 
-SahayoG (Saral Sahayta) is an AI-powered platform designed to democratize access to 5,000+ government schemes through intelligent matching, automated application assistance, and comprehensive document support.
+Saral Sahayta is an AI-powered platform designed to democratize access to 5,000+ government schemes through intelligent matching, automated application assistance, and comprehensive document support.
 
 ## 🚀 Tech Stack
 
@@ -96,7 +96,7 @@ Proprietary - All rights reserved
 
 ## 👥 Team
 
-Product Management Team - SahayoG Platform
+Product Management Team - Saral Sahayta Platform
 
 ---
 

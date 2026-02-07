@@ -8,12 +8,12 @@ import { Navbar } from '@/components/navigation/navbar';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-    title: 'SahayoG - Universal Scheme Gateway',
+    title: 'Saral Sahayta - Universal Scheme Gateway',
     description: 'AI-powered scholarship and government scheme aggregation platform connecting eligible citizens with financial assistance programs across India.',
     keywords: ['scholarship', 'government schemes', 'financial assistance', 'India', 'education', 'welfare'],
-    authors: [{ name: 'SahayoG Team' }],
+    authors: [{ name: 'Saral Sahayta Team' }],
     openGraph: {
-        title: 'SahayoG - Universal Scheme Gateway',
+        title: 'Saral Sahayta - Universal Scheme Gateway',
         description: 'Discover and apply for 5,000+ government schemes and scholarships',
         type: 'website',
     },

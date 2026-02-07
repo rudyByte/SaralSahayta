@@ -66,7 +66,7 @@ export function Navbar() {
                             <BookOpen className="h-6 w-6" />
                         </div>
                         <span className="text-2xl font-bold tracking-tight text-slate-900">
-                            Sahayo<span className="text-primary">G</span>
+                            Saral<span className="text-primary">Sahayta</span>
                         </span>
                     </Link>
 
