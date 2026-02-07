@@ -14,7 +14,8 @@ import {
     ClipboardList,
     LogOut,
     ChevronDown,
-    LayoutDashboard
+    LayoutDashboard,
+    FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
@@ -48,6 +49,7 @@ export function Navbar() {
         { name: 'Home', href: '/', icon: <Home className="h-4 w-4" /> },
         { name: 'Discover', href: '/discover', icon: <Search className="h-4 w-4" /> },
         { name: 'My Applications', href: '/applications', icon: <ClipboardList className="h-4 w-4" />, auth: true },
+        { name: 'My Documents', href: '/documents', icon: <FileText className="h-4 w-4" />, auth: true },
         { name: 'Resources', href: '/resources', icon: <BookOpen className="h-4 w-4" /> },
     ];
 

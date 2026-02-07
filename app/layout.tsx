@@ -4,6 +4,7 @@ import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 import { SWRProvider } from '@/lib/swr-config';
 import { Navbar } from '@/components/navigation/navbar';
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -33,6 +34,7 @@ export default function RootLayout({
                         <main className="pt-20">
                             {children}
                         </main>
+                        <Toaster />
                     </AuthProvider>
                 </SWRProvider>
             </body>

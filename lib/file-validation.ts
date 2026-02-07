@@ -1,4 +1,5 @@
-import sharp from 'sharp';
+// Optimization logic moved to lib/optimize-image.ts to avoid client-side build errors
+
 
 export interface FileValidationResult {
     valid: boolean;
@@ -28,27 +29,7 @@ export function validateFile(file: File): FileValidationResult {
     return { valid: true };
 }
 
-/**
- * Optimizes an image file for storage
- * Reduces quality and converts to webp if it's a large image
- */
-export async function optimizeImage(file: File): Promise<Buffer> {
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
 
-    // If it's an image, optimize it
-    if (file.type.startsWith('image/')) {
-        return await sharp(buffer)
-            .resize(1200, 1200, {
-                fit: 'inside',
-                withoutEnlargement: true
-            })
-            .webp({ quality: 80 })
-            .toBuffer();
-    }
-
-    return buffer;
-}
 
 /**
  * Client-side quality check for images

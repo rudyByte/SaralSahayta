@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
-import { optimizeImage, validateFile } from '@/lib/file-validation';
+import { validateFile } from '@/lib/file-validation';
+import { optimizeImage } from '@/lib/optimize-image';
 
 /**
  * API Route for handling secure document uploads
