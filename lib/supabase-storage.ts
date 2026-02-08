@@ -20,9 +20,15 @@ export async function uploadFileToSupabase({
     userId,
     folder = 'documents'
 }: StorageUploadParams): Promise<string> {
+    console.log('[uploadFileToSupabase] Starting upload...');
+    console.log('[uploadFileToSupabase] Params:', { fileName, contentType, userId, folder });
+
     const timestamp = Date.now();
     const cleanFileName = fileName.replace(/[^\x00-\x7F]/g, "").replace(/\s+/g, "-");
     const filePath = `${userId}/${folder}/${timestamp}-${cleanFileName}`;
+
+    console.log('[uploadFileToSupabase] File path:', filePath);
+    console.log('[uploadFileToSupabase] Attempting upload to bucket: documents');
 
     // Determine if file is Buffer or File and handle accordingly
     const body = file instanceof File ? file : file;
@@ -36,14 +42,18 @@ export async function uploadFileToSupabase({
         });
 
     if (error) {
-        console.error('Supabase Storage Error:', error);
+        console.error('[uploadFileToSupabase] ❌ UPLOAD ERROR:', error);
+        console.error('[uploadFileToSupabase] Error details:', JSON.stringify(error, null, 2));
         throw new Error(`Upload failed: ${error.message}`);
     }
+
+    console.log('[uploadFileToSupabase] ✅ Upload successful:', data);
 
     // Get the public URL
     const { data: { publicUrl } } = supabase.storage
         .from('documents')
         .getPublicUrl(data.path);
 
+    console.log('[uploadFileToSupabase] Public URL:', publicUrl);
     return publicUrl;
 }

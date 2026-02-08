@@ -80,27 +80,45 @@ export function DocumentUpload({
         setError(null);
 
         try {
+            console.log('[Frontend] Starting upload for:', documentCode);
             const formData = new FormData();
             formData.append('file', file);
             formData.append('documentCode', documentCode);
 
+            console.log('[Frontend] Sending request to /api/documents/upload');
             const response = await fetch('/api/documents/upload', {
                 method: 'POST',
                 body: formData,
             });
 
-            const data = await response.json();
+            console.log('[Frontend] Response status:', response.status);
+            console.log('[Frontend] Response headers:', Object.fromEntries(response.headers.entries()));
+
+            const responseText = await response.text();
+            console.log('[Frontend] Response text:', responseText);
+
+            let data;
+            try {
+                data = JSON.parse(responseText);
+                console.log('[Frontend] Parsed response:', data);
+            } catch (parseError) {
+                console.error('[Frontend] Failed to parse response as JSON:', parseError);
+                throw new Error('Server returned invalid response: ' + responseText.substring(0, 100));
+            }
 
             if (!response.ok) {
+                console.error('[Frontend] Upload failed with status:', response.status);
                 throw new Error(data.error || 'Upload failed');
             }
 
+            console.log('[Frontend] ✅ Upload successful!');
             onUploadSuccess(data.document);
             setFile(null);
             setPreview(null);
             setQualityCheck(null);
 
         } catch (err: any) {
+            console.error('[Frontend] Upload error:', err);
             setError(err.message);
         } finally {
             setUploading(false);
@@ -179,10 +197,10 @@ export function DocumentUpload({
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${qualityCheck.score}%` }}
                                                 className={`h-full ${qualityCheck.score >= 80
-                                                        ? 'bg-emerald-500'
-                                                        : qualityCheck.score >= 60
-                                                            ? 'bg-amber-500'
-                                                            : 'bg-rose-500'
+                                                    ? 'bg-emerald-500'
+                                                    : qualityCheck.score >= 60
+                                                        ? 'bg-amber-500'
+                                                        : 'bg-rose-500'
                                                     }`}
                                             />
                                         </div>

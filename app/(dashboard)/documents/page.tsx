@@ -10,8 +10,20 @@ import {
     Clock,
     RefreshCw,
     ExternalLink,
-    Search
+    Search,
+    Trash2
 } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { DocumentUpload } from '@/components/documents/document-upload';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -95,6 +107,23 @@ export default function DocumentsPage() {
         toast.success('Document uploaded successfully');
         mutate('/api/documents'); // Refresh user documents
         setSelectedDocForUpload(null); // Close dialog
+    };
+
+    const handleDelete = async (documentId: string) => {
+        try {
+            const response = await fetch(`/api/documents/delete?id=${documentId}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete');
+            }
+
+            toast.success('Document deleted successfully');
+            mutate('/api/documents');
+        } catch (error) {
+            toast.error('Failed to delete document');
+        }
     };
 
     return (
@@ -197,11 +226,25 @@ export default function DocumentsPage() {
                                     </Dialog>
                                 ) : (
                                     <>
-                                        <Button variant="outline" className="flex-1 gap-2" asChild>
-                                            <a href={userDoc?.file_url} target="_blank" rel="noopener noreferrer">
-                                                <ExternalLink className="h-4 w-4" />
-                                                View
-                                            </a>
+                                        <Button
+                                            variant="outline"
+                                            className="flex-1 gap-2"
+                                            onClick={async () => {
+                                                try {
+                                                    const response = await fetch(`/api/documents/download?id=${userDoc?.id}`);
+                                                    const data = await response.json();
+                                                    if (data.signedUrl) {
+                                                        window.open(data.signedUrl, '_blank');
+                                                    } else {
+                                                        toast.error('Failed to generate download link');
+                                                    }
+                                                } catch (error) {
+                                                    toast.error('Failed to open document');
+                                                }
+                                            }}
+                                        >
+                                            <ExternalLink className="h-4 w-4" />
+                                            View
                                         </Button>
 
                                         {status !== 'VERIFIED' && (
@@ -222,7 +265,33 @@ export default function DocumentsPage() {
                                                     />
                                                 </DialogContent>
                                             </Dialog>
+
                                         )}
+
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" title="Delete Document">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        This action cannot be undone. This will permanently delete your document.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => userDoc && handleDelete(userDoc.id)}
+                                                        className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                                                    >
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </>
                                 )}
                             </div>
@@ -231,12 +300,14 @@ export default function DocumentsPage() {
                 })}
             </div>
 
-            {filteredDocs.length === 0 && (
-                <div className="text-center py-12">
-                    <p className="text-gray-500">No documents found matching your search.</p>
-                </div>
-            )}
-        </div>
+            {
+                filteredDocs.length === 0 && (
+                    <div className="text-center py-12">
+                        <p className="text-gray-500">No documents found matching your search.</p>
+                    </div>
+                )
+            }
+        </div >
     );
 }
 
