@@ -11,7 +11,12 @@ import {
     RefreshCw,
     ExternalLink,
     Search,
-    Trash2
+    Trash2,
+    HelpCircle,
+    Globe,
+    MapPin,
+    Phone,
+    Clock as ClockIcon
 } from 'lucide-react';
 import {
     AlertDialog,
@@ -24,6 +29,9 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { DocumentUpload } from '@/components/documents/document-upload';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -39,6 +47,22 @@ interface Document {
     category: string;
     description?: string;
     is_common: boolean;
+    procurement_guide?: {
+        steps: { title: string; description: string }[];
+    };
+    portal_url?: string;
+}
+
+interface OfficeAddress {
+    id: string;
+    document_id?: string;
+    state: string;
+    office_name: string;
+    address: string;
+    contact_number?: string;
+    working_hours?: string;
+    location_url?: string;
+    office_type?: string;
 }
 
 interface UserDocument {
@@ -63,6 +87,7 @@ export default function DocumentsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [filterCategory, setFilterCategory] = useState<string | null>(null);
     const [selectedDocForUpload, setSelectedDocForUpload] = useState<Document | null>(null);
+    const [selectedDocForGuide, setSelectedDocForGuide] = useState<Document | null>(null);
 
     const isLoading = !masterDocsData || !userDocsData;
 
@@ -91,6 +116,7 @@ export default function DocumentsPage() {
     }
 
     const masterDocuments: Document[] = masterDocsData.documents || [];
+    const officeAddresses: OfficeAddress[] = masterDocsData.officeAddresses || [];
     const userDocuments: UserDocument[] = userDocsData.documents || [];
 
     // Filter documents
@@ -172,13 +198,27 @@ export default function DocumentsPage() {
                     const status = userDoc?.verification_status || 'MISSING';
 
                     return (
-                        <div key={doc.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+                        <div key={doc.id} className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col relative">
                             <div className="p-6 flex-1">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="p-2 bg-primary-50 rounded-lg">
                                         <FileText className="h-6 w-6 text-primary" />
                                     </div>
-                                    <StatusBadge status={status} />
+                                    <div className="flex items-center gap-2">
+                                        <StatusBadge status={status} />
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-8 w-8 p-0 rounded-full text-blue-600 hover:bg-blue-50"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedDocForGuide(doc);
+                                            }}
+                                            title="How to get this document?"
+                                        >
+                                            <HelpCircle className="h-5 w-5" />
+                                        </Button>
+                                    </div>
                                 </div>
                                 <h3 className="text-lg font-semibold text-gray-900 mb-1">{doc.document_name}</h3>
                                 <p className="text-sm text-gray-500 mb-4 line-clamp-2">{doc.description}</p>
@@ -307,6 +347,161 @@ export default function DocumentsPage() {
                     </div>
                 )
             }
+            {/* Procurement Guide Modal */}
+            <Dialog open={!!selectedDocForGuide} onOpenChange={(open) => !open && setSelectedDocForGuide(null)}>
+                <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl flex items-center gap-2">
+                            <span className="p-1 bg-blue-100 rounded-md text-blue-700">
+                                <HelpCircle className="h-5 w-5" />
+                            </span>
+                            How to get: {selectedDocForGuide?.document_name}
+                        </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="flex-1 overflow-hidden mt-2">
+                        <Tabs defaultValue="online" className="h-full flex flex-col">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="online">Online Process</TabsTrigger>
+                                <TabsTrigger value="offline">Offline / In-Person</TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="online" className="flex-1 overflow-hidden mt-4">
+                                <ScrollArea className="h-[50vh] pr-4">
+                                    <div className="space-y-6">
+                                        {selectedDocForGuide?.portal_url && (
+                                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+                                                <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                                                    <Globe className="h-4 w-4" /> Official Portal
+                                                </h4>
+                                                <div className="flex items-center gap-3 bg-white p-2 rounded border border-blue-200">
+                                                    <code className="text-sm flex-1 text-gray-600 truncate">{selectedDocForGuide.portal_url}</code>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(selectedDocForGuide.portal_url!);
+                                                            toast.success('URL copied to clipboard');
+                                                        }}
+                                                    >
+                                                        Copy
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => window.open(selectedDocForGuide.portal_url, '_blank')}
+                                                    >
+                                                        Visit
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        <div className="space-y-4">
+                                            <h4 className="font-semibold text-gray-900">Step-by-Step Guide</h4>
+                                            {selectedDocForGuide?.procurement_guide?.steps?.length ? (
+                                                <div className="relative border-l-2 border-blue-100 ml-3 pl-6 space-y-8">
+                                                    {selectedDocForGuide.procurement_guide.steps.map((step, idx) => (
+                                                        <div key={idx} className="relative">
+                                                            <div className="absolute -left-[31px] bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm border-2 border-white">
+                                                                {idx + 1}
+                                                            </div>
+                                                            <h5 className="font-medium text-gray-900 mb-1">{step.title}</h5>
+                                                            <p className="text-sm text-gray-600">{step.description}</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
+                                                    No specific online guide available for this document.
+                                                    Please check the official portal.
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </ScrollArea>
+                            </TabsContent>
+
+                            <TabsContent value="offline" className="flex-1 overflow-hidden mt-4">
+                                <ScrollArea className="h-[50vh] pr-4">
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <h4 className="font-semibold text-gray-900">Nearby Offices</h4>
+                                            {officeAddresses.length > 0 && (
+                                                <Badge variant="secondary">{officeAddresses[0].state}</Badge>
+                                            )}
+                                        </div>
+
+                                        {officeAddresses.filter(addr => addr.document_id === selectedDocForGuide?.id).length > 0 ? (
+                                            <div className="grid gap-4">
+                                                {officeAddresses
+                                                    .filter(addr => addr.document_id === selectedDocForGuide?.id)
+                                                    .map((office) => (
+                                                        <div key={office.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                                            <div className="flex items-start justify-between mb-2">
+                                                                <div className="font-medium text-gray-900 flex items-center gap-2">
+                                                                    <MapPin className="h-4 w-4 text-gray-500" />
+                                                                    {office.office_name}
+                                                                </div>
+                                                                {office.office_type && (
+                                                                    <Badge variant="outline" className="text-xs">{office.office_type}</Badge>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-sm text-gray-600 ml-6 mb-3">{office.address}</p>
+
+                                                            <div className="flex flex-wrap gap-4 ml-6 text-xs text-gray-500">
+                                                                {office.working_hours && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <ClockIcon className="h-3 w-3" />
+                                                                        {office.working_hours}
+                                                                    </div>
+                                                                )}
+                                                                {office.contact_number && (
+                                                                    <div className="flex items-center gap-1">
+                                                                        <Phone className="h-3 w-3" />
+                                                                        {office.contact_number}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+
+                                                            {office.location_url && (
+                                                                <div className="ml-6 mt-3">
+                                                                    <a
+                                                                        href={office.location_url}
+                                                                        target="_blank"
+                                                                        rel="noreferrer"
+                                                                        className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                                                                    >
+                                                                        View on Maps <ExternalLink className="h-3 w-3" />
+                                                                    </a>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-12 bg-gray-50 rounded-xl">
+                                                <MapPin className="h-10 w-10 text-gray-300 mx-auto mb-3" />
+                                                <p className="text-gray-900 font-medium">No offices found nearby</p>
+                                                <p className="text-sm text-gray-500 mt-1">
+                                                    We couldn't find specific offices for this document in your state.
+                                                    Please try looking for "Tehsil Office" or "CSC Center" on Google Maps.
+                                                </p>
+                                                <Button
+                                                    variant="outline"
+                                                    className="mt-4"
+                                                    onClick={() => window.open(`https://www.google.com/maps/search/${selectedDocForGuide?.document_name}+near+me`, '_blank')}
+                                                >
+                                                    Search on Google Maps
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </ScrollArea>
+                            </TabsContent>
+                        </Tabs>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div >
     );
 }
