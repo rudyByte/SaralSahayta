@@ -94,7 +94,6 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
 
                 <div className="flex flex-col space-y-3">
                     <div className="flex items-center text-primary font-bold">
-                        <IndianRupee className="h-4 w-4 mr-1" />
                         <span className="text-lg">
                             {scheme.benefitAmount ? `₹${scheme.benefitAmount.toLocaleString()}` : "Variable"}
                         </span>
