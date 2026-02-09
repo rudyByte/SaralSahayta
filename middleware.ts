@@ -77,6 +77,28 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/discover', request.url));
     }
 
+    // Admin routes - check if user is admin
+    const isAdminPath = request.nextUrl.pathname.startsWith('/admin');
+
+    if (isAdminPath) {
+        if (!user) {
+            // Not logged in, redirect to login
+            return NextResponse.redirect(new URL('/login', request.url));
+        }
+
+        // Check if user is admin
+        const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('is_admin')
+            .eq('user_id', user.id)
+            .single();
+
+        if (!profile?.is_admin) {
+            // Not an admin, redirect to discover page
+            return NextResponse.redirect(new URL('/discover', request.url));
+        }
+    }
+
     return response;
 }
 
