@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TEST STYLE - REMOVE AFTER VERIFICATION */
+body {
+  background-color: #fce4ec !important;
+  /* Light pink test */
+}
+
 @layer base {
   :root {
     /* Base: Slate-50 */
