@@ -57,8 +57,10 @@ export function Navbar() {
 
     return (
         <header className={cn(
-            "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-            isScrolled ? "bg-white/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-5"
+            "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
+            isScrolled
+                ? "bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] py-3"
+                : "bg-transparent py-6"
         )}>
             <div className="container mx-auto px-4 md:px-6">
                 <nav className="flex items-center justify-between">
@@ -81,11 +83,11 @@ export function Navbar() {
                                 className={cn(
                                     "px-4 py-2 rounded-full text-sm font-medium transition-all hover:bg-slate-100",
                                     pathname === link.href
-                                        ? "text-primary bg-primary-50"
-                                        : "text-slate-600 hover:text-slate-900"
+                                        ? "text-primary bg-primary/10 shadow-sm"
+                                        : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
                                 )}
                             >
-                                <div className="flex items-center gap-1.5">
+                                <div className="flex items-center gap-1.5 px-1">
                                     {link.name}
                                 </div>
                             </Link>
@@ -113,7 +115,7 @@ export function Navbar() {
                                 {isProfileOpen && (
                                     <>
                                         <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                                        <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
+                                        <div className="absolute right-0 mt-3 w-64 bg-white/80 backdrop-blur-2xl rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/40 z-50 overflow-hidden animate-in fade-in zoom-in duration-300 origin-top-right">
                                             <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
                                                 <p className="text-sm font-bold text-slate-900 truncate">{user.email}</p>
                                                 <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mt-0.5">Verified Account</p>
