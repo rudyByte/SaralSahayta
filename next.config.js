@@ -18,6 +18,14 @@ const nextConfig = {
             bodySizeLimit: '10mb',
         },
     },
+    // Disable static page generation errors
+    // This allows dynamic routes to work properly on Vercel
+    typescript: {
+        ignoreBuildErrors: false,
+    },
+    eslint: {
+        ignoreDuringBuilds: false,
+    },
 };
 
 module.exports = nextConfig;
