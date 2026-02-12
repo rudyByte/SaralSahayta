@@ -97,10 +97,10 @@ export default function AdminDashboard() {
                                     </div>
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs font-medium ${app.status === 'APPROVED'
-                                                ? 'bg-green-100 text-green-800'
-                                                : app.status === 'REJECTED'
-                                                    ? 'bg-red-100 text-red-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
+                                            ? 'bg-green-100 text-green-800'
+                                            : app.status === 'REJECTED'
+                                                ? 'bg-red-100 text-red-800'
+                                                : 'bg-yellow-100 text-yellow-800'
                                             }`}
                                     >
                                         {app.status}
@@ -126,14 +126,14 @@ export default function AdminDashboard() {
                                             className="bg-primary-600 h-2 rounded-full"
                                             style={{
                                                 width: `${((count as number) /
-                                                        stats.totalApplications) *
+                                                    stats.totalApplications) *
                                                     100
                                                     }%`,
                                             }}
                                         ></div>
                                     </div>
                                     <span className="text-sm font-medium text-gray-900 w-8 text-right">
-                                        {count}
+                                        {count as number}
                                     </span>
                                 </div>
                             </div>
