@@ -87,27 +87,16 @@ export async function middleware(request: NextRequest) {
         }
 
         // Check if user is admin
-        const { data: profile, error } = await supabase
+        const { data: profile } = await supabase
             .from('user_profiles')
             .select('is_admin')
             .eq('user_id', user.id)
             .single();
 
-        console.log('Admin check:', {
-            userId: user.id,
-            userEmail: user.email,
-            profile,
-            isAdmin: profile?.is_admin,
-            error
-        });
-
         if (!profile?.is_admin) {
             // Not an admin, redirect to discover page
-            console.log('Redirecting to /discover - not an admin');
             return NextResponse.redirect(new URL('/discover', request.url));
         }
-
-        console.log('Admin access granted!');
     }
 
     return response;
