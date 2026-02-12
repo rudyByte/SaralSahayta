@@ -2,7 +2,7 @@
 
 import React, { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
-import DiscoverPageContent from './discover-content';
+import { DiscoverPageContent } from './page';
 
 // Force dynamic rendering for this page
 export const dynamic = 'force-dynamic';
