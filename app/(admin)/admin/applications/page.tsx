@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
 import { Search, Filter, FileText, MoreVertical } from 'lucide-react';

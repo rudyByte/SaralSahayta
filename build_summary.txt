@@ -1,0 +1,50 @@
+﻿   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ Γ£ô Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /                                    176 B          94.2 kB
+Γö£ Γùï /_not-found                          873 B          88.1 kB
+Γö£ ╞Æ /admin                               2.42 kB         102 kB
+Γö£ ╞Æ /admin/applications                  3.62 kB         140 kB
+Γö£ ╞Æ /admin/applications/[id]             4.66 kB         121 kB
+Γö£ ╞Æ /admin/users                         4.56 kB         148 kB
+Γö£ ╞Æ /admin/users/[id]                    4.34 kB         111 kB
+Γö£ ╞Æ /api/admin/applications              0 B                0 B
+Γö£ ╞Æ /api/admin/applications/[id]         0 B                0 B
+Γö£ ╞Æ /api/admin/applications/[id]/review  0 B                0 B
+Γö£ ╞Æ /api/admin/dashboard/stats           0 B                0 B
+Γö£ ╞Æ /api/admin/stats                     0 B                0 B
+Γö£ ╞Æ /api/admin/users                     0 B                0 B
+Γö£ ╞Æ /api/admin/users/[id]                0 B                0 B
+Γö£ ╞Æ /api/applications/[id]               0 B                0 B
+Γö£ ╞Æ /api/applications/[id]/history       0 B                0 B
+Γö£ ╞Æ /api/applications/[id]/withdraw      0 B                0 B
+Γö£ ╞Æ /api/documents                       0 B                0 B
+Γö£ ╞Æ /api/documents/delete                0 B                0 B
+Γö£ ╞Æ /api/documents/download              0 B                0 B
+Γö£ ╞Æ /api/documents/master                0 B                0 B
+Γö£ ╞Æ /api/documents/upload                0 B                0 B
+Γö£ ╞Æ /api/profile                         0 B                0 B
+Γö£ ╞Æ /api/profile/districts               0 B                0 B
+Γö£ ╞Æ /api/schemes                         0 B                0 B
+Γö£ ╞Æ /api/schemes/[id]                    0 B                0 B
+Γö£ ╞Æ /applications                        145 B          87.3 kB
+Γö£ Γùï /discover                            6.27 kB         203 kB
+Γö£ Γùï /documents                           71.1 kB         191 kB
+Γö£ Γùï /login                               3.16 kB         160 kB
+Γö£ ╞Æ /profile                             29.3 kB         162 kB
+Γöö Γùï /register                            4.2 kB          188 kB
++ First Load JS shared by all            87.2 kB
+  Γö£ chunks/117-0b47a492bc1bcfe6.js       31.6 kB
+  Γö£ chunks/fd9d1056-5681c511a2ea01ac.js  53.6 kB
+  Γöö other shared chunks (total)          1.96 kB
+
+
+╞Æ Middleware                             73.6 kB
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+

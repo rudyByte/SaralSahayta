@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+export const dynamic = 'force-dynamic';
 
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -156,7 +157,7 @@ export default function ApplicationDetailPage() {
                                 <div>
                                     <label className="text-sm font-medium text-gray-500">Benefit Amount</label>
                                     <p className="mt-1 text-gray-900">
-                                        ₹{application.schemes?.benefitAmount?.toLocaleString()}
+                                        â‚¹{application.schemes?.benefitAmount?.toLocaleString()}
                                     </p>
                                 </div>
                             </div>
@@ -258,7 +259,7 @@ export default function ApplicationDetailPage() {
                                     </div>
                                     <div className="pb-4">
                                         <p className="text-sm font-medium text-gray-900">
-                                            {item.old_status} → {item.new_status}
+                                            {item.old_status} â†’ {item.new_status}
                                         </p>
                                         <p className="text-xs text-gray-600 mt-1">
                                             {new Date(item.changed_at).toLocaleString()}

@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
             const { data: authData } = await supabase.auth.getUser();
             user = authData?.user;
         } catch (authErr) {
-            console.warn("⚠️ Auth Check Failed:", authErr);
+            console.warn("âš ï¸ Auth Check Failed:", authErr);
         }
 
         // 2. Parse filters
@@ -91,7 +92,7 @@ export async function GET(request: Request) {
         const { data: schemes, count: total, error: fetchError } = await query;
 
         if (fetchError) {
-            console.error("❌ Supabase Fetch Error:", fetchError);
+            console.error("âŒ Supabase Fetch Error:", fetchError);
             throw fetchError;
         }
 
@@ -151,7 +152,7 @@ export async function GET(request: Request) {
         return response;
 
     } catch (error: any) {
-        console.error("❌ Final API Error:", error);
+        console.error("âŒ Final API Error:", error);
         return NextResponse.json({
             error: error.message,
             hint: "Check terminal logs for details."

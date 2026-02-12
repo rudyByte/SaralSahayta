@@ -1,3 +1,4 @@
+﻿export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Failed to generate download link' }, { status: 500 });
         }
 
-        console.log('[Download API] ✅ Signed URL created successfully');
+        console.log('[Download API] âœ… Signed URL created successfully');
         return NextResponse.json({
             signedUrl: data.signedUrl,
             expiresIn: 3600

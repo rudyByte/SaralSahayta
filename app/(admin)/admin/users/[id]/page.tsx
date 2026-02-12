@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+export const dynamic = 'force-dynamic';
 
 import { useParams } from 'next/navigation';
 import { ArrowLeft, Mail, Phone, MapPin, Calendar, FileText, CheckCircle, Clock } from 'lucide-react';
