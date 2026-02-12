@@ -91,8 +91,8 @@ export async function POST(request: NextRequest) {
         }
 
         // 7. Upload
-        let fileToUpload: File | Buffer = file;
-        let contentType = file.type;
+        const fileToUpload: File | Buffer = file;
+        const contentType = file.type;
         // Optimization disabled for now
 
         console.log('[Upload API] Starting Upload to Supabase Storage...');

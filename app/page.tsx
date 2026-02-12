@@ -11,7 +11,7 @@ export default function HomePage() {
                         Your Gateway to <span className="text-primary">5,000+</span> Government Schemes
                     </h1>
                     <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                        Discover scholarships, welfare programs, and financial assistance you're eligible for.
+                        Discover scholarships, welfare programs, and financial assistance you&apos;re eligible for.
                         Powered by AI, simplified for everyone.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">

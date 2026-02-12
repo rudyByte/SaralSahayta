@@ -483,8 +483,8 @@ export default function DocumentsPage() {
                                                 <MapPin className="h-10 w-10 text-gray-300 mx-auto mb-3" />
                                                 <p className="text-gray-900 font-medium">No offices found nearby</p>
                                                 <p className="text-sm text-gray-500 mt-1">
-                                                    We couldn't find specific offices for this document in your state.
-                                                    Please try looking for "Tehsil Office" or "CSC Center" on Google Maps.
+                                                    We couldn&apos;t find specific offices for this document in your state.
+                                                    Please try looking for &quot;Tehsil Office&quot; or &quot;CSC Center&quot; on Google Maps.
                                                 </p>
                                                 <Button
                                                     variant="outline"

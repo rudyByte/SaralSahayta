@@ -185,7 +185,7 @@ export default function DiscoverPage() {
                                 <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                                 <h3 className="text-xl font-bold text-slate-900 mb-2">No schemes found</h3>
                                 <p className="text-slate-500 mb-6 max-w-xs mx-auto">
-                                    We couldn't find any schemes matching your current filters. Try adjusting them or resetting.
+                                    We couldn&apos;t find any schemes matching your current filters. Try adjusting them or resetting.
                                 </p>
                                 <Button onClick={handleReset} variant="secondary">
                                     <RotateCcw className="h-4 w-4 mr-2" />
