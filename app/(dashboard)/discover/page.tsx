@@ -21,6 +21,9 @@ import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
 import { useAuth } from '@/lib/auth-context';
 import { cn } from '@/lib/utils';
 
+// Force dynamic rendering for this page
+export const dynamic = 'force-dynamic';
+
 type SortOption = 'relevance' | 'matchScore' | 'deadline' | 'benefit' | 'recent';
 
 export default function DiscoverPage() {
