@@ -22,15 +22,21 @@ export interface UserProfileForMatching {
     profileCompletionPercentage: number;
 }
 
+export interface MatchResult {
+    score: number;
+    matched: string[];
+    missing: string[];
+}
+
 /**
  * Calculates a match score between a scheme and a user profile.
  * Returns null if the user profile is incomplete (< 80%).
- * Returns 50 if eligibility criteria is missing.
+ * Returns a default score if eligibility criteria is missing.
  */
 export function calculateMatchScore(
     scheme: Scheme,
     userProfile: UserProfileForMatching
-): number | null {
+): MatchResult | null {
     // 1. Check for incomplete profile
     if (userProfile.profileCompletionPercentage < 80) {
         return null;
@@ -40,80 +46,125 @@ export function calculateMatchScore(
 
     // 2. Default if no criteria
     if (!criteria || Object.keys(criteria).length === 0) {
-        return 50;
+        return {
+            score: 50,
+            matched: ['General Eligibility'],
+            missing: []
+        };
     }
 
     let score = 0;
+    const matched: string[] = [];
+    const missing: string[] = [];
 
-    // 1. Age (20 points)
-    if (userProfile.age !== undefined) {
-        const ageMin = criteria.ageMin ?? 0;
-        const ageMax = criteria.ageMax ?? 150;
-        if (userProfile.age >= ageMin && userProfile.age <= ageMax) {
-            score += 20;
+    // 1. State (25 points) - CRITICAL
+    if (scheme.schemeType === 'CENTRAL') {
+        score += 25;
+        matched.push('Central Scheme (Available in Maharashtra)');
+    } else if (criteria.states && criteria.states.length > 0) {
+        if (criteria.states.includes(userProfile.state)) {
+            score += 25;
+            matched.push(`${userProfile.state} state matches`);
+        } else {
+            missing.push(`Restricted to ${criteria.states.join(', ')}`);
         }
     } else {
-        // If scheme has no age restriction, give points
-        if (criteria.ageMin === undefined && criteria.ageMax === undefined) {
-            score += 20;
-        }
+        score += 25; // No state restriction
+        matched.push('Available across India');
     }
 
-    // 2. Caste Category (20 points)
+    // 2. Gender (15 points) - CRITICAL
+    if (criteria.gender && criteria.gender.length > 0) {
+        if (criteria.gender.includes(userProfile.gender)) {
+            score += 15;
+            matched.push(`Gender (${userProfile.gender}) matches`);
+        } else {
+            missing.push(`Restricted to ${criteria.gender.join(', ')}`);
+        }
+    } else {
+        score += 15;
+        matched.push('All genders eligible');
+    }
+
+    // 3. Category (20 points) - HIGH
     if (criteria.casteCategories && criteria.casteCategories.length > 0) {
         if (criteria.casteCategories.includes(userProfile.category)) {
             score += 20;
+            matched.push(`Category (${userProfile.category}) matches`);
+        } else {
+            missing.push(`Restricted to ${criteria.casteCategories.join(', ')}`);
         }
     } else {
-        score += 20; // No restriction
+        score += 20;
+        matched.push('All categories eligible');
     }
 
-    // 3. Income (15 points)
-    if (criteria.incomeMax !== undefined && userProfile.annualIncome !== undefined) {
-        if (userProfile.annualIncome <= criteria.incomeMax) {
+    // 4. Age (15 points)
+    const ageMin = criteria.ageMin ?? 0;
+    const ageMax = criteria.ageMax ?? 150;
+    if (userProfile.age !== undefined) {
+        if (userProfile.age >= ageMin && userProfile.age <= ageMax) {
             score += 15;
+            matched.push('Age within required range');
+        } else {
+            missing.push(`Age ${userProfile.age} is outside ${ageMin}-${ageMax}`);
         }
     } else {
-        score += 15; // No restriction
-    }
-
-    // 4. State (15 points)
-    if (scheme.schemeType === 'CENTRAL') {
-        score += 15;
-    } else if (criteria.states && criteria.states.length > 0) {
-        if (criteria.states.includes(userProfile.state)) {
+        if (criteria.ageMin === undefined && criteria.ageMax === undefined) {
             score += 15;
+            matched.push('No age restrictions');
+        } else {
+            missing.push('Age not provided in profile');
         }
-    } else {
-        score += 15; // Central or no specific state list
     }
 
-    // 5. Education (10 points)
+    // 5. Income (10 points)
+    if (criteria.incomeMax !== undefined) {
+        if (userProfile.annualIncome !== undefined) {
+            if (userProfile.annualIncome <= criteria.incomeMax) {
+                score += 10;
+                matched.push('Income within eligible limit');
+            } else {
+                missing.push(`Income ₹${userProfile.annualIncome.toLocaleString()} exceeds ₹${criteria.incomeMax.toLocaleString()}`);
+            }
+        } else {
+            missing.push('Income missing in profile');
+        }
+    } else {
+        score += 10;
+        matched.push('No income restrictions');
+    }
+
+    // 6. Education & Occupation (15 points total)
+    let eduMatch = true;
     if (criteria.educationLevels && criteria.educationLevels.length > 0) {
         if (userProfile.education && criteria.educationLevels.includes(userProfile.education)) {
             score += 10;
+            matched.push(`${userProfile.education} education matches`);
+        } else {
+            eduMatch = false;
+            missing.push(`Requires ${criteria.educationLevels.join('/')}`);
         }
     } else {
-        score += 10; // No restriction
+        score += 10;
+        matched.push('No education restrictions');
     }
 
-    // 6. Gender (10 points)
-    if (criteria.gender && criteria.gender.length > 0) {
-        if (criteria.gender.includes(userProfile.gender)) {
-            score += 10;
-        }
-    } else {
-        score += 10; // No restriction
-    }
-
-    // 7. Occupation (10 points)
     if (criteria.occupation && criteria.occupation.length > 0) {
         if (userProfile.occupation && criteria.occupation.includes(userProfile.occupation)) {
-            score += 10;
+            score += 5;
+            matched.push(`${userProfile.occupation} occupation matches`);
+        } else {
+            missing.push(`Requires ${criteria.occupation.join('/')}`);
         }
     } else {
-        score += 10; // No restriction
+        score += 5;
+        matched.push('No occupation restrictions');
     }
 
-    return Math.min(100, score);
+    return {
+        score: Math.min(100, score),
+        matched,
+        missing
+    };
 }

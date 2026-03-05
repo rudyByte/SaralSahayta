@@ -32,7 +32,7 @@ export async function GET(request: Request) {
             const { data: authData } = await supabase.auth.getUser();
             user = authData?.user;
         } catch (authErr) {
-            console.warn("âš ï¸ Auth Check Failed:", authErr);
+            console.warn("⚠️ Auth Check Failed:", authErr);
         }
 
         // 2. Parse filters
@@ -92,14 +92,14 @@ export async function GET(request: Request) {
         const { data: schemes, count: total, error: fetchError } = await query;
 
         if (fetchError) {
-            console.error("âŒ Supabase Fetch Error:", fetchError);
+            console.error("❌ Supabase Fetch Error:", fetchError);
             throw fetchError;
         }
 
         // 4. Calculate Match Scores
         let results = (schemes || []).map(scheme => ({
             ...scheme,
-            matchScore: null as number | null
+            matchScore: null as any
         }));
 
         if (user && schemes && schemes.length > 0) {
@@ -124,13 +124,17 @@ export async function GET(request: Request) {
                         undefined
                 };
 
-                results = schemes.map(scheme => ({
-                    ...scheme,
-                    matchScore: calculateMatchScore(scheme as any, userProfileForMatching)
-                }));
+                results = schemes.map(scheme => {
+                    const matchResult = calculateMatchScore(scheme as any, userProfileForMatching);
+                    return {
+                        ...scheme,
+                        matchScore: matchResult?.score ?? null,
+                        matchDetails: matchResult
+                    };
+                });
 
                 if (sortBy === 'matchScore' || sortBy === 'relevance') {
-                    results.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+                    results.sort((a, b) => ((b as any).matchScore || 0) - ((a as any).matchScore || 0));
                 }
             }
         }
@@ -152,7 +156,7 @@ export async function GET(request: Request) {
         return response;
 
     } catch (error: any) {
-        console.error("âŒ Final API Error:", error);
+        console.error("❌ Final API Error:", error);
         return NextResponse.json({
             error: error.message,
             hint: "Check terminal logs for details."
