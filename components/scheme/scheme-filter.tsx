@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-    X,
     ChevronDown,
     ChevronUp,
     Filter,
@@ -13,7 +12,6 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { getStates } from '@/lib/india-data';
 import { SchemeType, SchemeCategory } from '@prisma/client';
-import { cn } from '@/lib/utils';
 
 export interface FilterState {
     search: string;

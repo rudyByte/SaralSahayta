@@ -9,8 +9,7 @@ import {
     IndianRupee,
     Info,
     Bookmark,
-    Target,
-    Zap
+    Target
 } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

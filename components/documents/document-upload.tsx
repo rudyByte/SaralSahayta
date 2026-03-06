@@ -169,6 +169,7 @@ export function DocumentUpload({
                         {/* Preview Image */}
                         <div className="h-24 w-24 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0 border border-slate-100 flex items-center justify-center">
                             {preview ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
                                 <img
                                     src={preview}
                                     alt="Preview"

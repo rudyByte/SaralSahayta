@@ -5,8 +5,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Save, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useSWRConfig } from 'swr';
+import { toast } from 'sonner';
 import { fullProfileUpdateSchema, type FullProfileUpdateInput } from '@/lib/validations';
-import { INDIA_DATA, getStates, getDistricts } from '@/lib/india-data';
+import { getStates, getDistricts } from '@/lib/india-data';
 import { validateIFSC } from '@/lib/ifsc';
 
 import { Input } from '@/components/ui/input';
@@ -15,7 +16,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 // Types for form select options
 const CATEGORIES = ['GENERAL', 'SC', 'ST', 'OBC', 'EWS'];
@@ -173,19 +173,8 @@ export default function ProfileForm() {
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [isDirty]);
 
-    // Auto-Save Logic (Debounced 3s)
-    useEffect(() => {
-        if (!isDirty || !isValid || saving) return;
-
-        const timer = setTimeout(() => {
-            handleSubmit(onSubmit)();
-        }, 3000);
-
-        return () => clearTimeout(timer);
-    }, [isDirty, isValid, watchedState, watchedIfsc, watchedDisability, handleSubmit]);
-
     // Manual Save Logic
-    const onSubmit = async (data: FullProfileUpdateInput) => {
+    const onSubmit = useCallback(async (data: FullProfileUpdateInput) => {
         setSaving(true);
         try {
             const res = await fetch('/api/profile', {
@@ -198,28 +187,37 @@ export default function ProfileForm() {
                 const result = await res.json();
                 setCompletion(result.completion);
                 setLastSaved(new Date());
-                // Reset dirty state with current data
-                reset(data);
+                reset(data); // Reset form to mark as clean
+                toast.success("Profile saved automatically");
                 // Sync Navbar Name
                 mutate('/api/profile');
             } else {
                 const result = await res.json();
                 console.error("Save failed:", result);
-
-                // If it's a schema cache error, we can try to tell the user what to do
                 if (result.error?.includes('schema cache')) {
-                    alert(`Supabase Error: ${result.error}. Please try refreshing the page or waiting 10 seconds.`);
+                    toast.error(`Supabase Error: ${result.error}. Please try refreshing the page or waiting 10 seconds.`);
                 } else {
-                    alert(`Failed to save profile: ${result.error || 'Unknown error'}`);
+                    toast.error(`Failed to save profile: ${result.error || 'Unknown error'}`);
                 }
             }
         } catch (error) {
             console.error(error);
-            alert('Error saving profile (Network or Client error).');
+            toast.error('Error saving profile (Network or Client error).');
         } finally {
             setSaving(false);
         }
-    };
+    }, [reset, mutate]);
+
+    // Auto-Save Logic (Debounced 3s)
+    useEffect(() => {
+        if (!isDirty || !isValid || saving) return;
+
+        const timer = setTimeout(() => {
+            handleSubmit(onSubmit)();
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [isDirty, isValid, watchedState, watchedIfsc, watchedDisability, handleSubmit, onSubmit, saving]);
 
     if (loading) {
         return (

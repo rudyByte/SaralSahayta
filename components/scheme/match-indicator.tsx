@@ -3,20 +3,18 @@
 import React from 'react';
 import {
     CheckCircle2,
-    XCircle,
-    Info,
-    Zap,
+    Target,
     ChevronDown,
-    Target
+    Zap,
+    Info
 } from 'lucide-react';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface MatchIndicatorProps {
     score: number;

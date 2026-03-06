@@ -31,10 +31,12 @@ model User {
   disabilityType String?
   
   // Relations
-  familyMembers FamilyMember[]
-  applications  Application[]
-  documents     Document[]
-  profile       UserProfile?
+  familyMembers          FamilyMember[]
+  applications           Application[]
+  documents              Document[]
+  profile                UserProfile?
+  premiumTransactions    PremiumTransaction[]
+  notificationPreference NotificationPreference?
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -57,6 +59,10 @@ model UserProfile {
   
   consentData     Boolean  @default(false)
   consentMarketing Boolean @default(false)
+
+  // Premium Tracking
+  isPremium       Boolean  @default(false)
+  premiumExpiresAt DateTime?
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -148,6 +154,9 @@ model Application {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   
+  // Relations
+  premiumApplication ApplicationPremium?
+  
   @@index([userId])
   @@index([schemeId])
   @@index([status])
@@ -228,4 +237,59 @@ enum ApplicationStatus {
   APPROVED
   REJECTED
   DISBURSED
+}
+
+// Phase 4: Premium Transactions
+model PremiumTransaction {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  amount          Float
+  currency        String   @default("INR")
+  status          PaymentStatus @default(PENDING)
+  provider        String   @default("RAZORPAY")
+  orderId         String?  @unique
+  paymentId       String?  @unique
+  signature       String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// Phase 4: Application Premium Services
+model ApplicationPremium {
+  id              String   @id @default(cuid())
+  applicationId   String   @unique
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  serviceType     String   // e.g., "FAST_TRACK", "AI_REVIEW"
+  status          String   @default("PENDING")
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Phase 4: Notification Preferences
+model NotificationPreference {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  smsEnabled      Boolean  @default(true)
+  emailEnabled    Boolean  @default(true)
+  whatsappEnabled Boolean  @default(false)
+  pushEnabled     Boolean  @default(true)
+  
+  updatedAt       DateTime @updatedAt
+}
+
+// Enums Extensions
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
 }
