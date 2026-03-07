@@ -42,8 +42,12 @@ export async function extractTextFromImage(
     const startTime = Date.now();
 
     try {
-        // Initialize Tesseract worker
+        // Initialize Tesseract worker with reliable CDN (jsdelivr)
+        // Note: Using the -simd version is usually faster and better supported in modern browsers
         const worker = await Tesseract.createWorker(language, 1, {
+            workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js',
+            corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-simd.js',
+            langPath: 'https://cdn.jsdelivr.net/npm/tesseract.js-tessdata@1.0.1/',
             logger: (m) => {
                 if (onProgress && m.status) {
                     onProgress({
@@ -65,18 +69,20 @@ export async function extractTextFromImage(
         return {
             text: data.text,
             confidence: data.confidence,
-            words: (data as any).words.map((word: any) => ({
+            words: (data as any).words?.map((word: any) => ({
                 text: word.text,
                 confidence: word.confidence,
                 bbox: word.bbox
-            })),
+            })) || [],
             language,
             processingTime
         };
 
     } catch (error: any) {
-        console.error('OCR Error:', error);
-        throw new Error(`OCR failed: ${error.message}`);
+        console.error('OCR Error Detail:', error);
+        // Extract string message or stringify the error
+        const errorMessage = error?.message || (typeof error === 'string' ? error : JSON.stringify(error)) || 'Unknown OCR initialization error';
+        throw new Error(`OCR failed: ${errorMessage}`);
     }
 }
 
