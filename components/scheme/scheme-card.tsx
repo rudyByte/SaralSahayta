@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
 import { MatchIndicator } from './match-indicator';
+import { ConfidenceBadge } from './confidence-badge';
 
 interface SchemeCardProps {
     scheme: Scheme & {
@@ -66,6 +67,12 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                         <Bookmark className="h-5 w-5" />
                     </Button>
                 </div>
+
+                {/* AI Approval Probability Badge */}
+                <div className="mb-4">
+                    <ConfidenceBadge schemeId={scheme.id} />
+                </div>
+
                 <div>
                     <Link href={`/schemes/${scheme.id}`} className="block">
                         <h3 className="text-xl font-extrabold leading-tight text-slate-900 line-clamp-2 group-hover:text-primary transition-colors duration-300">
