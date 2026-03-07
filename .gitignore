@@ -47,3 +47,6 @@ prisma/migrations/
 
 # OS
 Thumbs.db
+
+# Prompt Blocks
+"phase4 prompt blocks"

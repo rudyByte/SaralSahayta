@@ -34,6 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { DocumentUpload } from '@/components/documents/document-upload';
+import OCRDocumentUpload from '@/components/documents/OCRDocumentUpload';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -89,6 +90,7 @@ export default function DocumentsPage() {
     const [filterCategory, setFilterCategory] = useState<string | null>(null);
     const [selectedDocForUpload, setSelectedDocForUpload] = useState<Document | null>(null);
     const [selectedDocForGuide, setSelectedDocForGuide] = useState<Document | null>(null);
+    const [useOCR, setUseOCR] = useState(true);
 
     const isLoading = !masterDocsData || !userDocsData;
 
@@ -258,11 +260,37 @@ export default function DocumentsPage() {
                                             <DialogHeader>
                                                 <DialogTitle>Upload {doc.document_name}</DialogTitle>
                                             </DialogHeader>
-                                            <DocumentUpload
-                                                documentCode={doc.document_code}
-                                                documentName={doc.document_name}
-                                                onUploadSuccess={handleUploadSuccess}
-                                            />
+                                            <div className="space-y-4">
+                                                <div className="flex bg-slate-100 p-1 rounded-lg">
+                                                    <button
+                                                        onClick={() => setUseOCR(true)}
+                                                        className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${useOCR ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                                    >
+                                                        AI OCR Scan
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setUseOCR(false)}
+                                                        className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${!useOCR ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                                    >
+                                                        Simple Upload
+                                                    </button>
+                                                </div>
+
+                                                {useOCR ? (
+                                                    <OCRDocumentUpload
+                                                        documentCode={doc.document_code}
+                                                        documentName={doc.document_name}
+                                                        onDataExtracted={(data) => console.log('Extracted Data:', data)}
+                                                        onUploadComplete={handleUploadSuccess}
+                                                    />
+                                                ) : (
+                                                    <DocumentUpload
+                                                        documentCode={doc.document_code}
+                                                        documentName={doc.document_name}
+                                                        onUploadSuccess={handleUploadSuccess}
+                                                    />
+                                                )}
+                                            </div>
                                         </DialogContent>
                                     </Dialog>
                                 ) : (
@@ -299,11 +327,37 @@ export default function DocumentsPage() {
                                                     <DialogHeader>
                                                         <DialogTitle>Replace {doc.document_name}</DialogTitle>
                                                     </DialogHeader>
-                                                    <DocumentUpload
-                                                        documentCode={doc.document_code}
-                                                        documentName={doc.document_name}
-                                                        onUploadSuccess={handleUploadSuccess}
-                                                    />
+                                                    <div className="space-y-4">
+                                                        <div className="flex bg-slate-100 p-1 rounded-lg">
+                                                            <button
+                                                                onClick={() => setUseOCR(true)}
+                                                                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${useOCR ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                                            >
+                                                                AI OCR Scan
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setUseOCR(false)}
+                                                                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${!useOCR ? 'bg-white text-primary shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                                            >
+                                                                Simple Upload
+                                                            </button>
+                                                        </div>
+
+                                                        {useOCR ? (
+                                                            <OCRDocumentUpload
+                                                                documentCode={doc.document_code}
+                                                                documentName={doc.document_name}
+                                                                onDataExtracted={(data) => console.log('Extracted Data:', data)}
+                                                                onUploadComplete={handleUploadSuccess}
+                                                            />
+                                                        ) : (
+                                                            <DocumentUpload
+                                                                documentCode={doc.document_code}
+                                                                documentName={doc.document_name}
+                                                                onUploadSuccess={handleUploadSuccess}
+                                                            />
+                                                        )}
+                                                    </div>
                                                 </DialogContent>
                                             </Dialog>
 
