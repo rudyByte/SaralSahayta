@@ -42,38 +42,56 @@ export async function extractTextFromImage(
     const startTime = Date.now();
 
     try {
-        // Initialize Tesseract worker with reliable CDN (jsdelivr)
-        // Note: Using the -simd version is usually faster and better supported in modern browsers
-        const worker = await Tesseract.createWorker(language, 1, {
-            workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/worker.min.js',
-            corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core-simd.js',
-            langPath: 'https://cdn.jsdelivr.net/npm/tesseract.js-tessdata@1.0.1/',
-            logger: (m) => {
-                if (onProgress && m.status) {
-                    onProgress({
-                        status: m.status,
-                        progress: m.progress || 0
-                    });
-                }
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        const ocrAssetsUrl = `${origin}/ocr-assets`;
+
+        console.log(`[OCR] Starting with createWorker v5.1.1 (lang as first arg)...`);
+
+        // In Tesseract.js v5.1.1, the correct method is:
+        // createWorker(langs, oem, options) - pass lang as first arg so it internally
+        // handles loadLanguage + initialize WITHOUT separate postMessage calls for options.
+        // This avoids the DataCloneError from the separate loadLanguage() call.
+        //
+        // corePath must point to the SPECIFIC .wasm.js file (v5.1.1 naming convention)
+        // The worker uses importScripts() to load it, so it needs the full absolute URL.
+        const worker = await (Tesseract as any).createWorker(
+            language,  // <-- language as first arg is key
+            1,         // OEM.LSTM_ONLY - most accurate
+            {
+                workerPath: `${ocrAssetsUrl}/worker.min.js`,
+                corePath: `${ocrAssetsUrl}/tesseract-core-simd-lstm.wasm.js`, // v5.1.1 specific file
+                langPath: `${ocrAssetsUrl}/`,
+                logger: (m: any) => {
+                    const prog = Math.round((m.progress || 0) * 100);
+                    console.log(`[OCR Status] ${m.status}: ${prog}%`);
+                    if (onProgress && m.status) {
+                        onProgress({ status: m.status, progress: m.progress || 0 });
+                    }
+                },
+                gzip: false
             }
-        });
+        );
+
+        console.log(`[OCR] Worker ready. Recognizing image...`);
 
         // Perform OCR
-        const { data } = await worker.recognize(imageFile);
+        const { data } = await (worker as any).recognize(imageFile);
+
+        console.log(`[OCR] Success! Confidence: ${data.confidence}%`);
 
         // Terminate worker to free memory
-        await worker.terminate();
+        await (worker as any).terminate();
 
         const processingTime = Date.now() - startTime;
 
         return {
             text: data.text,
             confidence: data.confidence,
-            words: (data as any).words?.map((word: any) => ({
+            words: (data.words || []).map((word: any) => ({
                 text: word.text,
                 confidence: word.confidence,
                 bbox: word.bbox
-            })) || [],
+            })),
             language,
             processingTime
         };

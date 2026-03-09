@@ -37,6 +37,7 @@ model User {
   profile                UserProfile?
   premiumTransactions    PremiumTransaction[]
   notificationPreference NotificationPreference?
+  notifications          Notification[]
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -284,6 +285,24 @@ model NotificationPreference {
   pushEnabled     Boolean  @default(true)
   
   updatedAt       DateTime @updatedAt
+}
+
+// Phase 4: Notifications
+model Notification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title       String
+  message     String
+  type        String   // e.g., "DEADLINE", "EXPIRY", "MATCH", "SYSTEM"
+  link        String?
+  isRead      Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@index([isRead])
 }
 
 // Enums Extensions

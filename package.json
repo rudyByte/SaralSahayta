@@ -45,7 +45,7 @@
     "swr": "^2.4.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "tesseract.js": "^7.0.0",
+    "tesseract.js": "^5.1.1",
     "twilio": "^5.3.5",
     "zod": "^3.23.8"
   },

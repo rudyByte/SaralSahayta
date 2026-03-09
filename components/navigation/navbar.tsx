@@ -15,11 +15,13 @@ import {
     LogOut,
     ChevronDown,
     LayoutDashboard,
-    FileText
+    FileText,
+    Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
 import { cn } from '@/lib/utils';
+import { NotificationBell } from './notification-bell';
 
 export function Navbar() {
     const { user, signOut } = useAuth();
@@ -97,58 +99,69 @@ export function Navbar() {
                     {/* Auth Section */}
                     <div className="hidden md:flex items-center gap-4">
                         {user ? (
-                            <div className="relative">
-                                <button
-                                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                    className="flex items-center gap-2 p-1.5 pr-3 hover:bg-slate-100 rounded-full transition-colors"
-                                >
-                                    <div className="h-8 w-8 rounded-full bg-primary-100 text-primary flex items-center justify-center font-bold text-xs ring-2 ring-white">
-                                        {profileName?.charAt(0).toUpperCase()}
-                                    </div>
-                                    <span className="text-sm font-medium text-slate-700 max-w-[120px] truncate">
-                                        {profileName}
-                                    </span>
-                                    <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform", isProfileOpen && "rotate-180")} />
-                                </button>
-
-                                {/* Dropdown Menu */}
-                                {isProfileOpen && (
-                                    <>
-                                        <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                                        <div className="absolute right-0 mt-3 w-64 bg-white/80 backdrop-blur-2xl rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/40 z-50 overflow-hidden animate-in fade-in zoom-in duration-300 origin-top-right">
-                                            <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
-                                                <p className="text-sm font-bold text-slate-900 truncate">{user.email}</p>
-                                                <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mt-0.5">Verified Account</p>
-                                            </div>
-                                            <div className="p-2">
-                                                <Link
-                                                    href="/profile"
-                                                    onClick={() => setIsProfileOpen(false)}
-                                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
-                                                >
-                                                    <User className="h-4 w-4 text-slate-400" />
-                                                    My Profile
-                                                </Link>
-                                                <Link
-                                                    href="/discover"
-                                                    onClick={() => setIsProfileOpen(false)}
-                                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
-                                                >
-                                                    <LayoutDashboard className="h-4 w-4 text-slate-400" />
-                                                    Dashboard
-                                                </Link>
-                                                <hr className="my-2 border-slate-100" />
-                                                <button
-                                                    onClick={() => { signOut(); setIsProfileOpen(false); }}
-                                                    className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                >
-                                                    <LogOut className="h-4 w-4" />
-                                                    Sign Out
-                                                </button>
-                                            </div>
+                            <div className="flex items-center gap-4">
+                                <NotificationBell />
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                        className="flex items-center gap-2 p-1.5 pr-3 hover:bg-slate-100 rounded-full transition-colors"
+                                    >
+                                        <div className="h-8 w-8 rounded-full bg-primary-100 text-primary flex items-center justify-center font-bold text-xs ring-2 ring-white">
+                                            {profileName?.charAt(0).toUpperCase()}
                                         </div>
-                                    </>
-                                )}
+                                        <span className="text-sm font-medium text-slate-700 max-w-[120px] truncate">
+                                            {profileName}
+                                        </span>
+                                        <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform", isProfileOpen && "rotate-180")} />
+                                    </button>
+
+                                    {/* Dropdown Menu */}
+                                    {isProfileOpen && (
+                                        <>
+                                            <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
+                                            <div className="absolute right-0 mt-3 w-64 bg-white/80 backdrop-blur-2xl rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-white/40 z-50 overflow-hidden animate-in fade-in zoom-in duration-300 origin-top-right">
+                                                <div className="px-4 py-3 bg-slate-50 border-b border-slate-100">
+                                                    <p className="text-sm font-bold text-slate-900 truncate">{user.email}</p>
+                                                    <p className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mt-0.5">Verified Account</p>
+                                                </div>
+                                                <div className="p-2">
+                                                    <Link
+                                                        href="/profile"
+                                                        onClick={() => setIsProfileOpen(false)}
+                                                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+                                                    >
+                                                        <User className="h-4 w-4 text-slate-400" />
+                                                        My Profile
+                                                    </Link>
+                                                    <Link
+                                                        href="/settings/notifications"
+                                                        onClick={() => setIsProfileOpen(false)}
+                                                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+                                                    >
+                                                        <Bell className="h-4 w-4 text-slate-400" />
+                                                        Notifications
+                                                    </Link>
+                                                    <Link
+                                                        href="/discover"
+                                                        onClick={() => setIsProfileOpen(false)}
+                                                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 rounded-lg transition-colors"
+                                                    >
+                                                        <LayoutDashboard className="h-4 w-4 text-slate-400" />
+                                                        Dashboard
+                                                    </Link>
+                                                    <hr className="my-2 border-slate-100" />
+                                                    <button
+                                                        onClick={() => { signOut(); setIsProfileOpen(false); }}
+                                                        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                    >
+                                                        <LogOut className="h-4 w-4" />
+                                                        Sign Out
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
                             </div>
                         ) : (
                             <div className="flex items-center gap-2">
