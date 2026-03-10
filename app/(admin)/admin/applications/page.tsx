@@ -2,7 +2,7 @@
 export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
-import { Search, Filter, FileText, MoreVertical } from 'lucide-react';
+import { Search, Filter, FileText, MoreVertical, Star, ShieldCheck } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -35,12 +35,14 @@ const statusColors: Record<string, string> = {
 export default function ApplicationsPage() {
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState('');
+    const [priority, setPriority] = useState(false);
     const [page, setPage] = useState(1);
 
     const queryParams = new URLSearchParams({
         page: page.toString(),
         ...(search && { search }),
         ...(status && { status }),
+        ...(priority && { priority: 'true' }),
     });
 
     const { data, error, isLoading } = useSWR(
@@ -62,122 +64,138 @@ export default function ApplicationsPage() {
             </div>
 
             {/* Filters */}
-            <Card className="p-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="md:col-span-2">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                            <Input
-                                type="search"
-                                placeholder="Search by applicant name or ID..."
-                                className="pl-10"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
-                        </div>
+            <Card className="p-4 border-slate-200 shadow-sm">
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1 relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                            type="search"
+                            placeholder="Search by applicant name or ID..."
+                            className="pl-10 h-10 bg-slate-50"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
                     </div>
-                    <Select value={status} onValueChange={setStatus}>
-                        <SelectTrigger>
-                            <SelectValue placeholder="All Statuses" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="">All Statuses</SelectItem>
-                            <SelectItem value="SUBMITTED">Submitted</SelectItem>
-                            <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
-                            <SelectItem value="APPROVED">Approved</SelectItem>
-                            <SelectItem value="REJECTED">Rejected</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <div className="flex gap-4">
+                        <Select value={status} onValueChange={setStatus}>
+                            <SelectTrigger className="w-[180px] h-10 bg-slate-50 border-slate-200">
+                                <SelectValue placeholder="All Statuses" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="">All Statuses</SelectItem>
+                                <SelectItem value="SUBMITTED">Submitted</SelectItem>
+                                <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
+                                <SelectItem value="APPROVED">Approved</SelectItem>
+                                <SelectItem value="REJECTED">Rejected</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Button
+                            variant={priority ? 'default' : 'outline'}
+                            className={`h-10 transition-colors ${priority ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500 shadow-sm shadow-amber-200' : 'text-slate-600 border-slate-200 shadow-sm hover:bg-slate-50'}`}
+                            onClick={() => {
+                                setPriority(!priority);
+                                setPage(1);
+                            }}
+                        >
+                            <Star className={`w-4 h-4 mr-2 ${priority ? 'fill-white' : ''}`} />
+                            Priority First
+                        </Button>
+                    </div>
                 </div>
             </Card>
 
             {/* Applications Table */}
-            <Card>
+            <Card className="border-slate-200 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-gray-50 border-b">
+                        <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs uppercase tracking-wider font-semibold">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Application ID
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Applicant
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Scheme
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Applied Date
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
+                                <th className="px-6 py-4 text-left">Application ID</th>
+                                <th className="px-6 py-4 text-left">Applicant</th>
+                                <th className="px-6 py-4 text-left">Scheme</th>
+                                <th className="px-6 py-4 text-left">Applied Date</th>
+                                <th className="px-6 py-4 text-left">Status</th>
+                                <th className="px-6 py-4 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white divide-y divide-slate-100">
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={6} className="px-6 py-12 text-center">
                                         <div className="flex justify-center">
-                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600"></div>
                                         </div>
                                     </td>
                                 </tr>
                             ) : applications.length === 0 ? (
                                 <tr>
-                                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                                         No applications found
                                     </td>
                                 </tr>
                             ) : (
-                                applications.map((app: any) => (
-                                    <tr key={app.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-mono text-gray-900">
-                                                {app.id.slice(0, 8)}...
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div>
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {app.user_profiles?.full_name || 'Unknown'}
+                                applications.map((app: any) => {
+                                    const isPremiumUser = app.user_profiles?.is_premium;
+                                    const isPremiumApp = app.application_premium?.some((ap: any) => ap.status === 'ACTIVE');
+                                    const isPriority = isPremiumUser || isPremiumApp;
+
+                                    return (
+                                        <tr key={app.id} className={`hover:bg-slate-50 transition-colors ${isPriority ? 'bg-amber-50/40 hover:bg-amber-50/70 border-l-2 border-l-amber-400' : 'border-l-2 border-l-transparent'}`}>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="text-sm font-mono text-slate-900 font-semibold">
+                                                        {app.id.slice(0, 8)}...
+                                                    </div>
+                                                    {isPriority && (
+                                                        <div title={isPremiumUser ? 'Premium User' : 'Fast-Tracked Application'}>
+                                                            {isPremiumUser ? (
+                                                                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                                                            ) : (
+                                                                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className="text-sm text-gray-500">
-                                                    {app.user_profiles?.mobile}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div>
+                                                    <div className="text-sm font-semibold text-slate-900">
+                                                        {app.user_profiles?.full_name || 'Unknown'}
+                                                    </div>
+                                                    <div className="text-sm text-slate-500">
+                                                        {app.user_profiles?.mobile}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900">
-                                                {app.schemes?.schemeName || 'Unknown Scheme'}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                {app.schemes?.category}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {new Date(app.created_at).toLocaleDateString()}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span
-                                                className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[app.status] || 'bg-gray-100 text-gray-800'
-                                                    }`}
-                                            >
-                                                {app.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <Link href={`/admin/applications/${app.id}`}>
-                                                <Button variant="ghost" size="sm">
-                                                    Review
-                                                </Button>
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className={`text-sm font-medium ${isPriority ? 'text-amber-900' : 'text-slate-900'}`}>
+                                                    {app.schemes?.schemeName || 'Unknown Scheme'}
+                                                </div>
+                                                <div className="text-sm text-slate-500">
+                                                    {app.schemes?.category}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                                                {new Date(app.created_at).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span
+                                                    className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${statusColors[app.status] ? `${statusColors[app.status]} border-opacity-20` : 'bg-slate-100 text-slate-800 border-slate-200'
+                                                        }`}
+                                                >
+                                                    {app.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                                <Link href={`/admin/applications/${app.id}`}>
+                                                    <Button variant={isPriority ? "default" : "ghost"} size="sm" className={isPriority ? 'bg-slate-900 text-white hover:bg-slate-800' : 'font-semibold text-slate-600'}>
+                                                        Review
+                                                    </Button>
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             )}
                         </tbody>
                     </table>
@@ -185,18 +203,19 @@ export default function ApplicationsPage() {
 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                    <div className="px-6 py-4 border-t flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
-                            Showing <span className="font-medium">{(page - 1) * pagination.limit + 1}</span> to{' '}
-                            <span className="font-medium">
+                    <div className="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                        <div className="text-sm text-slate-600">
+                            Showing <span className="font-semibold text-slate-900">{(page - 1) * pagination.limit + 1}</span> to{' '}
+                            <span className="font-semibold text-slate-900">
                                 {Math.min(page * pagination.limit, pagination.total)}
                             </span>{' '}
-                            of <span className="font-medium">{pagination.total}</span> applications
+                            of <span className="font-semibold text-slate-900">{pagination.total}</span>
                         </div>
                         <div className="flex space-x-2">
                             <Button
                                 variant="outline"
                                 size="sm"
+                                className="border-slate-300 text-slate-700 bg-white"
                                 onClick={() => setPage(page - 1)}
                                 disabled={page === 1}
                             >
@@ -205,6 +224,7 @@ export default function ApplicationsPage() {
                             <Button
                                 variant="outline"
                                 size="sm"
+                                className="border-slate-300 text-slate-700 bg-white"
                                 onClick={() => setPage(page + 1)}
                                 disabled={page >= pagination.totalPages}
                             >
