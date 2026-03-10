@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
+import { calculateExpiryDate, getDocumentExpiryStatus } from '@/lib/documents/expiry-calculator';
 
 export async function POST(request: NextRequest) {
     try {
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
         // Get document ID from code
         const { data: document } = await supabase
             .from('documents')
-            .select('id')
+            .select('id, document_name')
             .eq('document_code', documentCode)
             .single();
 
@@ -49,6 +50,20 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+
+        // Calculate Expiry Date if issue date is available in OCR data
+        let expiryDate: Date | null = null;
+        const issueDate = ocrData?.extractedData?.issueDate;
+
+        if (issueDate) {
+            try {
+                expiryDate = calculateExpiryDate(document.document_name, issueDate);
+            } catch (e) {
+                console.warn('Failed to calculate expiry date from OCR issueDate:', issueDate);
+            }
+        }
+
+        const status = getDocumentExpiryStatus(expiryDate);
 
         // Upload to Supabase Storage using project utility
         const fileUrl = await uploadFileToSupabase({
@@ -76,6 +91,8 @@ export async function POST(request: NextRequest) {
             file_size: file.size,
             file_url: fileUrl,
             verification_status: 'PENDING',
+            status: status,
+            expiry_date: expiryDate ? expiryDate.toISOString() : null,
             metadata: {
                 ocr_text: ocrData?.text,
                 ocr_confidence: ocrData?.confidence,

@@ -76,6 +76,7 @@ interface UserDocument {
     verification_status: 'PENDING' | 'VERIFIED' | 'REJECTED';
     rejection_reason?: string;
     expiry_date?: string;
+    status: 'ACTIVE' | 'EXPIRED' | 'EXPIRING_SOON';
     created_at: string;
     updated_at: string;
 }
@@ -208,7 +209,7 @@ export default function DocumentsPage() {
                                         <FileText className="h-6 w-6 text-primary" />
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <StatusBadge status={status} />
+                                        <StatusBadge status={userDoc?.status || status} />
                                         <Button
                                             variant="ghost"
                                             size="sm"
@@ -315,6 +316,17 @@ export default function DocumentsPage() {
                                             <ExternalLink className="h-4 w-4" />
                                             View
                                         </Button>
+
+                                        {(userDoc?.status === 'EXPIRED' || userDoc?.status === 'EXPIRING_SOON') && (
+                                            <Button
+                                                variant="outline"
+                                                className="flex-1 gap-2 border-amber-200 text-amber-700 hover:bg-amber-50"
+                                                onClick={() => window.location.href = `/documents/renew/${doc.document_code.toLowerCase().replace('_', '-')}`}
+                                            >
+                                                <RefreshCw className="h-4 w-4" />
+                                                Renew
+                                            </Button>
+                                        )}
 
                                         {status !== 'VERIFIED' && (
                                             <Dialog>
@@ -569,6 +581,10 @@ function StatusBadge({ status }: { status: string }) {
             return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200"><Clock className="h-3 w-3 mr-1" /> Pending</Badge>;
         case 'REJECTED':
             return <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-red-200"><AlertCircle className="h-3 w-3 mr-1" /> Rejected</Badge>;
+        case 'EXPIRED':
+            return <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-red-200"><AlertCircle className="h-3 w-3 mr-1" /> Expired</Badge>;
+        case 'EXPIRING_SOON':
+            return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-amber-200"><Clock className="h-3 w-3 mr-1" /> Expiring Soon</Badge>;
         default:
             return <Badge variant="outline" className="text-gray-500 border-gray-200">Missing</Badge>;
     }

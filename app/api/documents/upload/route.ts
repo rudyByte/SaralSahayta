@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase-server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
 import { validateFile } from '@/lib/file-validation';
+import { getDocumentExpiryStatus } from '@/lib/documents/expiry-calculator';
 // import { optimizeImage } from '@/lib/optimize-image'; // Temporarily disabled
 
 /**
@@ -42,7 +43,7 @@ export async function POST(request: NextRequest) {
         // 4. Document Type Lookup
         const { data: document, error: docError } = await supabase
             .from('documents')
-            .select('id')
+            .select('id, document_name')
             .eq('document_code', documentCode)
             .single();
 
@@ -107,6 +108,8 @@ export async function POST(request: NextRequest) {
         });
         console.log('[Upload API] Upload Successful. URL:', fileUrl);
 
+        const status = getDocumentExpiryStatus(expiryDate ? new Date(expiryDate) : null);
+
         // 8. DB Update
         const payload = {
             user_id: userId,
@@ -116,6 +119,7 @@ export async function POST(request: NextRequest) {
             file_size: file.size,
             file_url: fileUrl,
             verification_status: 'PENDING',
+            status: status,
             uploaded_at: new Date().toISOString(),
             expiry_date: expiryDate ? new Date(expiryDate).toISOString() : null,
         };

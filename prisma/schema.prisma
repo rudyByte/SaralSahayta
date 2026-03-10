@@ -175,6 +175,7 @@ model Document {
   fileSize        Int
   mimeType        String
   
+  status          String   @default("ACTIVE") // ACTIVE, EXPIRED, EXPIRING_SOON
   isVerified      Boolean  @default(false)
   verifiedAt      DateTime?
   expiryDate      DateTime?
