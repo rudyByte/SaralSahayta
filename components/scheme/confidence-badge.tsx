@@ -1,13 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-    AlertCircle,
-    TrendingUp,
-    Zap,
-    Target,
-    Info
-} from 'lucide-react';
+import { TrendingUp, Zap, AlertCircle, Target } from 'lucide-react';
 import {
     Popover,
     PopoverContent,
@@ -23,60 +17,81 @@ interface ConfidenceBadgeProps {
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+function MiniCircle({ score, color }: { score: number; color: string }) {
+    const r = 16;
+    const circ = 2 * Math.PI * r;
+    const offset = circ - (score / 100) * circ;
+
+    return (
+        <svg width="44" height="44" viewBox="0 0 44 44" className="-rotate-90 shrink-0">
+            <circle cx="22" cy="22" r={r} fill="none" stroke="currentColor" strokeWidth="4" className="text-slate-100" />
+            <circle
+                cx="22" cy="22" r={r}
+                fill="none"
+                stroke={color}
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray={circ}
+                strokeDashoffset={offset}
+                style={{ transition: 'stroke-dashoffset 1s ease' }}
+            />
+        </svg>
+    );
+}
+
 export function ConfidenceBadge({ schemeId, className }: ConfidenceBadgeProps) {
     const { data, error, isLoading } = useSWR(`/api/schemes/${schemeId}/confidence`, fetcher);
     const [isOpen, setIsOpen] = useState(false);
 
-    if (isLoading) return <div className="h-6 w-24 animate-pulse bg-slate-100 rounded-full" />;
+    if (isLoading) return <div className="h-10 w-10 animate-pulse bg-slate-100 rounded-full" />;
     if (error || !data) return null;
 
-    const score = data.score;
+    const score: number = data.score;
 
-    const getStatusColor = (s: number) => {
-        if (s >= 80) return 'text-emerald-700 bg-emerald-50 border-emerald-100 ring-emerald-500/10 shadow-sm shadow-emerald-100/50';
-        if (s >= 50) return 'text-amber-700 bg-amber-50 border-amber-100 ring-amber-500/10 shadow-sm shadow-amber-100/50';
-        return 'text-rose-700 bg-rose-50 border-rose-100 ring-rose-500/10 shadow-sm shadow-rose-100/50';
-    };
-
-    const getStatusIcon = (s: number) => {
-        if (s >= 80) return <TrendingUp className="h-3 w-3" />;
-        if (s >= 50) return <Zap className="h-3 w-3" />;
-        return <AlertCircle className="h-3 w-3" />;
-    };
+    const config =
+        score >= 80
+            ? { color: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-700', label: 'High', icon: <TrendingUp className="h-2.5 w-2.5" /> }
+            : score >= 50
+            ? { color: '#f59e0b', bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-700', label: 'Med', icon: <Zap className="h-2.5 w-2.5" /> }
+            : { color: '#f43f5e', bg: 'bg-rose-50', border: 'border-rose-100', text: 'text-rose-700', label: 'Low', icon: <AlertCircle className="h-2.5 w-2.5" /> };
 
     return (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-                <div
+                <button
                     onMouseEnter={() => setIsOpen(true)}
                     onMouseLeave={() => setIsOpen(false)}
+                    title={`${score}% Approval Chance`}
                     className={cn(
-                        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-extrabold uppercase tracking-wider cursor-help transition-all hover:scale-105 active:scale-95 group",
-                        getStatusColor(score),
+                        'relative inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-help rounded-full',
                         className
                     )}
                 >
-                    {getStatusIcon(score)}
-                    <span className="opacity-90">{score}% Approval Chance</span>
-                    <Info className="h-2.5 w-2.5 ml-0.5 opacity-40 group-hover:opacity-100 transition-opacity" />
-                </div>
+                    <MiniCircle score={score} color={config.color} />
+                    {/* Centre label */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center leading-none">
+                        <span className="text-[9px] font-black text-slate-900">{score}%</span>
+                    </div>
+                </button>
             </PopoverTrigger>
+
             <PopoverContent
                 side="top"
                 align="start"
-                className="w-72 p-0 rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200"
                 onMouseEnter={() => setIsOpen(true)}
                 onMouseLeave={() => setIsOpen(false)}
+                className="w-64 p-0 rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden"
             >
+                {/* Header */}
                 <div className="bg-slate-900 p-4 text-white">
                     <div className="flex items-center justify-between mb-1">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">AI Prediction</span>
-                        <div className={cn(
-                            "px-2 py-0.5 rounded text-[10px] font-black uppercase",
+                        <span className={cn(
+                            'px-2 py-0.5 rounded text-[10px] font-black uppercase',
                             score >= 80 ? 'bg-emerald-500/20 text-emerald-400' : score >= 50 ? 'bg-amber-500/20 text-amber-400' : 'bg-rose-500/20 text-rose-400'
                         )}>
-                            {score >= 80 ? 'High' : score >= 50 ? 'Medium' : 'Low'} Accuracy
-                        </div>
+                            {config.label} Chance
+                        </span>
                     </div>
                     <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-black">{score}%</span>
@@ -84,42 +99,38 @@ export function ConfidenceBadge({ schemeId, className }: ConfidenceBadgeProps) {
                     </div>
                 </div>
 
-                <div className="p-4 space-y-4">
-                    <div className="space-y-1.5">
-                        <div className="flex justify-between text-[10px] font-bold text-slate-500">
-                            <span>Historical Success</span>
-                            <span>{Math.round(data.breakdown.historicalRate * 100)}%</span>
+                {/* Breakdown bars */}
+                <div className="p-4 space-y-3">
+                    {[
+                        { label: 'Historical Success', val: data.breakdown?.historicalRate ?? 0 },
+                        { label: 'Document Readiness', val: data.breakdown?.docsComplete ?? 0 },
+                    ].map(({ label, val }) => (
+                        <div key={label} className="space-y-1">
+                            <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                                <span>{label}</span>
+                                <span>{Math.round(val * 100)}%</span>
+                            </div>
+                            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full rounded-full transition-all duration-700"
+                                    style={{ width: `${val * 100}%`, backgroundColor: config.color }}
+                                />
+                            </div>
                         </div>
-                        <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-slate-300 rounded-full" style={{ width: `${data.breakdown.historicalRate * 100}%` }} />
-                        </div>
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <div className="flex justify-between text-[10px] font-bold text-slate-500">
-                            <span>Document Readiness</span>
-                            <span>{Math.round(data.breakdown.docsComplete * 100)}%</span>
-                        </div>
-                        <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-primary rounded-full" style={{ width: `${data.breakdown.docsComplete * 100}%` }} />
-                        </div>
-                    </div>
+                    ))}
 
                     {data.suggestions?.length > 0 && (
                         <div className="pt-2 border-t border-slate-100">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">How to increase odds</span>
-                            <div className="space-y-2">
-                                {data.suggestions.map((suggestion: any, i: number) => (
-                                    <div key={i} className="flex items-start gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100 group hover:border-primary/20 hover:bg-white transition-all">
-                                        <div className="bg-white p-1 rounded-lg border border-slate-200 shadow-sm mt-0.5 group-hover:border-primary/30 transition-colors">
-                                            <Target className="h-2.5 w-2.5 text-primary" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-[10px] font-bold text-slate-700 leading-tight">{suggestion.text}</p>
-                                            <p className="text-[9px] font-black text-emerald-600 mt-0.5 flex items-center gap-1">
-                                                <TrendingUp className="h-2 w-2" />
-                                                +{suggestion.impact}% Impact
-                                            </p>
+                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">
+                                How to improve
+                            </span>
+                            <div className="space-y-1.5">
+                                {data.suggestions.map((s: any, i: number) => (
+                                    <div key={i} className="flex items-start gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                                        <Target className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+                                        <div>
+                                            <p className="text-[10px] font-semibold text-slate-700 leading-tight">{s.text}</p>
+                                            <p className="text-[9px] font-black text-emerald-600 mt-0.5">+{s.impact}% Impact</p>
                                         </div>
                                     </div>
                                 ))}
@@ -127,10 +138,9 @@ export function ConfidenceBadge({ schemeId, className }: ConfidenceBadgeProps) {
                         </div>
                     )}
                 </div>
-                <div className="bg-slate-50 p-3 border-t border-slate-100">
-                    <p className="text-[9px] text-slate-400 leading-relaxed font-medium">
-                        *Predictions are based on statistical models and do not guarantee official approval.
-                    </p>
+
+                <div className="bg-slate-50 px-4 py-2.5 border-t border-slate-100">
+                    <p className="text-[9px] text-slate-400 font-medium">*Statistical prediction, not a guarantee.</p>
                 </div>
             </PopoverContent>
         </Popover>

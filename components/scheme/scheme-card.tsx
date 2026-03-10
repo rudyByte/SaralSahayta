@@ -63,14 +63,13 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                             {scheme.category.replace('_', ' ')}
                         </Badge>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
-                        <Bookmark className="h-5 w-5" />
-                    </Button>
-                </div>
-
-                {/* AI Approval Probability Badge */}
-                <div className="mb-4">
-                    <ConfidenceBadge schemeId={scheme.id} />
+                    {/* Compact circular approval chance + bookmark */}
+                    <div className="flex items-center gap-1 shrink-0">
+                        <ConfidenceBadge schemeId={scheme.id} />
+                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
+                            <Bookmark className="h-5 w-5" />
+                        </Button>
+                    </div>
                 </div>
 
                 <div>
