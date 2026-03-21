@@ -12,6 +12,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+            return NextResponse.json(
+                { error: 'Razorpay integration is currently disabled (missing API keys)' },
+                { status: 503 }
+            );
+        }
+
         const body = await request.json();
         const { type, schemeId } = body; // type is 'monthly' or 'per_scheme'
 

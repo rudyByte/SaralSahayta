@@ -135,6 +135,13 @@ export const PricingPlans = ({ onSuccess, schemeId, className }: PricingPlansPro
                     {loading === 'per_scheme' ? 'Initialising...' : 'Expedite Current Application'}
                 </Button>
             </div>
+            
+            <div className="md:col-span-2 text-center mt-4">
+                <p className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-50 border border-amber-100 text-amber-700 text-xs font-semibold">
+                    <Shield className="h-3.5 w-3.5" />
+                    Preview Mode: Payments are currently disabled. Contact support for assistance.
+                </p>
+            </div>
         </div>
     );
 };
