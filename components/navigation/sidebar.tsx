@@ -30,16 +30,13 @@ const navItems = [
 
 import useSWR from 'swr';
 import { useAuth } from '@/lib/auth-context';
-import { useSidebar } from '@/lib/sidebar-context';
-
 export function Sidebar() {
     const pathname = usePathname();
     const { user, signOut } = useAuth();
-    const { isCollapsed, toggle } = useSidebar();
     const [isHovered, setIsHovered] = React.useState(false);
 
-    // Sidebar is considered "expanded" if it's either NOT collapsed OR it's being hovered
-    const isExpanded = !isCollapsed || isHovered;
+    // Sidebar strictly expands on hover and auto-closes otherwise
+    const isExpanded = isHovered;
     
     // Fetch profile data for the name
     const { data: profileData } = useSWR(user ? '/api/profile' : null);
@@ -63,8 +60,8 @@ export function Sidebar() {
         >
             {/* Logo Section */}
             <div className={cn(
-                "pt-4 pb-3 px-6 flex items-center justify-between",
-                isCollapsed ? "flex-col gap-4" : "flex-row"
+                "pt-4 pb-3 px-6 flex items-center justify-between transition-all duration-150",
+                !isExpanded ? "flex-col gap-4" : "flex-row"
             )}>
                 <Link href="/dashboard" className="flex items-center group">
                     <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform shrink-0">
@@ -91,10 +88,10 @@ export function Sidebar() {
                     return (
                         <Link key={item.name} href={item.href}>
                             <motion.div 
-                                whileHover={{ x: isCollapsed ? 0 : 4 }}
+                                whileHover={{ x: !isExpanded ? 0 : 4 }}
                                 className={cn(
                                 "relative flex items-center px-4 py-3.5 rounded-2xl transition-all duration-200 group",
-                                isCollapsed ? "justify-center" : "gap-3",
+                                !isExpanded ? "justify-center" : "gap-3",
                                 isActive 
                                     ? "bg-white text-primary shadow-sm border border-slate-100" 
                                     : "text-slate-500 hover:bg-white/50 hover:text-slate-900"
@@ -151,11 +148,11 @@ export function Sidebar() {
             {/* User Profile Hook */}
             <div className={cn(
                 "p-4 border-t border-slate-100/50 transition-all duration-150",
-                isCollapsed ? "items-center" : "px-6"
+                !isExpanded ? "items-center" : "px-6"
             )}>
                 <div className={cn(
                     "flex items-center",
-                    isCollapsed ? "flex-col" : "flex-row"
+                    !isExpanded ? "flex-col" : "flex-row"
                 )}>
                     <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center font-black text-xs shadow-md shadow-primary/20 shrink-0">
                         {profileName?.charAt(0).toUpperCase()}
@@ -173,7 +170,7 @@ export function Sidebar() {
                         onClick={() => signOut()}
                         className={cn(
                             "p-2 rounded-xl hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all active:scale-90 shrink-0",
-                            isCollapsed && "mt-1",
+                            !isExpanded && "mt-1",
                             isExpanded && "ml-3"
                         )}
                     >

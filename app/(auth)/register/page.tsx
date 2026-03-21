@@ -87,13 +87,15 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-2xl w-full">
+        <div className="bg-white/80 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] border border-white p-8 sm:p-12 max-w-2xl w-full relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-accent/0 via-accent/50 to-accent/0" />
+
             <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-                    <UserPlus className="h-8 w-8 text-primary" />
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/5 rounded-3xl mb-6 shadow-inner border border-accent/10">
+                    <UserPlus className="h-10 w-10 text-accent drop-shadow-md" />
                 </div>
-                <h1 className="text-3xl font-bold text-primary-900 mb-2">Create Account</h1>
-                <p className="text-gray-600">Join thousands discovering their eligible schemes</p>
+                <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Create Account</h1>
+                <p className="text-slate-500 font-medium">Join thousands discovering their eligible schemes</p>
             </div>
 
             <form onSubmit={handleRegister} className="space-y-4">
@@ -257,7 +259,7 @@ export default function RegisterPage() {
                     </div>
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full h-12 rounded-xl font-black text-base shadow-xl shadow-accent/20 bg-accent hover:bg-accent/90 text-white" disabled={loading}>
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

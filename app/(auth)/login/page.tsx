@@ -106,13 +106,15 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white/80 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.1)] border border-white p-8 sm:p-12 w-full max-w-md relative overflow-hidden">
+            <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
+            
             <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-                    <LogIn className="h-8 w-8 text-primary" />
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/5 rounded-3xl mb-6 shadow-inner border border-primary/10">
+                    <LogIn className="h-10 w-10 text-primary drop-shadow-md" />
                 </div>
-                <h1 className="text-3xl font-bold text-primary-900 mb-2">Welcome Back</h1>
-                <p className="text-gray-600">Sign in to access your account</p>
+                <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Welcome Back</h1>
+                <p className="text-slate-500 font-medium">Sign in to access your dashboard</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
@@ -136,6 +138,7 @@ export default function LoginPage() {
                         maxLength={10}
                         pattern="[6-9][0-9]{9}"
                         disabled={loading}
+                        className="h-12 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-colors font-medium text-slate-900"
                     />
                 </div>
 
@@ -152,10 +155,11 @@ export default function LoginPage() {
                         required
                         minLength={8}
                         disabled={loading}
+                        className="h-12 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-colors font-medium text-slate-900"
                     />
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full h-12 rounded-xl font-black text-base shadow-xl shadow-primary/20" disabled={loading}>
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -181,7 +185,7 @@ export default function LoginPage() {
                 <Button
                     type="button"
                     variant="outline"
-                    className="w-full border-dashed border-2 hover:bg-gray-50 text-gray-600"
+                    className="w-full h-12 rounded-xl border-dashed border-2 hover:bg-slate-50 text-slate-600 font-bold"
                     onClick={handleDemoLogin}
                     disabled={loading}
                 >
