@@ -105,10 +105,9 @@ export default function DiscoverPageContent() {
     if (authLoading) return <div className="p-8 text-center text-slate-500">Authenticating...</div>;
 
     return (
-        <div className="min-h-screen bg-slate-50/50">
-            <main className="container mx-auto px-4 py-8">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div className="container mx-auto px-4 pt-2">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">
                             Discover Schemes
@@ -225,7 +224,6 @@ export default function DiscoverPageContent() {
                         )}
                     </section>
                 </div>
-            </main>
         </div>
     );
 }

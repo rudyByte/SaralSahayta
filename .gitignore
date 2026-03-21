@@ -20,6 +20,10 @@ dist
 *.pem
 
 # Debug
+
+# Prompt Blocks
+"phase4 prompt blocks"
+phase5\ promptBlocks/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -44,9 +48,4 @@ prisma/migrations/
 *.swp
 *.swo
 *~
-
-# OS
-Thumbs.db
-
-# Prompt Blocks
-"phase4 prompt blocks"
+# Debug

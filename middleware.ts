@@ -58,7 +58,7 @@ export async function middleware(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     // Protected routes - redirect to login if not authenticated
-    const protectedPaths = ['/discover', '/profile', '/applications'];
+    const protectedPaths = ['/dashboard', '/life-events', '/discover', '/profile', '/applications', '/premium'];
     const isProtectedPath = protectedPaths.some(path =>
         request.nextUrl.pathname.startsWith(path)
     );
@@ -74,7 +74,7 @@ export async function middleware(request: NextRequest) {
     );
 
     if (isAuthPath && user) {
-        return NextResponse.redirect(new URL('/discover', request.url));
+        return NextResponse.redirect(new URL('/dashboard', request.url));
     }
 
     // Admin routes - check if user is admin
@@ -94,8 +94,8 @@ export async function middleware(request: NextRequest) {
             .single();
 
         if (!profile?.is_admin) {
-            // Not an admin, redirect to discover page
-            return NextResponse.redirect(new URL('/discover', request.url));
+            // Not an admin, redirect to dashboard page
+            return NextResponse.redirect(new URL('/dashboard', request.url));
         }
     }
 

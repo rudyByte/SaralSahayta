@@ -1,5 +1,10 @@
-// Placeholder for dashboard layout
-// Will include Navbar and Sidebar components
+'use client';
+
+import React from 'react';
+import { Sidebar } from '@/components/navigation/sidebar';
+import { Navbar } from '@/components/navigation/navbar';
+import { LifeEventsTrigger } from '@/components/life-events/LifeEventsTrigger';
+import { SidebarProvider } from '@/lib/sidebar-context';
 
 export default function DashboardLayout({
     children,
@@ -7,14 +12,23 @@ export default function DashboardLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Navbar will be added here */}
-            <div className="flex">
-                {/* Sidebar will be added here */}
-                <main className="flex-1 p-6">
-                    {children}
-                </main>
+        <SidebarProvider>
+            <div className="min-h-screen bg-slate-50/50">
+            <LifeEventsTrigger />
+            <Navbar />
+            
+            {/* Fixed Sidebar for desktop */}
+            <div className="hidden lg:block">
+                <Sidebar />
             </div>
+            
+            {/* Main Content Area */}
+            <main className="pt-20 lg:pl-20 min-h-screen relative z-10">
+                <div className="pb-12 px-4 md:px-8">
+                    {children}
+                </div>
+            </main>
         </div>
+        </SidebarProvider>
     );
 }

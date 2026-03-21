@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 import { SWRProvider } from '@/lib/swr-config';
-import { Navbar } from '@/components/navigation/navbar';
 import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -30,10 +29,9 @@ export default function RootLayout({
             <body className={inter.className}>
                 <SWRProvider>
                     <AuthProvider>
-                        <Navbar />
-                        <main className="pt-20">
-                            {children}
-                        </main>
+                        {/* No global Navbar or main padding here. 
+                            Individual group layouts (dashboard, guest) handle their own navigation and spacing. */}
+                        {children}
                         <Toaster />
                     </AuthProvider>
                 </SWRProvider>
