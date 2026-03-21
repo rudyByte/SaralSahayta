@@ -9,15 +9,24 @@ import {
     IndianRupee,
     Info,
     Bookmark,
-    Target
+    Target,
+    Zap
 } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogTrigger 
+} from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
 import { MatchIndicator } from './match-indicator';
 import { ConfidenceBadge } from './confidence-badge';
+import { PricingPlans } from '../premium/PricingPlans';
 
 interface SchemeCardProps {
     scheme: Scheme & {
@@ -143,7 +152,7 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
             </CardContent>
 
             <CardFooter className="p-6 pt-0 bg-white relative z-10 flex gap-3">
-                <Button asChild className="w-full h-12 rounded-2xl shadow-lg shadow-primary/20 font-bold text-sm tracking-wide group/btn overflow-hidden relative">
+                <Button asChild className="flex-1 h-12 rounded-2xl shadow-lg shadow-primary/20 font-bold text-sm tracking-wide group/btn overflow-hidden relative">
                     <Link href={`/schemes/${scheme.id}`}>
                         <span className="relative z-10 flex items-center justify-center">
                             Secure Benefit
@@ -152,6 +161,37 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                         <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary-600 to-primary opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
                     </Link>
                 </Button>
+
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-12 w-12 rounded-2xl border-slate-200 text-amber-500 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 transition-all flex-shrink-0"
+                            title="Fast-track this application"
+                        >
+                            <Zap className="h-5 w-5 fill-current" />
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-4xl p-0 overflow-hidden border-none bg-transparent shadow-none">
+                        <div className="bg-white p-8 rounded-3xl">
+                            <DialogHeader className="mb-8">
+                                <DialogTitle className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                                    <div className="p-2 bg-amber-100 rounded-xl">
+                                        <Zap className="h-6 w-6 text-amber-600 fill-current" />
+                                    </div>
+                                    Expedite: {scheme.name}
+                                </DialogTitle>
+                            </DialogHeader>
+                            <PricingPlans schemeId={scheme.id} />
+                            <div className="mt-8 text-center">
+                                <p className="text-xs text-slate-400">
+                                    Fast-track applies a ₹99 priority processing fee to this specific application for 24-hour admin review.
+                                </p>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </CardFooter>
         </Card>
     );

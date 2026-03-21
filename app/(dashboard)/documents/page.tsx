@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 export const dynamic = 'force-dynamic';
 
 import React, { useState } from 'react';
@@ -136,6 +136,14 @@ export default function DocumentsPage() {
     const handleUploadSuccess = () => {
         toast.success('Document uploaded successfully');
         mutate('/api/documents'); // Refresh user documents
+        
+        // Globally refresh any confidence-related API caches to update match scores
+        mutate(
+            (key: any) => typeof key === 'string' && (key.includes('/confidence') || key.includes('/api/schemes')),
+            undefined,
+            { revalidate: true }
+        );
+        
         setSelectedDocForUpload(null); // Close dialog
     };
 

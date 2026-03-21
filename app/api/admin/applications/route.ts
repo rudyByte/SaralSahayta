@@ -1,4 +1,4 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
                     schemeName,
                     category
                 ),
-                application_premium (
+                "ApplicationPremium" (
                     status,
                     serviceType
                 )
@@ -61,8 +61,8 @@ export async function GET(request: NextRequest) {
         // Apply Priority Sorting in memory for the current page if requested
         if (priorityOnly) {
             processedApplications.sort((a, b) => {
-                const aIsPremium = a.user_profiles?.is_premium || a.application_premium?.some((ap: any) => ap.status === 'ACTIVE');
-                const bIsPremium = b.user_profiles?.is_premium || b.application_premium?.some((ap: any) => ap.status === 'ACTIVE');
+                const aIsPremium = a.user_profiles?.is_premium || a.ApplicationPremium?.some((ap: any) => ap.status === 'ACTIVE');
+                const bIsPremium = b.user_profiles?.is_premium || b.ApplicationPremium?.some((ap: any) => ap.status === 'ACTIVE');
 
                 if (aIsPremium && !bIsPremium) return -1;
                 if (!aIsPremium && bIsPremium) return 1;

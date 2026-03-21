@@ -1,131 +1,97 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { supabaseAdmin } from '@/lib/supabase-admin';
 import { verifyWebhookSignature } from '@/lib/payments/razorpay';
-import { PrismaClient } from '@prisma/client';
-
-export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
+import { nanoid } from 'nanoid';
 
 export async function POST(request: NextRequest) {
     try {
-        const bodyText = await request.text();
+        const body = await request.text(); // Raw body for signature verification
         const signature = request.headers.get('x-razorpay-signature');
+        const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
-        if (!signature || !verifyWebhookSignature(bodyText, signature)) {
-            return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+        if (!signature || !secret) {
+            return NextResponse.json({ error: 'Verification headers missing' }, { status: 400 });
         }
 
-        const body = JSON.parse(bodyText);
+        const isValid = verifyWebhookSignature(body, signature, secret);
 
-        // Handle only payment.captured events
-        if (body.event !== 'payment.captured') {
-            return NextResponse.json({ success: true, message: 'Event ignored' });
+        if (!isValid) {
+            return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
         }
 
-        const payment = body.payload.payment.entity;
-        const supabase = createClient();
+        const payload = JSON.parse(body);
+        const event = payload.event;
 
-        // Find the transaction using the order_id
-        const orderId = payment.order_id;
-        if (!orderId) {
-            return NextResponse.json({ error: 'Missing order_id' }, { status: 400 });
-        }
+        if (event === 'payment.captured') {
+            const payment = payload.payload.payment.entity;
+            const notes = payment.notes;
+            const userId = notes.userId;
+            const type = notes.type;
+            const schemeId = notes.schemeId;
+            const orderId = payment.order_id;
+            const amount = payment.amount / 100; // in INR
 
-        // We can use prisma directly since it's a backend operation without RLS context
-        const transaction = await prisma.premiumTransaction.findUnique({
-            where: { orderId: orderId }
-        });
-
-        if (!transaction) {
-            console.error(`Transaction not found for Order ID: ${orderId}`);
-            // If not found in Prisma, try fetching order details directly from Razorpay to figure out context
-            return NextResponse.json({ error: 'Transaction record not found' }, { status: 404 });
-        }
-
-        if (transaction.status === 'COMPLETED') {
-            return NextResponse.json({ success: true, message: 'Already processed' });
-        }
-
-        // Use a transaction to ensure atomic updates
-        await prisma.$transaction(async (tx) => {
-            // 1. Update Transaction Status
-            await tx.premiumTransaction.update({
-                where: { id: transaction.id },
-                data: {
+            // 1. Log Transaction
+            const { error: txError } = await supabaseAdmin
+                .from('PremiumTransaction')
+                .insert({
+                    id: nanoid(),
+                    userId: userId,
+                    amount: amount,
                     status: 'COMPLETED',
+                    provider: 'RAZORPAY',
+                    orderId: orderId,
                     paymentId: payment.id,
-                    signature: signature
-                }
-            });
-
-            // Retrieve Context Notes (we should have stored these when creating the order, 
-            // but Razorpay also sends them back in the webhook if attached to the order or payment)
-            const notes = payment.notes || {};
-            const planType = notes.planType;
-            const userId = transaction.userId;
-
-            // 2. Apply Premium Benefits Based on Plan Type
-            if (planType === 'monthly') {
-                // Grant global premium status for 30 days
-                const expiryDate = new Date();
-                expiryDate.setDate(expiryDate.getDate() + 30);
-
-                await tx.userProfile.update({
-                    where: { userId: userId },
-                    data: {
-                        isPremium: true,
-                        premiumExpiresAt: expiryDate
-                    }
                 });
 
-                // Optionally create an in-app notification
-                await tx.notification.create({
-                    data: {
-                        userId: userId,
-                        title: 'Premium Subscription Active!',
-                        message: 'Your monthly premium subscription plan is now active.',
-                        type: 'SYSTEM',
-                        isRead: false
-                    }
-                });
+            if (txError) throw txError;
 
-            } else if (planType === 'per_scheme') {
-                const applicationId = notes.applicationId;
-                if (applicationId) {
-                    // Create ApplicationPremium record to fast-track
-                    await tx.applicationPremium.create({
-                        data: {
-                            applicationId: applicationId,
+            // 2. Handle Plan Types
+            if (type === 'monthly') {
+                const expiresAt = new Date();
+                expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+                await supabaseAdmin
+                    .from('user_profiles')
+                    .update({
+                        is_premium: true,
+                        premium_expires_at: expiresAt.toISOString(),
+                    })
+                    .eq('user_id', userId);
+            } 
+            else if (type === 'per_scheme' && schemeId) {
+                // Determine applicationId first (assuming there's an existing application)
+                // In a robust system, we would have passed applicationId in notes
+                // For now, let's find the current draft/submitted application for this user and scheme
+                const { data: application } = await supabaseAdmin
+                    .from('applications')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .eq('scheme_id', schemeId)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (application) {
+                    await supabaseAdmin
+                        .from('ApplicationPremium')
+                        .upsert({
+                            id: nanoid(),
+                            applicationId: application.id,
                             serviceType: 'FAST_TRACK',
                             status: 'ACTIVE'
-                        }
-                    });
-
-                    // Optionally create an in-app notification
-                    await tx.notification.create({
-                        data: {
-                            userId: userId,
-                            title: 'Application Fast-Tracked!',
-                            message: 'Your application has been fast-tracked for priority processing.',
-                            type: 'SYSTEM',
-                            link: `/applications/${applicationId}`,
-                            isRead: false
-                        }
-                    });
+                        });
                 }
             }
-        });
+        }
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ received: true });
 
     } catch (error: any) {
-        console.error('Webhook error:', error);
+        console.error('[Razorpay Webhook] Error:', error);
         return NextResponse.json(
-            { error: error.message || 'Error processing webhook' },
+            { error: error.message || 'Webhook processing failed' },
             { status: 500 }
         );
-    } finally {
-        await prisma.$disconnect();
     }
 }

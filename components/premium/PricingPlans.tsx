@@ -1,226 +1,149 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Zap, Shield, Clock, Star, Loader2, Sparkles, ArrowRight } from 'lucide-react';
+import { Check, Shield, Zap, Sparkles, Clock, Bell, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
-interface PricingPlansProps {
-    onSubscribeSuccess?: (orderId: string) => void;
-    onSubscribeError?: (error: string) => void;
-    schemeId?: string;
-    applicationId?: string;
+declare global {
+    interface Window {
+        Razorpay: any;
+    }
 }
 
-const loadRazorpayScript = (src: string): Promise<boolean> =>
-    new Promise((resolve) => {
-        if ((window as any).Razorpay) return resolve(true);
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.body.appendChild(script);
-    });
+interface PricingPlansProps {
+    onSuccess?: () => void;
+    schemeId?: string; // Optional: Only provided for per-scheme fast-track
+    className?: string;
+}
 
-const plans = [
-    {
-        id: 'freemium',
-        name: 'Free',
-        tagline: 'Get started at no cost',
-        price: '₹0',
-        period: '/forever',
-        badge: null,
-        badgeClass: '',
-        cardClass: 'border-slate-200 bg-white',
-        headerClass: 'text-slate-800',
-        priceClass: 'text-slate-800',
-        ctaLabel: 'Current Plan',
-        ctaClass: 'border-slate-200 text-slate-600 bg-slate-50 cursor-default',
-        ctaVariant: 'outline' as const,
-        isFreemium: true,
-        features: [
-            { label: 'Discover eligible schemes', included: true },
-            { label: 'Profile completion & management', included: true },
-            { label: 'Document upload (manual)', included: true },
-            { label: 'Standard application queue', included: true },
-            { label: 'Basic email notifications', included: true },
-            { label: 'Priority processing queue', included: false },
-            { label: 'WhatsApp & call support', included: false },
-            { label: 'SMS & real-time alerts', included: false },
-        ],
-    },
-    {
-        id: 'monthly',
-        name: 'Saral Premium',
-        tagline: 'Priority access for every scheme',
-        price: '₹199',
-        period: '/month',
-        badge: '⭐ Best Value',
-        badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-        cardClass: 'border-emerald-300 bg-gradient-to-b from-emerald-50/60 to-white shadow-xl shadow-emerald-100/50 scale-[1.02]',
-        headerClass: 'text-emerald-900',
-        priceClass: 'text-emerald-600',
-        ctaLabel: 'Subscribe — ₹199/mo',
-        ctaClass: 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg shadow-emerald-200',
-        ctaVariant: 'default' as const,
-        isFreemium: false,
-        planType: 'monthly',
-        accentBar: 'bg-gradient-to-r from-emerald-400 to-teal-400',
-        features: [
-            { label: 'Everything in Free', included: true },
-            { label: 'Priority admin processing queue', included: true },
-            { label: '24–48 hr processing guarantee', included: true },
-            { label: 'Real-time SMS & Email alerts', included: true },
-            { label: 'Dedicated WhatsApp support', included: true },
-            { label: 'Expert document review', included: true },
-            { label: 'Unlimited scheme applications', included: true },
-            { label: 'Auto-renewal (cancel anytime)', included: true },
-        ],
-    },
-    {
-        id: 'per_scheme',
-        name: 'Fast-Track',
-        tagline: 'Urgent processing for one scheme',
-        price: '₹99',
-        period: '/scheme',
-        badge: '⚡ One-Time',
-        badgeClass: 'bg-amber-100 text-amber-800 border-amber-200',
-        cardClass: 'border-amber-200 bg-white',
-        headerClass: 'text-slate-800',
-        priceClass: 'text-amber-600',
-        ctaLabel: 'Fast-Track This Scheme',
-        ctaClass: 'border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100',
-        ctaVariant: 'outline' as const,
-        isFreemium: false,
-        planType: 'per_scheme',
-        features: [
-            { label: 'Single scheme priority queue', included: true },
-            { label: '24–48 hr processing guarantee', included: true },
-            { label: 'One-time secure payment', included: true },
-            { label: 'Standard email notification', included: true },
-            { label: 'Unlimited schemes', included: false },
-            { label: 'WhatsApp support', included: false },
-            { label: 'SMS alerts', included: false },
-            { label: 'Expert document review', included: false },
-        ],
-    },
-];
+export const PricingPlans = ({ onSuccess, schemeId, className }: PricingPlansProps) => {
+    const [loading, setLoading] = useState<string | null>(null);
 
-export function PricingPlans({ onSubscribeSuccess, onSubscribeError, schemeId, applicationId }: PricingPlansProps) {
-    const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-
-    const handleSubscribe = async (planType: 'monthly' | 'per_scheme') => {
+    const handleSubscribe = async (type: 'monthly' | 'per_scheme') => {
         try {
-            setLoadingPlan(planType);
+            setLoading(type);
+            
+            // 1. Create Order
             const response = await fetch('/api/premium/subscribe', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ planType, schemeId, applicationId }),
+                body: JSON.stringify({ type, schemeId }),
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Failed to initialize payment');
 
-            const ready = await loadRazorpayScript('https://checkout.razorpay.com/v1/checkout.js');
-            if (!ready) throw new Error('Razorpay SDK failed to load.');
+            const order = await response.json();
+            if (order.error) throw new Error(order.error);
 
-            const options = {
-                key: data.key,
-                amount: data.amount,
-                currency: data.currency,
-                name: 'Saral Sahayta',
-                description: planType === 'monthly' ? 'Premium Monthly Subscription' : 'Priority Scheme Processing',
-                order_id: data.orderId,
-                handler: () => {
-                    if (onSubscribeSuccess) onSubscribeSuccess(data.orderId);
-                    else window.location.href = '/premium?success=true';
-                },
-                theme: { color: '#16a34a' },
+            // 2. Load Razorpay Script
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            document.body.appendChild(script);
+
+            script.onload = () => {
+                const options = {
+                    key: order.keyId,
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: "Saral Sahayta",
+                    description: type === 'monthly' ? "Premium Subscription" : "Fast-Track Application",
+                    order_id: order.id,
+                    handler: async (response: any) => {
+                        toast.success('Payment Successful!');
+                        if (onSuccess) onSuccess();
+                        // The webhook handles DB updates, but we can trigger a refresh
+                        window.location.reload();
+                    },
+                    prefill: {
+                        name: "User",
+                        email: "user@example.com",
+                    },
+                    theme: { color: "#0F172A" },
+                };
+
+                const rzp = new window.Razorpay(options);
+                rzp.open();
             };
 
-            const rp = new (window as any).Razorpay(options);
-            rp.on('payment.failed', (r: any) => {
-                if (onSubscribeError) onSubscribeError(r.error?.description || 'Payment failed.');
-            });
-            rp.open();
-        } catch (err: any) {
-            if (onSubscribeError) onSubscribeError(err.message);
+        } catch (error: any) {
+            console.error('Payment Error:', error);
+            toast.error(error.message || 'Payment initiation failed');
         } finally {
-            setLoadingPlan(null);
+            setLoading(null);
         }
     };
 
     return (
-        <div className="w-full">
-            <div className="grid lg:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
-                {plans.map((plan) => (
-                    <div
-                        key={plan.id}
-                        className={cn(
-                            'relative rounded-2xl border-2 p-6 flex flex-col gap-5 transition-all duration-300 hover:shadow-lg',
-                            plan.cardClass
-                        )}
-                    >
-                        {/* Top accent bar for premium */}
-                        {plan.accentBar && (
-                            <div className={cn('absolute top-0 inset-x-0 h-1 rounded-t-2xl', plan.accentBar)} />
-                        )}
+        <div className={cn("grid md:grid-cols-2 gap-8 items-stretch", className)}>
+            {/* Monthly Subscription */}
+            <div className="relative group p-8 rounded-3xl bg-white border border-slate-200 shadow-xl hover:border-primary/50 transition-all flex flex-col">
+                <div className="absolute -top-4 left-6 bg-primary text-white text-[10px] font-black px-3 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-primary/20">
+                    <Sparkles className="h-3 w-3" /> MOST POPULAR
+                </div>
+                
+                <div className="mb-6">
+                    <h3 className="text-xl font-bold text-slate-900">Premium Pro</h3>
+                    <p className="text-sm text-slate-500 mt-1">Full access to simplify your life</p>
+                </div>
 
-                        {/* Badge */}
-                        {plan.badge && (
-                            <Badge className={cn('self-start text-[10px] font-bold uppercase tracking-widest border px-2 py-0.5', plan.badgeClass)}>
-                                {plan.badge}
-                            </Badge>
-                        )}
+                <div className="flex items-baseline gap-1 mb-8">
+                    <span className="text-4xl font-black text-slate-900">₹199</span>
+                    <span className="text-slate-500 font-medium">/month</span>
+                </div>
 
-                        {/* Name & Tagline */}
-                        <div>
-                            <h3 className={cn('text-xl font-extrabold', plan.headerClass)}>{plan.name}</h3>
-                            <p className="text-sm text-slate-500 mt-1">{plan.tagline}</p>
-                        </div>
+                <div className="space-y-4 mb-10 flex-1">
+                    <FeatureItem icon={<Zap className="h-4 w-4 text-amber-500" />} text="Priority Admin Processing" />
+                    <FeatureItem icon={<Bell className="h-4 w-4 text-blue-500" />} text="SMS & WhatsApp Alerts" />
+                    <FeatureItem icon={<Shield className="h-4 w-4 text-emerald-500" />} text="Verified Scheme Matching" />
+                    <FeatureItem icon={<MessageSquare className="h-4 w-4 text-purple-500" />} text="1-on-1 Help Support" />
+                </div>
 
-                        {/* Price */}
-                        <div className="flex items-baseline gap-1">
-                            <span className={cn('text-4xl font-black', plan.priceClass)}>{plan.price}</span>
-                            <span className="text-sm text-slate-400 font-medium">{plan.period}</span>
-                        </div>
+                <Button 
+                    className="w-full h-12 rounded-xl bg-slate-900 hover:bg-black text-white font-bold"
+                    onClick={() => handleSubscribe('monthly')}
+                    disabled={!!loading}
+                >
+                    {loading === 'monthly' ? 'Initialising...' : 'Get Unlimited Access'}
+                </Button>
+            </div>
 
-                        {/* CTA */}
-                        <Button
-                            variant={plan.ctaVariant}
-                            className={cn('w-full h-11 font-bold text-sm rounded-xl', plan.ctaClass)}
-                            disabled={plan.isFreemium || loadingPlan !== null}
-                            onClick={() => {
-                                if (plan.planType) handleSubscribe(plan.planType as any);
-                            }}
-                        >
-                            {loadingPlan === plan.id ? (
-                                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Processing…</>
-                            ) : plan.isFreemium ? (
-                                plan.ctaLabel
-                            ) : (
-                                <>{plan.ctaLabel} <ArrowRight className="w-4 h-4 ml-1.5" /></>
-                            )}
-                        </Button>
+            {/* Per-Scheme Fast Track */}
+            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-200 shadow-sm flex flex-col">
+                <div className="mb-6">
+                    <h3 className="text-xl font-bold text-slate-900">Fast-Track Only</h3>
+                    <p className="text-sm text-slate-500 mt-1">Single application priority</p>
+                </div>
 
-                        {/* Feature list */}
-                        <ul className="space-y-2.5">
-                            {plan.features.map((f, i) => (
-                                <li key={i} className="flex items-center gap-2.5 text-sm">
-                                    {f.included ? (
-                                        <Check className="w-4 h-4 text-emerald-500 shrink-0" />
-                                    ) : (
-                                        <div className="w-4 h-4 rounded-full border border-slate-200 shrink-0" />
-                                    )}
-                                    <span className={f.included ? 'text-slate-700 font-medium' : 'text-slate-400'}>
-                                        {f.label}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
+                <div className="flex items-baseline gap-1 mb-8">
+                    <span className="text-4xl font-black text-slate-900">₹99</span>
+                    <span className="text-slate-500 font-medium text-sm">per scheme</span>
+                </div>
+
+                <div className="space-y-4 mb-10 flex-1">
+                    <FeatureItem icon={<Clock className="h-4 w-4 text-slate-400" />} text="24-Hour Admin Review" />
+                    <FeatureItem icon={<Check className="h-4 w-4 text-slate-400" />} text="Doc Error Correction" />
+                    <FeatureItem icon={<Check className="h-4 w-4 text-slate-400" />} text="Application Tracking" />
+                </div>
+
+                <Button 
+                    variant="outline"
+                    className="w-full h-12 rounded-xl border-slate-300 text-slate-700 font-bold hover:bg-white"
+                    onClick={() => handleSubscribe('per_scheme')}
+                    disabled={!!loading}
+                >
+                    {loading === 'per_scheme' ? 'Initialising...' : 'Expedite Current Application'}
+                </Button>
             </div>
         </div>
     );
-}
+};
+
+const FeatureItem = ({ icon, text }: { icon: React.ReactNode, text: string }) => (
+    <div className="flex items-center gap-3">
+        <div className="p-1 rounded bg-white shadow-sm border border-slate-100">
+            {icon}
+        </div>
+        <span className="text-sm font-medium text-slate-700">{text}</span>
+    </div>
+);
