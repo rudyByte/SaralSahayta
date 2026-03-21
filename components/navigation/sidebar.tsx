@@ -57,7 +57,7 @@ export function Sidebar() {
             transition={{ type: "spring", bounce: 0, duration: 0.15 }}
             className={cn(
                 "h-screen fixed left-0 top-0 z-[60] flex flex-col transition-all duration-150 border-r shrink-0",
-                "bg-white/70 backdrop-blur-3xl border-white/40 shadow-[4px_0_24px_rgba(0,0,0,0.02)]",
+                "bg-white/40 backdrop-blur-[40px] border-white/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)]",
                 isExpanded && "shadow-[12px_0_40px_rgba(0,0,0,0.08)]"
             )}
         >
@@ -66,36 +66,20 @@ export function Sidebar() {
                 "pt-4 pb-3 px-6 flex items-center justify-between",
                 isCollapsed ? "flex-col gap-4" : "flex-row"
             )}>
-                <Link href="/dashboard" className="flex items-center gap-3 group">
-                    {!isExpanded && (
-                        <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform">
-                            <Zap className="text-white h-5 w-5 fill-current" />
-                        </div>
-                    )}
-                    {isExpanded && (
-                        <motion.div 
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center gap-3"
-                        >
-                            <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
-                                <Zap className="text-white h-5 w-5 fill-current" />
-                            </div>
-                            <span className="text-xl font-black text-slate-900 tracking-tight">
-                                Saral <span className="text-primary">Sahayta</span>
-                            </span>
-                        </motion.div>
-                    )}
+                <Link href="/dashboard" className="flex items-center group">
+                    <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-105 transition-transform shrink-0">
+                        <Zap className="text-white h-5 w-5 fill-current" />
+                    </div>
+                    
+                    <div className={cn(
+                        "flex items-center overflow-hidden transition-all duration-150",
+                        isExpanded ? "w-auto opacity-100 ml-3" : "w-0 opacity-0"
+                    )}>
+                        <span className="text-xl font-black text-slate-900 tracking-tight whitespace-nowrap">
+                            Saral <span className="text-primary">Sahayta</span>
+                        </span>
+                    </div>
                 </Link>
-                <button 
-                    onClick={toggle}
-                    className="p-2 rounded-xl hover:bg-white/50 text-slate-400 hover:text-primary transition-all active:scale-90"
-                >
-                    <ChevronRight className={cn(
-                        "h-5 w-5 transition-transform duration-150",
-                        isCollapsed ? "" : "rotate-180"
-                    )} />
-                </button>
             </div>
 
             {/* Navigation Section */}
@@ -125,18 +109,18 @@ export function Sidebar() {
                                     "h-5 w-5 transition-colors shrink-0",
                                     isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-600"
                                 )} />
-                                {isExpanded && (
-                                    <motion.span 
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        className="font-bold text-sm tracking-wide flex-1"
-                                    >
+                                
+                                <div className={cn(
+                                    "flex items-center flex-1 overflow-hidden transition-all duration-150",
+                                    isExpanded ? "w-auto opacity-100 ml-3" : "w-0 opacity-0"
+                                )}>
+                                    <span className="font-bold text-sm tracking-wide flex-1 whitespace-nowrap">
                                         {item.name}
-                                    </motion.span>
-                                )}
-                                {item.highlight && isExpanded && (
-                                    <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-                                )}
+                                    </span>
+                                    {item.highlight && (
+                                        <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse shrink-0 ml-2" />
+                                    )}
+                                </div>
                             </motion.div>
                         </Link>
                     );
@@ -144,52 +128,53 @@ export function Sidebar() {
             </nav>
 
             {/* Premium Upgrade (Contextual) - Hidden when collapsed */}
-            {!isCollapsed && (
-                <div className="px-6 py-6 mt-auto">
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-indigo-600 to-primary p-5 rounded-[2rem] relative overflow-hidden group shadow-xl shadow-primary/10"
-                    >
-                        <div className="absolute top-[-10px] right-[-10px] opacity-10 group-hover:rotate-12 transition-transform duration-500">
-                            <Sparkles className="h-20 w-20 text-white" />
-                        </div>
-                        <p className="text-white font-black text-sm mb-1">Upgrade to Premium</p>
-                        <p className="text-indigo-100/70 text-[10px] font-bold leading-tight mb-4 uppercase tracking-widest">
-                            Fast-track applications
-                        </p>
-                        <Link href="/premium">
-                            <Button className="w-full bg-white text-primary hover:bg-indigo-50 font-black h-10 rounded-xl text-xs shadow-md border-0 transition-all active:scale-95">
-                                Get Pro Now
-                            </Button>
-                        </Link>
-                    </motion.div>
+            <div className={cn(
+                "px-6 mt-auto transition-all duration-150 overflow-hidden",
+                isExpanded ? "opacity-100 max-h-64 py-6" : "opacity-0 max-h-0 py-0"
+            )}>
+                <div className="bg-gradient-to-br from-indigo-600 to-primary p-5 rounded-[2rem] relative overflow-hidden group shadow-xl shadow-primary/10 w-60">
+                    <div className="absolute top-[-10px] right-[-10px] opacity-10 group-hover:rotate-12 transition-transform duration-500">
+                        <Sparkles className="h-20 w-20 text-white" />
+                    </div>
+                    <p className="text-white font-black text-sm mb-1 whitespace-nowrap">Upgrade to Premium</p>
+                    <p className="text-indigo-100/70 text-[10px] font-bold leading-tight mb-4 uppercase tracking-widest whitespace-nowrap">
+                        Fast-track applications
+                    </p>
+                    <Link href="/premium">
+                        <Button className="w-full bg-white text-primary hover:bg-indigo-50 font-black h-10 rounded-xl text-xs shadow-md border-0 transition-all active:scale-95 whitespace-nowrap">
+                            Get Pro Now
+                        </Button>
+                    </Link>
                 </div>
-            )}
+            </div>
 
             {/* User Profile Hook */}
             <div className={cn(
-                "p-4 border-t border-slate-100/50",
+                "p-4 border-t border-slate-100/50 transition-all duration-150",
                 isCollapsed ? "items-center" : "px-6"
             )}>
                 <div className={cn(
-                    "flex items-center gap-3",
+                    "flex items-center",
                     isCollapsed ? "flex-col" : "flex-row"
                 )}>
                     <div className="w-10 h-10 rounded-2xl bg-primary text-white flex items-center justify-center font-black text-xs shadow-md shadow-primary/20 shrink-0">
                         {profileName?.charAt(0).toUpperCase()}
                     </div>
-                    {!isCollapsed && (
-                        <div className="flex-1 min-w-0">
-                            <p className="text-xs font-black text-slate-900 truncate">{profileName}</p>
-                            <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-tighter">{userRole}</p>
-                        </div>
-                    )}
+                    
+                    <div className={cn(
+                        "flex-1 min-w-0 transition-all duration-150 overflow-hidden",
+                        isExpanded ? "opacity-100 ml-3 w-auto" : "opacity-0 w-0"
+                    )}>
+                        <p className="text-xs font-black text-slate-900 truncate whitespace-nowrap">{profileName}</p>
+                        <p className="text-[10px] font-bold text-slate-400 truncate uppercase tracking-tighter whitespace-nowrap">{userRole}</p>
+                    </div>
+                    
                     <button 
                         onClick={() => signOut()}
                         className={cn(
-                            "p-2 rounded-xl hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all active:scale-90",
-                            isCollapsed && "mt-1"
+                            "p-2 rounded-xl hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all active:scale-90 shrink-0",
+                            isCollapsed && "mt-1",
+                            isExpanded && "ml-3"
                         )}
                     >
                         <LogOut className="h-4 w-4" />

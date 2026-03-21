@@ -34,7 +34,11 @@ export function Navbar() {
     const isDashboard = pathname.startsWith('/dashboard') || 
                         pathname.startsWith('/life-events') || 
                         pathname.startsWith('/discover') || 
-                        pathname.startsWith('/documents');
+                        pathname.startsWith('/documents') ||
+                        pathname.startsWith('/applications') ||
+                        pathname.startsWith('/settings') ||
+                        pathname.startsWith('/profile') ||
+                        pathname.startsWith('/premium');
 
     // Fetch profile data for the name
     const { data: profileData } = useSWR(user ? '/api/profile' : null);
