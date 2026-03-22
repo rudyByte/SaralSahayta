@@ -11,7 +11,8 @@ import {
     List,
     Loader2,
     AlertCircle,
-    RotateCcw
+    RotateCcw,
+    Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ import { SchemeFilter, FilterState } from '@/components/scheme/scheme-filter';
 import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
 import { useAuth } from '@/lib/auth-context';
 import { cn } from '@/lib/utils';
+import { useRealtimeSchemeUpdates } from '@/hooks/useRealtimeSchemeUpdates';
 
 type SortOption = 'relevance' | 'matchScore' | 'deadline' | 'benefit' | 'recent';
 
@@ -28,6 +30,10 @@ export default function DiscoverPageContent() {
     const { user, loading: authLoading } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
+    
+    // Real-time hook for listening to match recalculations
+    const { newSchemes } = useRealtimeSchemeUpdates(user?.id);
+    const isNewlyEligibleFilter = searchParams.get('filter') === 'newly_eligible';
 
     // -- State --
     const [page, setPage] = useState(1);
@@ -72,9 +78,15 @@ export default function DiscoverPageContent() {
 
     const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR(getQueryUrl);
 
-    const schemes = data?.schemes || [];
-    const total = data?.total || 0;
-    const totalPages = data?.totalPages || 1;
+    let schemes = data?.schemes || [];
+    
+    // Filter actively in-memory if user clicks the toast notification
+    if (isNewlyEligibleFilter) {
+        schemes = schemes.filter((s: Scheme) => newSchemes.includes(s.id));
+    }
+
+    const total = isNewlyEligibleFilter ? schemes.length : (data?.total || 0);
+    const totalPages = isNewlyEligibleFilter ? 1 : (data?.totalPages || 1);
     const loading = swrLoading;
     const error = swrError?.message || null;
 
@@ -106,6 +118,23 @@ export default function DiscoverPageContent() {
 
     return (
         <div className="container mx-auto px-4 pt-2">
+            {isNewlyEligibleFilter && (
+                <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-2xl flex items-center justify-between text-orange-900 shadow-sm animate-in fade-in zoom-in duration-500">
+                   <div className="flex items-center gap-3">
+                       <div className="p-2 bg-orange-100 rounded-full text-orange-600">
+                           <Sparkles className="h-5 w-5" />
+                       </div>
+                       <div>
+                           <h3 className="text-sm font-black uppercase tracking-wider">Your Profile was Updated</h3>
+                           <p className="text-xs font-medium mt-0.5 opacity-80">Showing the {schemes.length} schemes you uniquely qualify for based on your new details.</p>
+                       </div>
+                   </div>
+                   <Button variant="ghost" className="shrink-0 text-orange-700 hover:text-orange-900 hover:bg-orange-100" onClick={() => router.push('/schemes')}>
+                       View All Schemes
+                   </Button>
+                </div>
+            )}
+            
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                     <div>

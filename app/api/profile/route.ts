@@ -1,8 +1,9 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { fullProfileUpdateSchema } from '@/lib/validations';
+import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
 
 // Helper to get supabase client
 const getSupabase = () => {
@@ -45,12 +46,6 @@ export async function GET() {
             });
         }
 
-        // Calculate completion percentage
-        // Fields to check: [name, email, dob, gender, mobile] (Basic) + [category, income, state, district, education, occupation...] (Elig) + [bank, ifsc] (Bank)
-        // For simplicity, we just use the stored value or recalc here if needed.
-        // Let's rely on what stored in DB if we implemented it there, else do strictly frontend logic. 
-        // We'll return the raw profile which has 'profile_completion_percentage' column if we added it.
-
         return NextResponse.json({ user, profile });
 
     } catch (error: any) {
@@ -79,15 +74,13 @@ export async function PUT(request: Request) {
 
         // Calculate Completion Percentage
         let completedFields = 0;
-        const totalFields = 15; // Approx count of critical fields
-        // Basic (5): Name, Email, Mobile, DOB, Gender
+        const totalFields = 15;
         if (updates.name || user.user_metadata.name) completedFields++;
         if (updates.email || user.email) completedFields++;
         if (user.user_metadata.mobile) completedFields++;
         if (updates.dateOfBirth || user.user_metadata.date_of_birth) completedFields++;
         if (updates.gender || user.user_metadata.gender) completedFields++;
 
-        // Eligibility (8): Category, Income, State, District, Edu, Occu, Disab, DisabType
         if (updates.category) completedFields++;
         if (updates.annualIncome !== undefined) completedFields++;
         if (updates.state) completedFields++;
@@ -95,14 +88,12 @@ export async function PUT(request: Request) {
         if (updates.education) completedFields++;
         if (updates.occupation) completedFields++;
         if (updates.disability !== undefined) completedFields++;
-        // Bank (2)
         if (updates.bankAccount) completedFields++;
         if (updates.ifscCode) completedFields++;
 
         const percentage = Math.min(100, Math.round((completedFields / totalFields) * 100));
 
-        // 1. Update Auth Metadata (for basic info syncing)
-        // We only update what changed in basic info
+        // 1. Update Auth Metadata
         const metaUpdates: any = {};
         if (updates.name) metaUpdates.name = updates.name;
         if (updates.dateOfBirth) metaUpdates.date_of_birth = updates.dateOfBirth;
@@ -115,7 +106,6 @@ export async function PUT(request: Request) {
         }
 
         // 2. Update 'user_profiles' table
-        // Map frontend camelCase to DB snake_case
         const dbUpdates = {
             full_name: updates.name,
             email: updates.email,
@@ -155,6 +145,11 @@ export async function PUT(request: Request) {
             console.error("Supabase Save Error:", updateError);
             return NextResponse.json({ error: updateError.message }, { status: 500 });
         }
+
+        // 3. Recalculate Scheme Matches in the background
+        recalculateSchemeMatches(user.id, 'User Profile Update').catch(err => {
+            console.error('Failed to auto-recalculate scheme matches:', err);
+        });
 
         return NextResponse.json({ profile: updatedProfile, completion: percentage });
 

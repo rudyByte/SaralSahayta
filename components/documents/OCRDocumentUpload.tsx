@@ -11,6 +11,9 @@ import {
     parseEducationDocumentData,
     detectDocumentType,
 } from '@/lib/ocr/document-parsers';
+import useSWR from 'swr';
+import ProfileChangePreview from './ProfileChangePreview';
+import { detectProfileChanges } from '@/lib/profile/change-detector';
 
 interface OCRDocumentUploadProps {
     documentCode: string;
@@ -37,6 +40,7 @@ export default function OCRDocumentUpload({
     const [error, setError] = useState<string | null>(null);
     const [detectedType, setDetectedType] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const { data: userProfile, mutate: mutateProfile } = useSWR('/api/profile');
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         const selectedFile = acceptedFiles[0];
@@ -149,13 +153,52 @@ export default function OCRDocumentUpload({
                 throw new Error(data.error || 'Upload failed');
             }
 
-            onUploadComplete();
-
+            return true;
         } catch (err: any) {
             setError(err.message);
+            return false;
         } finally {
             setIsUploading(false);
         }
+    };
+
+    const handleUpdateProfileAndUpload = async () => {
+        if (!userProfile || !extractedData) return;
+        
+        setIsUploading(true);
+        try {
+            const changes = detectProfileChanges(userProfile, extractedData, detectedType || documentCode);
+            if (changes.length > 0) {
+                const updatePayload: any = {};
+                if (extractedData.annualIncome) updatePayload.annual_income = parseInt(extractedData.annualIncome.toString().replace(/,/g, ''));
+                if (extractedData.dateOfBirth) updatePayload.date_of_birth = extractedData.dateOfBirth;
+                if (extractedData.address) updatePayload.full_address = extractedData.address;
+                if (extractedData.gender) updatePayload.gender = extractedData.gender;
+                if (extractedData.name) updatePayload.name = extractedData.name;
+                if (extractedData.course) updatePayload.education = extractedData.course;
+
+                if (Object.keys(updatePayload).length > 0) {
+                    const res = await fetch('/api/profile', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatePayload)
+                    });
+                    if (!res.ok) throw new Error('Failed to update profile');
+                    await mutateProfile(); // refresh cache
+                }
+            }
+            
+            const success = await handleUpload();
+            if (success) onUploadComplete();
+        } catch(err: any) {
+             setError(err.message);
+             setIsUploading(false);
+        }
+    };
+
+    const handleUploadWithoutProfileUpdate = async () => {
+        const success = await handleUpload();
+        if (success) onUploadComplete();
     };
 
     return (
@@ -334,30 +377,53 @@ export default function OCRDocumentUpload({
                                             ))}
                                         </div>
 
-                                        <div className="mt-8 flex flex-col gap-3">
+                                        {userProfile && extractedData && (
+                                            <div className="mt-6 border-t border-slate-100 pt-6">
+                                                <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                                    <FileText className="h-4 w-4 text-primary" />
+                                                    Profile Update Preview
+                                                </h4>
+                                                <ProfileChangePreview 
+                                                    currentProfile={userProfile}
+                                                    extractedData={extractedData}
+                                                    documentType={detectedType || documentCode}
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div className="mt-8 flex flex-col sm:flex-row gap-3">
                                             <button
-                                                onClick={handleUpload}
+                                                onClick={handleUpdateProfileAndUpload}
                                                 disabled={isUploading}
-                                                className="w-full px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 font-bold text-sm shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2"
+                                                className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 font-bold text-sm shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                                             >
                                                 {isUploading ? (
                                                     <>
                                                         <Loader2 className="h-4 w-4 animate-spin" />
-                                                        Uploading...
+                                                        Saving...
                                                     </>
                                                 ) : (
                                                     <>
                                                         <CheckCircle className="h-4 w-4" />
-                                                        Confirm & Save Document
+                                                        Update Profile & Save
                                                     </>
                                                 )}
                                             </button>
                                             <button
+                                                onClick={handleUploadWithoutProfileUpdate}
+                                                disabled={isUploading}
+                                                className="px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 disabled:opacity-50 font-bold text-sm transition-all text-center"
+                                            >
+                                                Save Only
+                                            </button>
+                                        </div>
+                                        <div className="mt-3 text-center">
+                                            <button
                                                 onClick={() => setOcrStatus('idle')}
                                                 disabled={isUploading}
-                                                className="w-full px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 disabled:opacity-50 font-bold text-sm transition-all"
+                                                className="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase transition-all"
                                             >
-                                                Scan Again
+                                                Cancel & Scan Again
                                             </button>
                                         </div>
                                     </div>

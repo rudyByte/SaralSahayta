@@ -26,7 +26,9 @@ import { cn } from '@/lib/utils';
 import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
 import { MatchIndicator } from './match-indicator';
 import { ConfidenceBadge } from './confidence-badge';
+import NewlyEligibleBadge from '../schemes/NewlyEligibleBadge';
 import { PricingPlans } from '../premium/PricingPlans';
+import { useAuth } from '@/lib/auth-context';
 
 interface SchemeCardProps {
     scheme: Scheme & {
@@ -53,6 +55,7 @@ const CATEGORY_ICONS: Partial<Record<SchemeCategory, React.ReactNode>> = {
 };
 
 export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
+    const { user } = useAuth();
     const hasDeadline = scheme.deadline && !scheme.isRolling;
     const daysLeft = hasDeadline ? Math.ceil((new Date(scheme.deadline!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
 
@@ -74,6 +77,7 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                     </div>
                     {/* Compact circular approval chance + bookmark */}
                     <div className="flex items-center gap-1 shrink-0">
+                        {user && <NewlyEligibleBadge schemeId={scheme.id} userId={user.id} />}
                         <ConfidenceBadge schemeId={scheme.id} />
                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
                             <Bookmark className="h-5 w-5" />

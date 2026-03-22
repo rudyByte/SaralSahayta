@@ -1,13 +1,23 @@
-import Razorpay from 'razorpay';
+import RazorpaySDK from 'razorpay';
 import crypto from 'crypto';
 
-if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
-    console.warn('⚠️ Razorpay keys are missing from environment variables');
+// Lazy initialization — do NOT create the instance at module load time
+// because Next.js static analysis evaluates modules at build time,
+// and throwing/warning here crashes the build.
+let _instance: RazorpaySDK | null = null;
+
+function getRazorpayInstance(): RazorpaySDK {
+    if (_instance) return _instance;
+    const keyId = process.env.RAZORPAY_KEY_ID || '';
+    const keySecret = process.env.RAZORPAY_KEY_SECRET || '';
+    _instance = new RazorpaySDK({ key_id: keyId, key_secret: keySecret });
+    return _instance;
 }
 
-export const razorpay = new Razorpay({
-    key_id: process.env.RAZORPAY_KEY_ID || '',
-    key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+export const razorpay = new Proxy({} as RazorpaySDK, {
+    get(_target, prop) {
+        return getRazorpayInstance()[prop as keyof RazorpaySDK];
+    }
 });
 
 /**
