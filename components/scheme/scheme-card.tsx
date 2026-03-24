@@ -86,7 +86,7 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                 </div>
 
                 <div>
-                    <Link href={`/schemes/${scheme.id}`} className="block">
+                    <Link href={`/schemes/${(scheme as any).slug || scheme.id}`} className="block">
                         <h3 className="text-xl font-extrabold leading-tight text-slate-900 line-clamp-2 group-hover:text-primary transition-colors duration-300">
                             {scheme.name}
                         </h3>
@@ -157,7 +157,7 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
 
             <CardFooter className="p-6 pt-0 bg-white relative z-10 flex gap-3">
                 <Button asChild className="flex-1 h-12 rounded-2xl shadow-lg shadow-primary/20 font-bold text-sm tracking-wide group/btn overflow-hidden relative">
-                    <Link href={`/schemes/${scheme.id}`}>
+                    <Link href={`/schemes/${(scheme as any).slug || scheme.id}`}>
                         <span className="relative z-10 flex items-center justify-center">
                             Secure Benefit
                             <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />

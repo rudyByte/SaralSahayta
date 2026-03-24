@@ -24,6 +24,8 @@ dist
 # Prompt Blocks
 "phase4 prompt blocks"
 phase5\ promptBlocks/
+phase6\ promptBlocks/
+phase8-9\ promptBlocks/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
