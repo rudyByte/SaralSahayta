@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
-import { Search, Filter, FileText, MoreVertical, Star, ShieldCheck } from 'lucide-react';
+import { Search, Filter, FileText, MoreVertical, Star, ShieldCheck, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -61,6 +61,14 @@ export default function ApplicationsPage() {
                     <h1 className="text-3xl font-bold text-gray-900">Application Review</h1>
                     <p className="text-gray-600 mt-1">Review and manage scheme applications</p>
                 </div>
+                <Button 
+                    variant="outline" 
+                    className="flex items-center bg-white"
+                    onClick={() => window.open('/api/admin/applications/export' + (status ? `?status=${status}` : ''))}
+                >
+                    <Download className="mr-2 h-4 w-4" />
+                    Export CSV
+                </Button>
             </div>
 
             {/* Filters */}
