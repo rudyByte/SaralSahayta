@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -14,8 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { maskSensitiveData } from '@/lib/security/data-encryption';
 
-export default function ApplicationReviewPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
-  const params = use(paramsPromise);
+export default function ApplicationReviewPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   
   const [scheme, setScheme] = useState<any>(null);
@@ -43,7 +42,7 @@ export default function ApplicationReviewPage({ params: paramsPromise }: { param
       const { data: schemeData } = await supabase
         .from('Scheme')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('id', params.slug)
         .single();
       
       setScheme(schemeData);

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -16,8 +16,7 @@ import DocumentAttachmentStatus from '@/components/applications/DocumentAttachme
 import DynamicApplicationForm from '@/components/applications/DynamicApplicationForm';
 import { mapOCRToFormFields } from '@/lib/applications/form-field-mapper';
 
-export default function ApplicationEntryPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
-  const params = use(paramsPromise);
+export default function ApplicationEntryPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   
   const [scheme, setScheme] = useState<any>(null);
@@ -43,7 +42,7 @@ export default function ApplicationEntryPage({ params: paramsPromise }: { params
       const { data: schemeData } = await supabase
         .from('Scheme')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('id', params.slug)
         .single();
       
       if (!schemeData) throw new Error('Scheme not found');

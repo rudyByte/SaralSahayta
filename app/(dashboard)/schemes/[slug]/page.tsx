@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { 
@@ -17,8 +17,7 @@ import { ConfidenceBadge } from '@/components/scheme/confidence-badge';
 import DocumentRequirementsList from '@/components/schemes/DocumentRequirementsList';
 import { toast } from 'sonner';
 
-export default function SchemeDetailPage({ params: paramsPromise }: { params: Promise<{ slug: string }> }) {
-  const params = use(paramsPromise);
+export default function SchemeDetailPage({ params }: { params: { slug: string } }) {
   const router = useRouter();
   
   const [scheme, setScheme] = useState<any>(null);
@@ -45,7 +44,7 @@ export default function SchemeDetailPage({ params: paramsPromise }: { params: Pr
       const { data: schemeData, error } = await supabase
         .from('Scheme')
         .select('*')
-        .eq('slug', params.slug)
+        .eq('id', params.slug)
         .single();
       
       if (error || !schemeData) {
@@ -120,6 +119,8 @@ export default function SchemeDetailPage({ params: paramsPromise }: { params: Pr
     );
   }
   
+  if (!scheme) return null;
+
   const uploadedMandatoryCount = requiredDocuments.filter(r => r.isMandatory && documentStatus[r.documentId]).length;
   const totalMandatoryCount = requiredDocuments.filter(r => r.isMandatory).length;
   const readinessPercentage = totalMandatoryCount > 0 ? (uploadedMandatoryCount / totalMandatoryCount) * 100 : 100;
