@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['localhost'],
         remotePatterns: [
+            {
+                protocol: 'http',
+                hostname: 'localhost',
+            },
             {
                 protocol: 'https',
                 hostname: '**.cloudinary.com',
@@ -11,15 +14,29 @@ const nextConfig = {
                 protocol: 'https',
                 hostname: '**.gov.in',
             },
+            {
+                protocol: 'https',
+                hostname: '**.supabase.co',
+            },
         ],
+        minimumCacheTTL: 60,
     },
     experimental: {
         serverActions: {
             bodySizeLimit: '10mb',
         },
+        optimizePackageImports: [
+            'lucide-react',
+            'recharts',
+            'date-fns',
+            'framer-motion',
+        ],
     },
-    // Disable static page generation errors
-    // This allows dynamic routes to work properly on Vercel
+    // Performance: Optimize production builds
+    poweredByHeader: false,
+    compress: true,
+    reactStrictMode: true,
+    
     typescript: {
         ignoreBuildErrors: false,
     },

@@ -17,11 +17,25 @@ interface ReadinessChartProps {
 
 const COLORS = ['#10b981', '#f43f5e'];
 
-export function ReadinessChart({ readyCount, missingCount }: ReadinessChartProps) {
+export default function ReadinessChart({ readyCount, missingCount }: ReadinessChartProps) {
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const data = [
     { name: 'Ready to Apply', value: readyCount },
     { name: 'Missing Docs', value: missingCount },
   ];
+
+  if (!isMounted) {
+    return (
+      <div className="h-64 w-full flex items-center justify-center bg-slate-50 rounded-2xl animate-pulse">
+        <div className="text-slate-300 text-xs font-medium uppercase tracking-widest">Loading Visualization...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-64 w-full">

@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation';
 import { format } from 'date-fns';
 import { analyzeDocumentReadiness } from '@/lib/documents/analyze-requirements';
 import { predictFutureOpportunities } from '@/lib/intelligence/opportunity-predictor';
-import { ReadinessChart } from '@/components/documents/ReadinessChart';
 import { 
     FileCheck, 
     FileWarning, 
@@ -19,6 +18,12 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Progress } from '@/components/ui/progress';
+import nextDynamic from 'next/dynamic';
+
+const ReadinessChart = nextDynamic(() => import('@/components/documents/ReadinessChart'), {
+    ssr: false,
+    loading: () => <div className="h-64 w-full flex items-center justify-center bg-slate-50 rounded-2xl animate-pulse text-slate-300 text-xs uppercase tracking-widest">Preparing Chart...</div>
+});
 
 export const dynamic = 'force-dynamic';
 

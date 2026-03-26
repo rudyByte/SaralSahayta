@@ -1,0 +1,1349 @@
+
+> saral-sahayta@0.1.0 build
+> turbo run build
+
+• turbo 2.8.20
+
+   • Packages in scope: saral-sahayta
+   • Running build in 1 packages
+   • Remote caching disabled
+
+saral-sahayta:build: cache miss, executing be2af4b49c372cb7
+saral-sahayta:build: 
+saral-sahayta:build: > saral-sahayta@0.1.0 build
+saral-sahayta:build: > turbo run build
+saral-sahayta:build: 
+saral-sahayta:build: • turbo 2.8.20
+saral-sahayta:build: 
+saral-sahayta:build:    • Packages in scope: saral-sahayta
+saral-sahayta:build:    • Running build in 1 packages
+saral-sahayta:build:    • Remote caching disabled
+saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: cache miss, executing 85b558c8a9ab05cb
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: > saral-sahayta@0.1.0 build
+saral-sahayta:build: saral-sahayta:build: > turbo run build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: • turbo 2.8.20
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:    • Packages in scope: saral-sahayta
+saral-sahayta:build: saral-sahayta:build:    • Running build in 1 packages
+saral-sahayta:build: saral-sahayta:build:    • Remote caching disabled
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: cache miss, executing 0d064c4c3bdebfd4
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > saral-sahayta@0.1.0 build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > turbo run build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: • turbo 2.8.20
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:    • Packages in scope: saral-sahayta
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:    • Running build in 1 packages
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:    • Remote caching disabled
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: cache miss, executing 729f02cb7fa75b49
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > saral-sahayta@0.1.0 build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > turbo run build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: • turbo 2.8.20
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:    • Packages in scope: saral-sahayta
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:    • Running build in 1 packages
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:    • Remote caching disabled
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: cache miss, executing 5d5105d745f90bfe
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > saral-sahayta@0.1.0 build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > turbo run build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 'turbo' is not recognized as an internal or external command,
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: operable program or batch file.
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    781ms 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    1.793s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    2.754s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    3.682s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    4.634s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+l-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    1.793s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:bsaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahaytsaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: cache miss, executing 5d5105d745f90bfe
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > saral-sahayta@0.1.0 build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: > turbo run build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 'turbo' is not recognized as an internal or external command,
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: operable program or batch file.
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    781ms 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    1.793s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    2.754s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    3.682s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    4.634s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    5.549s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    6.426s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    1.793s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    2.754s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    3.682s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    4.634s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    5.549s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    6.426s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    7.352s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    8.244s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodesaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    4.634s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    5.549s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    6.426s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    7.352s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    8.244s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    9.159s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    10.052s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+d: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    5.549s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    6.426s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    7.352s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:buisaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    5.549s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    6.426s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    7.352s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    8.244s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    9.159s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    10.052s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    11.851s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+al-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    7.352s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    8.244s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    9.159s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.052s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    12.725s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+ Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    7.352s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    8.244s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    9.159s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: sarasaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:busaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.052s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    13.606s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    8.244s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    9.159s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.052s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Prosaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:buisaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    14.474s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+ild:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    9.159s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.052s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    9.159s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.052s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROsaral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.052s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    17.149s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    10.951s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    17.976s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    11.851s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    17.976s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    18.854s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+ayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    17.976s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    18.854s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    19.667s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+d: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    12.725s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.976s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    18.854s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    19.667s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    20.532s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+ld: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    13.606s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.976s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    18.854s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    19.667s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    20.532s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    21.36s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    14.474s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.976s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    18.854s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    19.667s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    20.532s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    21.36s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    22.236s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    15.397s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.976s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    18.854s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    19.667s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    20.532s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    21.36s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    22.236s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    23.017s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)
+ayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    16.294s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.149s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    17.976s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    18.854s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    19.667s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    20.532s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:   Time:    21.36s 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build: saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build: saral-sahayta:build:   Time:    22.236s 
+saral-sahayta:build: saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: saral-sahayta:build: 
+saral-sahayta:build: saral-sahayta:build:  ERROR  run failed: command  exited (1)
+saral-sahayta:build:  ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+saral-sahayta:build: 
+saral-sahayta:build:  Tasks:    0 successful, 1 total
+saral-sahayta:build: Cached:    0 cached, 1 total
+saral-sahayta:build:   Time:    23.017s 
+saral-sahayta:build: Failed:    saral-sahayta#build
+saral-sahayta:build: 
+saral-sahayta:build:  ERROR  run failed: command  exited (1)
+ ERROR  saral-sahayta#build: command (D:\e transfer\1PROJECTS\SaralSahayta\) C:\Program Files\nodejs\npm.cmd run build exited (1)
+
+ Tasks:    0 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    23.76s 
+Failed:    saral-sahayta#build
+
+ ERROR  run failed: command  exited (1)

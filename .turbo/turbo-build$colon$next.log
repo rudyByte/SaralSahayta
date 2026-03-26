@@ -1,0 +1,186 @@
+
+> saral-sahayta@0.1.0 build:next
+> next build
+
+  ▲ Next.js 14.2.18
+  - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping linting
+   Checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/26) ...
+Error checking admin status: n [Error]: Dynamic server usage: Route /admin couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9276.js:1:37157)
+    at f (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9702.js:23:4189)
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:12832)
+    at u (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:13617)
+    at eh (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:134657)
+    at e (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:137542)
+    at ek (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:138016)
+    at Array.toJSON (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135626)
+    at stringify (<anonymous>)
+    at eP (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142090) {
+  description: "Route /admin couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error checking admin status: n [Error]: Dynamic server usage: Route /admin couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9276.js:1:37157)
+    at f (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9702.js:23:4189)
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:12832)
+    at u (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:13617)
+    at eh (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:134657)
+    at e (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:137542)
+    at ek (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:138016)
+    at Array.toJSON (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135626)
+    at stringify (<anonymous>)
+    at eP (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142090) {
+  description: "Route /admin couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error checking admin status: n [Error]: Dynamic server usage: Route /admin/applications couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9276.js:1:37157)
+    at f (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9702.js:23:4189)
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:12832)
+    at u (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:13617)
+    at eh (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:134657)
+    at e (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:137542)
+    at ek (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:138016)
+    at Array.toJSON (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135626)
+    at stringify (<anonymous>)
+    at eP (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142090) {
+  description: "Route /admin/applications couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+[Notifications API] Error: n [Error]: Dynamic server usage: Route /api/notifications couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9276.js:1:37157)
+    at f (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9702.js:23:4189)
+    at n (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\app\api\notifications\route.js:1:1947)
+    at p (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\app\api\notifications\route.js:1:841)
+    at D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-route.runtime.prod.js:6:37016
+    at D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\server\lib\trace\tracer.js:140:36
+    at NoopContextManager.with (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:7062)
+    at ContextAPI.with (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:518)
+    at NoopTracer.startActiveSpan (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18093)
+    at ProxyTracer.startActiveSpan (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\@opentelemetry\api\index.js:1:18854) {
+  description: "Route /api/notifications couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error checking admin status: n [Error]: Dynamic server usage: Route /admin/applications couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9276.js:1:37157)
+   Generating static pages (6/26) 
+    at f (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9702.js:23:4189)
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:12832)
+    at u (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:13617)
+    at eh (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:134657)
+    at e (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:137542)
+   Generating static pages (12/26) 
+    at ek (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:138016)
+    at Array.toJSON (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135626)
+    at stringify (<anonymous>)
+    at eP (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142090) {
+  description: "Route /admin/applications couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error checking admin status: n [Error]: Dynamic server usage: Route /admin/users couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9276.js:1:37157)
+    at f (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9702.js:23:4189)
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:12832)
+    at u (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:13617)
+    at eh (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:134657)
+    at e (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:137542)
+    at ek (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:138016)
+    at Array.toJSON (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135626)
+    at stringify (<anonymous>)
+    at eP (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142090) {
+  description: "Route /admin/users couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+Error checking admin status: n [Error]: Dynamic server usage: Route /admin/users couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9276.js:1:37157)
+    at f (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9702.js:23:4189)
+    at l (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:12832)
+    at u (D:\e transfer\1PROJECTS\SaralSahayta\.next\server\chunks\9497.js:1:13617)
+    at eh (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:134657)
+    at e (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:137542)
+    at ek (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:138016)
+    at Array.toJSON (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:135626)
+    at stringify (<anonymous>)
+    at eP (D:\e transfer\1PROJECTS\SaralSahayta\node_modules\next\dist\compiled\next-server\app-page.runtime.prod.js:12:142090) {
+  description: "Route /admin/users couldn't be rendered statically because it used `cookies`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error",
+  digest: 'DYNAMIC_SERVER_USAGE'
+}
+   Generating static pages (19/26) 
+ ✓ Generating static pages (26/26)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ƒ /                                    180 B          94.4 kB
+├ ○ /_not-found                          880 B          88.2 kB
+├ ƒ /admin                               2.84 kB         103 kB
+├ ƒ /admin/applications                  5.21 kB         141 kB
+├ ƒ /admin/applications/[id]             5.17 kB         121 kB
+├ ƒ /admin/users                         5.05 kB         149 kB
+├ ƒ /admin/users/[id]                    4.74 kB         111 kB
+├ ƒ /api/admin/applications              0 B                0 B
+├ ƒ /api/admin/applications/[id]         0 B                0 B
+├ ƒ /api/admin/applications/[id]/review  0 B                0 B
+├ ƒ /api/admin/applications/export       0 B                0 B
+├ ƒ /api/admin/dashboard/stats           0 B                0 B
+├ ƒ /api/admin/stats                     0 B                0 B
+├ ƒ /api/admin/users                     0 B                0 B
+├ ƒ /api/admin/users/[id]                0 B                0 B
+├ ƒ /api/applications/[id]               0 B                0 B
+├ ƒ /api/applications/[id]/history       0 B                0 B
+├ ƒ /api/applications/[id]/withdraw      0 B                0 B
+├ ƒ /api/applications/check-documents    0 B                0 B
+├ ƒ /api/applications/submit             0 B                0 B
+├ ƒ /api/documents                       0 B                0 B
+├ ƒ /api/documents/delete                0 B                0 B
+├ ƒ /api/documents/download              0 B                0 B
+├ ƒ /api/documents/master                0 B                0 B
+├ ƒ /api/documents/upload                0 B                0 B
+├ ƒ /api/documents/upload-with-ocr       0 B                0 B
+├ ƒ /api/life-events                     0 B                0 B
+├ ƒ /api/life-events/[id]                0 B                0 B
+├ ƒ /api/notifications                   0 B                0 B
+├ ƒ /api/notifications/%5Bid%5D/read     0 B                0 B
+├ ƒ /api/notifications/preferences       0 B                0 B
+├ ƒ /api/notifications/read-all          0 B                0 B
+├ ƒ /api/premium/subscribe               0 B                0 B
+├ ƒ /api/premium/webhook                 0 B                0 B
+├ ƒ /api/profile                         0 B                0 B
+├ ƒ /api/profile/districts               0 B                0 B
+├ ƒ /api/schemes                         0 B                0 B
+├ ƒ /api/schemes/[id]                    0 B                0 B
+├ ƒ /api/schemes/[id]/confidence         0 B                0 B
+├ ○ /api/temp-check-enums                0 B                0 B
+├ ƒ /applications                        143 B          87.5 kB
+├ ○ /dashboard                           6.04 kB         212 kB
+├ ○ /discover                            12.2 kB         264 kB
+├ ○ /documents                           42.6 kB         208 kB
+├ ƒ /documents/readiness                 97.6 kB         200 kB
+├ ƒ /documents/renew/[code]              8.48 kB         103 kB
+├ ○ /life-events                         4.19 kB         169 kB
+├ ○ /login                               4.84 kB         161 kB
+├ ƒ /premium                             4.62 kB         115 kB
+├ ƒ /profile                             6.1 kB          172 kB
+├ ○ /register                            4.33 kB         189 kB
+├ ƒ /reports/missed-benefits             2.83 kB         104 kB
+├ ƒ /schemes/[slug]                      8.23 kB         196 kB
+├ ƒ /schemes/[slug]/apply                7.36 kB         189 kB
+├ ƒ /schemes/[slug]/apply/review         129 kB          287 kB
+└ ○ /settings/notifications              4.75 kB         111 kB
++ First Load JS shared by all            87.4 kB
+  ├ chunks/2117-0aea615ff7978842.js      31.8 kB
+  ├ chunks/fd9d1056-ccb7188e0cb1421f.js  53.6 kB
+  └ other shared chunks (total)          1.98 kB
+
+
+ƒ Middleware                             73.5 kB
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
