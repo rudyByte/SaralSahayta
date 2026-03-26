@@ -52,6 +52,7 @@ export default function ProfileForm() {
         defaultValues: {
             name: '',
             email: '',
+            mobile: '',
             dateOfBirth: '',
             gender: 'MALE',
             category: 'GENERAL',
@@ -100,6 +101,7 @@ export default function ProfileForm() {
                     const formData: any = {
                         name: profile?.full_name || user.user_metadata.name || '',
                         email: profile?.email || user.email || '',
+                        mobile: user.phone || profile?.mobile || user.user_metadata?.phone || user.user_metadata?.mobile || '',
                         dateOfBirth: profile?.date_of_birth?.split('T')[0] || user.user_metadata.date_of_birth || '',
                         gender: profile?.gender || user.user_metadata.gender || 'MALE',
 
