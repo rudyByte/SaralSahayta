@@ -11,7 +11,7 @@ import {
     parseEducationDocumentData,
     detectDocumentType,
 } from '@/lib/ocr/document-parsers';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import ProfileChangePreview from './ProfileChangePreview';
 import { detectProfileChanges } from '@/lib/profile/change-detector';
 
@@ -41,6 +41,7 @@ export default function OCRDocumentUpload({
     const [detectedType, setDetectedType] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const { data: userProfile, mutate: mutateProfile } = useSWR('/api/profile');
+    const { mutate: globalMutate } = useSWRConfig();
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         const selectedFile = acceptedFiles[0];
@@ -184,12 +185,26 @@ export default function OCRDocumentUpload({
                         body: JSON.stringify(updatePayload)
                     });
                     if (!res.ok) throw new Error('Failed to update profile');
-                    await mutateProfile(); // refresh cache
+                    await mutateProfile(); // refresh profile cache
                 }
             }
             
             const success = await handleUpload();
-            if (success) onUploadComplete();
+            if (success) {
+                // Globally revalidate all confidence/scheme/document SWR caches
+                // so the eligibility % badges on Discover page update immediately
+                await globalMutate(
+                    (key: any) => typeof key === 'string' && (
+                        key.includes('/api/schemes') ||
+                        key.includes('/confidence') ||
+                        key.includes('/api/documents') ||
+                        key.includes('scheme_matches')
+                    ),
+                    undefined,
+                    { revalidate: true }
+                );
+                onUploadComplete();
+            }
         } catch(err: any) {
              setError(err.message);
              setIsUploading(false);
@@ -198,7 +213,18 @@ export default function OCRDocumentUpload({
 
     const handleUploadWithoutProfileUpdate = async () => {
         const success = await handleUpload();
-        if (success) onUploadComplete();
+        if (success) {
+            await globalMutate(
+                (key: any) => typeof key === 'string' && (
+                    key.includes('/api/schemes') ||
+                    key.includes('/confidence') ||
+                    key.includes('/api/documents')
+                ),
+                undefined,
+                { revalidate: true }
+            );
+            onUploadComplete();
+        }
     };
 
     return (

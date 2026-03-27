@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase-server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
 import { calculateExpiryDate, getDocumentExpiryStatus } from '@/lib/documents/expiry-calculator';
+import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
 
 export async function POST(request: NextRequest) {
     try {
@@ -123,6 +124,11 @@ export async function POST(request: NextRequest) {
             if (dbError) throw dbError;
             resultData = data;
         }
+
+        // Trigger background scheme match recalculation so eligibility % updates immediately
+        recalculateSchemeMatches(userId, `Document Uploaded: ${documentCode}`).catch(err => {
+            console.warn('Background recalculation failed (non-critical):', err);
+        });
 
         return NextResponse.json({
             success: true,

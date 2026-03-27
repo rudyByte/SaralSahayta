@@ -19,7 +19,7 @@ export async function GET(
         // 2. Fetch Scheme Details
         const { data: scheme, error: schemeError } = await supabase
             .from('Scheme')
-            .select('id, name, category, requiredDocuments')
+            .select('id, name, category')
             .eq('id', schemeId)
             .single();
 
@@ -27,54 +27,102 @@ export async function GET(
             return NextResponse.json({ error: 'Scheme not found' }, { status: 404 });
         }
 
-        // 3. Fetch User Documents
-        const { data: userDocs } = await supabase
-            .from('Document')
-            .select('documentType')
-            .eq('userId', user.id);
+        // 3. Fetch Required Doc Codes from SchemeDocumentRequirement table
+        // This is the proper normalised source, joined with master documents table
+        const { data: docReqs } = await supabase
+            .from('SchemeDocumentRequirement')
+            .select(`
+                documentId,
+                isMandatory,
+                documents (document_code, document_name)
+            `)
+            .eq('schemeId', schemeId);
 
-        const userDocTypes = (userDocs || []).map(d => d.documentType);
+        const requiredDocCodes: string[] = (docReqs || [])
+            .filter((r: any) => r.isMandatory && r.documents?.document_code)
+            .map((r: any) => r.documents.document_code as string);
 
-        // 4. Fetch Historical Stats (RPC or Fallback)
-        // For now, let's use a robust fallback logic with some randomness based on category
-        // in a real app, this would be: await supabase.rpc('get_scheme_stats', { target_scheme_id: schemeId })
+        // Also get optional doc codes for full list
+        const allDocCodes: string[] = (docReqs || [])
+            .filter((r: any) => r.documents?.document_code)
+            .map((r: any) => r.documents.document_code as string);
+
+        // 4. Fetch User's Uploaded Documents (from user_documents joined with master)
+        // We check both PENDING and VERIFIED to give credit; filter by doc codes for this scheme
+        const { data: userDocRows } = await supabase
+            .from('user_documents')
+            .select(`
+                verification_status,
+                documents (document_code)
+            `)
+            .eq('user_id', user.id);
+
+        // Collect the document codes the user has uploaded (any status counts for readiness)
+        const userUploadedCodes: string[] = (userDocRows || [])
+            .filter((d: any) => d.documents?.document_code)
+            .map((d: any) => d.documents.document_code as string);
+
+        // Also for suggestion text - only count VERIFIED docs as truly "complete"
+        const userVerifiedCodes: string[] = (userDocRows || [])
+            .filter((d: any) => d.documents?.document_code && d.verification_status === 'VERIFIED')
+            .map((d: any) => d.documents.document_code as string);
+
+        // 5. Historical Stats (RPC with fallback)
         const { data: statsData } = await supabase.rpc('get_scheme_stats', { target_scheme_id: schemeId });
 
-        let historicalRate = 0.75; // Default fallback
+        let historicalRate = 0.75;
         if (statsData && statsData.length > 0) {
             historicalRate = statsData[0].historical_rate;
         } else {
-            // Mocked logic for demo purposes if RPC fails or returns nothing
             const categorySeeds: Record<string, number> = {
                 'EDUCATION': 0.85,
                 'AGRICULTURE': 0.70,
                 'HEALTHCARE': 0.90,
-                'HOUSING': 0.45,
-                'ENTREPRENEURSHIP': 0.55,
+                'WOMEN_CHILD': 0.80,
+                'HOUSING': 0.55,
+                'EMPLOYMENT': 0.65,
             };
             historicalRate = categorySeeds[scheme.category] || 0.65;
         }
 
-        // 5. Calculate Match Score (Mocking based on session for now or fetching from application if exists)
-        // In a real scenario, we might want to pass this or re-calculate
-        const { data: application } = await supabase
-            .from('Application')
-            .select('eligibilityScore')
-            .eq('userId', user.id)
-            .eq('schemeId', schemeId)
+        // 6. Fetch profile match score from pre-computed user_scheme_matches table
+        const { data: matchRow } = await supabase
+            .from('user_scheme_matches')
+            .select('match_score')
+            .eq('user_id', user.id)
+            .eq('scheme_id', schemeId)
             .single();
 
-        const matchScore = application?.eligibilityScore || 85; // Default dummy match if no application
+        const matchScore = matchRow?.match_score ?? 60;
 
-        // 6. Final Calculation
+        // 7. Calculate Confidence using uploaded codes (any status = readiness)
         const confidence = calculateConfidence(
             historicalRate,
             matchScore,
-            scheme.requiredDocuments || [],
-            userDocTypes
+            requiredDocCodes,      // Only mandatory docs count for readiness
+            userUploadedCodes      // Use uploaded (not just verified) for display readiness
         );
 
-        return NextResponse.json(confidence);
+        // 8. Enrich suggestions — filter out documents the user already has
+        const enrichedSuggestions = confidence.suggestions.filter(s => {
+            // Remove document suggestions for already-uploaded docs
+            const isDocSuggestion = s.text.startsWith('Upload ');
+            if (!isDocSuggestion) return true;
+            // Extract doc code from suggestion (format: "Upload AADHAAR to increase...")
+            const code = s.text.split(' ')[1];
+            return !userUploadedCodes.includes(code);
+        });
+
+        return NextResponse.json({
+            ...confidence,
+            suggestions: enrichedSuggestions,
+            // Extra debug context for devs
+            _debug: {
+                requiredDocCodes,
+                userUploadedCodes,
+                matchScore
+            }
+        });
 
     } catch (error: any) {
         console.error('[Confidence API] Error:', error);
