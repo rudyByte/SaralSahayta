@@ -239,7 +239,7 @@ export default function OCRDocumentUpload({
                                 <FileText className="h-4 w-4 text-primary" />
                                 Document Preview
                             </h3>
-                            <div className="relative aspect-[4/3] rounded-lg border border-slate-200 bg-white overflow-hidden shadow-inner flex items-center justify-center">
+                            <div className="relative aspect-[3/4] sm:aspect-[4/3] rounded-lg border border-slate-200 bg-white overflow-hidden shadow-inner flex items-center justify-center">
                                 {preview ? (
                                     /* eslint-disable-next-line @next/next/no-img-element */
                                     <img

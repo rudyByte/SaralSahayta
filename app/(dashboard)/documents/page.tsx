@@ -265,7 +265,7 @@ export default function DocumentsPage() {
                                                 Upload Document
                                             </Button>
                                         </DialogTrigger>
-                                        <DialogContent className="sm:max-w-md">
+                                        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
                                             <DialogHeader>
                                                 <DialogTitle>Upload {doc.document_name}</DialogTitle>
                                             </DialogHeader>
@@ -343,7 +343,7 @@ export default function DocumentsPage() {
                                                         <RefreshCw className="h-4 w-4 text-gray-500" />
                                                     </Button>
                                                 </DialogTrigger>
-                                                <DialogContent className="sm:max-w-md">
+                                                <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
                                                     <DialogHeader>
                                                         <DialogTitle>Replace {doc.document_name}</DialogTitle>
                                                     </DialogHeader>

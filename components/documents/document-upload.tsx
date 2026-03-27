@@ -165,15 +165,15 @@ export function DocumentUpload({
                     animate={{ opacity: 1, scale: 1 }}
                     className="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"
                 >
-                    <div className="flex items-start gap-4">
+                    <div className="flex flex-col sm:flex-row items-start gap-4">
                         {/* Preview Image */}
-                        <div className="h-24 w-24 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0 border border-slate-100 flex items-center justify-center">
+                        <div className="w-full sm:w-32 h-32 bg-slate-50 rounded-lg overflow-hidden flex-shrink-0 border border-slate-100 flex items-center justify-center">
                             {preview ? (
                                 /* eslint-disable-next-line @next/next/no-img-element */
                                 <img
                                     src={preview}
                                     alt="Preview"
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-contain"
                                 />
                             ) : (
                                 <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -183,7 +183,7 @@ export function DocumentUpload({
                         </div>
 
                         {/* File Info */}
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 w-full">
                             <p className="font-semibold text-slate-900 truncate">{file.name}</p>
                             <p className="text-xs text-slate-500">
                                 {(file.size / 1024 / 1024).toFixed(2)} MB
