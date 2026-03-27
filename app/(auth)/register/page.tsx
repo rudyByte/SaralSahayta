@@ -103,8 +103,9 @@ export default function RegisterPage() {
                     </div>
                 )}
 
-                <div className="grid md:grid-cols-2 gap-4">
-                    <div>
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Full Name - Full Width */}
+                    <div className="md:col-span-2">
                         <label htmlFor="name" className="block text-sm font-bold text-slate-700 mb-2">
                             Full Name *
                         </label>
@@ -119,8 +120,8 @@ export default function RegisterPage() {
                         />
                     </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                    <div>
+                    {/* Email - Full Width */}
+                    <div className="md:col-span-2">
                         <label htmlFor="email" className="block text-sm font-bold text-slate-700 mb-2">
                             Email Address *
                         </label>
@@ -135,7 +136,8 @@ export default function RegisterPage() {
                         />
                     </div>
 
-                    <div>
+                    {/* Mobile - Full Width */}
+                    <div className="md:col-span-2">
                         <label htmlFor="mobile" className="block text-sm font-bold text-slate-700 mb-2">
                             Mobile Number *
                         </label>
@@ -151,10 +153,8 @@ export default function RegisterPage() {
                             disabled={loading}
                         />
                     </div>
-                </div>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                    {/* DOB & Gender Side-by-Side */}
                     <div>
                         <label htmlFor="dateOfBirth" className="block text-sm font-bold text-slate-700 mb-2">
                             Date of Birth *
@@ -190,9 +190,8 @@ export default function RegisterPage() {
                             </SelectContent>
                         </Select>
                     </div>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                    {/* Category & State Side-by-Side */}
                     <div>
                         <label htmlFor="category" className="block text-sm font-bold text-slate-700 mb-2">
                             Category *
@@ -238,9 +237,8 @@ export default function RegisterPage() {
                             </SelectContent>
                         </Select>
                     </div>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                    {/* Passwords Side-by-Side */}
                     <div>
                         <label htmlFor="password" className="block text-sm font-bold text-slate-700 mb-2">
                             Password *
@@ -248,7 +246,7 @@ export default function RegisterPage() {
                         <Input
                             id="password"
                             type="password"
-                            placeholder="Minimum 8 characters"
+                            placeholder="Min 8 chars"
                             value={formData.password}
                             onChange={(e) => handleChange('password', e.target.value)}
                             required
