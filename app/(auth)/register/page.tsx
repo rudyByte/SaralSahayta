@@ -22,6 +22,7 @@ export default function RegisterPage() {
     const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         mobile: '',
+        email: '',
         name: '',
         password: '',
         confirmPassword: '',
@@ -54,11 +55,8 @@ export default function RegisterPage() {
         }
 
         try {
-            // Create auth user (using mobile as email format)
-            const email = `${formData.mobile}@sahayog.app`;
-
             const { data: authData, error: authError } = await supabase.auth.signUp({
-                email,
+                email: formData.email,
                 password: formData.password,
                 options: {
                     data: {
@@ -121,6 +119,22 @@ export default function RegisterPage() {
                         />
                     </div>
 
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-bold text-slate-700 mb-2">
+                            Email Address *
+                        </label>
+                        <Input
+                            id="email"
+                            type="email"
+                            placeholder="your@email.com"
+                            value={formData.email}
+                            onChange={(e) => handleChange('email', e.target.value)}
+                            required
+                            disabled={loading}
+                        />
+                    </div>
+
                     <div>
                         <label htmlFor="mobile" className="block text-sm font-bold text-slate-700 mb-2">
                             Mobile Number *
@@ -137,6 +151,7 @@ export default function RegisterPage() {
                             disabled={loading}
                         />
                     </div>
+                </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">

@@ -35,7 +35,22 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { events } = await req.json();
+        const body = await req.json();
+        const { events, skip } = body;
+
+        // If skip is true, just update the profile and return
+        if (skip) {
+            const { error: skipUpdateError } = await supabase
+                .from('user_profiles')
+                .update({ 
+                    life_events_completed: true,
+                    last_life_event_update: new Date().toISOString()
+                })
+                .eq('user_id', user.id);
+
+            if (skipUpdateError) throw skipUpdateError;
+            return NextResponse.json({ success: true, skipped: true });
+        }
 
         if (!Array.isArray(events)) {
             return NextResponse.json({ error: 'Invalid input' }, { status: 400 });

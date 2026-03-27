@@ -10,7 +10,7 @@ import { LogIn, Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
     const router = useRouter();
-    const [mobile, setMobile] = useState('');
+    const [identifier, setIdentifier] = useState(''); // Email or Mobile
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -21,9 +21,12 @@ export default function LoginPage() {
         setError('');
 
         try {
-            // For now, using email/password auth
-            // Mobile format: mobile@sahayog.app
-            const email = `${mobile}@sahayog.app`;
+            // Support both Email and Mobile
+            // If it's a 10-digit number, treat as mobile and append domain for legacy support
+            let email = identifier;
+            if (/^\d{10}$/.test(identifier)) {
+                email = `${identifier}@sahayog.app`;
+            }
 
             const { data, error } = await supabase.auth.signInWithPassword({
                 email,
@@ -125,18 +128,16 @@ export default function LoginPage() {
                 )}
 
                 <div>
-                    <label htmlFor="mobile" className="block text-sm font-bold text-slate-700 mb-2">
-                        Mobile Number
+                    <label htmlFor="identifier" className="block text-sm font-bold text-slate-700 mb-2">
+                        Email or Mobile Number
                     </label>
                     <Input
-                        id="mobile"
-                        type="tel"
-                        placeholder="Enter 10-digit mobile number"
-                        value={mobile}
-                        onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                        id="identifier"
+                        type="text"
+                        placeholder="Enter email or 10-digit mobile"
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
                         required
-                        maxLength={10}
-                        pattern="[6-9][0-9]{9}"
                         disabled={loading}
                         className="h-12 rounded-xl bg-slate-50 border-slate-200 focus:bg-white transition-colors font-medium text-slate-900"
                     />

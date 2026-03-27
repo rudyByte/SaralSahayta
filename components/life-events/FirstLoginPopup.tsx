@@ -50,6 +50,20 @@ export const FirstLoginPopup = ({ isOpen, onClose }: FirstLoginPopupProps) => {
         setEventDates(prev => ({ ...prev, [type]: date }));
     };
 
+    const handleSkip = async () => {
+        try {
+            await fetch('/api/life-events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ skip: true })
+            });
+            onClose();
+        } catch (error) {
+            console.error('Error skipping popup:', error);
+            onClose(); // Close anyway
+        }
+    };
+
     const handleSubmit = async () => {
         setLoading(true);
         try {
@@ -99,7 +113,7 @@ export const FirstLoginPopup = ({ isOpen, onClose }: FirstLoginPopupProps) => {
             >
                 {/* Close Button */}
                 <button 
-                    onClick={onClose}
+                    onClick={handleSkip}
                     className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors z-10"
                 >
                     <X className="h-5 w-5" />
@@ -150,7 +164,7 @@ export const FirstLoginPopup = ({ isOpen, onClose }: FirstLoginPopupProps) => {
                                         <ChevronRight className="ml-2 h-5 w-5" />
                                     </Button>
                                     <button 
-                                        onClick={onClose}
+                                        onClick={handleSkip}
                                         className="block w-full mt-6 text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors"
                                     >
                                         Skip for now
