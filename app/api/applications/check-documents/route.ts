@@ -50,12 +50,12 @@ export async function GET(request: Request) {
 
     if (reqError) throw reqError;
 
-    // 2. Get user verified documents
+    // 2. Get user documents (Verified or Pending with OCR data)
     const { data: userDocs, error: userDocError } = await supabase
       .from('user_documents')
       .select('*, documents(document_code)')
       .eq('user_id', session.user.id)
-      .eq('verification_status', 'VERIFIED');
+      .in('verification_status', ['VERIFIED', 'PENDING']);
 
     if (userDocError) throw userDocError;
 

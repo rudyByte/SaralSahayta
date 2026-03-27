@@ -48,6 +48,11 @@ export default function DynamicApplicationForm({
 
   const schema = z.object(schemaMap);
 
+  const onError = (errors: any) => {
+    console.error('Form validation failed:', errors);
+    toast.error('Please fill all required fields correctly');
+  };
+
   const {
     register,
     handleSubmit,
@@ -63,7 +68,7 @@ export default function DynamicApplicationForm({
   }, [initialData, reset]);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
       <div className="grid md:grid-cols-2 gap-6">
         {fields.map((field) => (
           <div key={field.name} className="space-y-2">

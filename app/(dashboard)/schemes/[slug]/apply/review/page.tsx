@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
-import { maskSensitiveData } from '@/lib/security/data-encryption';
+import { maskSensitiveData } from '@/lib/security/masking';
 
 export default function ApplicationReviewPage({ params }: { params: { slug: string } }) {
   const router = useRouter();

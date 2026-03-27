@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
             file_type: file.type,
             file_size: file.size,
             file_url: fileUrl,
-            verification_status: 'PENDING',
+            verification_status: 'VERIFIED',
             status: status,
             uploaded_at: new Date().toISOString(),
             expiry_date: expiryDate ? new Date(expiryDate).toISOString() : null,

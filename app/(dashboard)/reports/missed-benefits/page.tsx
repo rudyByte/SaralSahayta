@@ -37,18 +37,18 @@ export default async function MissedBenefitsReportPage() {
 
     // 1. Get Application Stats
     const { data: applications } = await supabase
-        .from('Application')
+        .from('applications')
         .select(`
             status, 
-            schemeId, 
-            scheme:Scheme(benefitAmount)
+            scheme_id, 
+            schemes(benefit_amount)
         `)
-        .eq('userId', user.id);
+        .eq('user_id', user.id);
 
     const appliedCount = applications?.length || 0;
     const approved = applications?.filter(a => a.status === 'APPROVED') || [];
     const approvedCount = approved.length;
-    const totalBenefits = approved.reduce((sum, app) => sum + (Number((app.scheme as any)?.benefitAmount) || 0), 0);
+    const totalBenefits = approved.reduce((sum, app) => sum + (Number((app.schemes as any)?.benefit_amount) || 0), 0);
 
     // 2. Get Missed Benefits (Match score >= 70 but missed deadline and never applied)
     const { data: missedData } = await supabase
@@ -59,7 +59,7 @@ export default async function MissedBenefitsReportPage() {
         .order('match_score', { ascending: false });
 
     // Filter logic: deadline passed, and user didn't apply
-    const appliedSchemeIds = new Set(applications?.map(a => a.schemeId));
+    const appliedSchemeIds = new Set(applications?.map(a => a.scheme_id));
     
     // We mock the "missed" aspect securely here without complicated SQL
     const missedSchemes = missedData?.filter(match => {

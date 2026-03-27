@@ -47,20 +47,30 @@ export async function GET(
             .filter((r: any) => r.documents?.document_code)
             .map((r: any) => r.documents.document_code as string);
 
-        // 4. Fetch User's Uploaded Documents (from user_documents joined with master)
-        // We check both PENDING and VERIFIED to give credit; filter by doc codes for this scheme
-        const { data: userDocRows } = await supabase
+        // 4. Fetch User's Uploaded Documents
+        // We check all documents to give credit for readiness
+        const { data: userDocRows, error: userDocError } = await supabase
             .from('user_documents')
             .select(`
                 verification_status,
-                documents (document_code)
+                document_id,
+                documents!inner (
+                    document_code,
+                    document_name
+                )
             `)
             .eq('user_id', user.id);
 
-        // Collect the document codes the user has uploaded (any status counts for readiness)
-        const userUploadedCodes: string[] = (userDocRows || [])
-            .filter((d: any) => d.documents?.document_code)
-            .map((d: any) => d.documents.document_code as string);
+        if (userDocError) console.error('Error fetching user docs for confidence:', userDocError);
+
+        // Collect the document codes and names for matching
+        const userUploadedCodes = (userDocRows || [])
+            .map((d: any) => d.documents?.document_code?.toUpperCase())
+            .filter(Boolean);
+        
+        const userUploadedNames = (userDocRows || [])
+            .map((d: any) => d.documents?.document_name?.toLowerCase())
+            .filter(Boolean);
 
         // Also for suggestion text - only count VERIFIED docs as truly "complete"
         const userVerifiedCodes: string[] = (userDocRows || [])
@@ -104,13 +114,14 @@ export async function GET(
         );
 
         // 8. Enrich suggestions — filter out documents the user already has
+        // We match case-insensitively against both code and name
         const enrichedSuggestions = confidence.suggestions.filter(s => {
-            // Remove document suggestions for already-uploaded docs
-            const isDocSuggestion = s.text.startsWith('Upload ');
+            const text = s.text.toLowerCase();
+            const isDocSuggestion = text.startsWith('upload ');
             if (!isDocSuggestion) return true;
-            // Extract doc code from suggestion (format: "Upload AADHAAR to increase...")
-            const code = s.text.split(' ')[1];
-            return !userUploadedCodes.includes(code);
+
+            return !userUploadedCodes.some(code => text.includes(code.toLowerCase())) &&
+                   !userUploadedNames.some(name => text.includes(name));
         });
 
         return NextResponse.json({

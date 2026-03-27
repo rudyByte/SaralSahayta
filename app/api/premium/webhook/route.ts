@@ -75,11 +75,10 @@ export async function POST(request: NextRequest) {
 
                 if (application) {
                     await supabaseAdmin
-                        .from('ApplicationPremium')
+                        .from('application_premium')
                         .upsert({
-                            id: nanoid(),
-                            applicationId: application.id,
-                            serviceType: 'FAST_TRACK',
+                            application_id: application.id,
+                            service_type: 'FAST_TRACK',
                             status: 'ACTIVE'
                         });
                 }

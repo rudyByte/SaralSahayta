@@ -35,10 +35,10 @@ export async function GET(
 
         // Get application history
         const { data: history } = await supabase
-            .from('ApplicationHistory')
+            .from('application_history')
             .select('*')
             .eq('application_id', applicationId)
-            .order('changed_at', { ascending: false });
+            .order('created_at', { ascending: false });
 
         return NextResponse.json({
             application,
@@ -84,12 +84,11 @@ export async function PATCH(
         if (error) throw error;
 
         // Log the review in history
-        await supabase.from('ApplicationHistory').insert({
+        await supabase.from('application_history').insert({
             application_id: applicationId,
-            old_status: data.status,
-            new_status: status,
-            changed_by: reviewedBy,
+            status: status,
             remarks: remarks || null,
+            changed_by: reviewedBy,
         });
 
         return NextResponse.json({ application: data });

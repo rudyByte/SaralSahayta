@@ -58,7 +58,7 @@ export default function ApplicationEntryPage({ params }: { params: { slug: strin
         .from('user_documents')
         .select('*, documents(document_code)')
         .eq('user_id', session.user.id)
-        .eq('verification_status', 'VERIFIED');
+        .in('verification_status', ['VERIFIED', 'PENDING']);
 
       if (userDocs) {
         const mapped = mapOCRToFormFields(userDocs, params.slug);

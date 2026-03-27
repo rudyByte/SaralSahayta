@@ -84,14 +84,17 @@ export async function POST(request: NextRequest) {
             .eq('document_id', document.id)
             .single();
 
-        const payload = {
+        // When OCR data is present and user confirmed, mark as VERIFIED
+        const hasOcrData = ocrData?.extractedData && Object.keys(ocrData.extractedData).length > 0;
+
+        const payload: Record<string, any> = {
             user_id: userId,
             document_id: document.id,
             file_name: file.name,
             file_type: file.type,
             file_size: file.size,
             file_url: fileUrl,
-            verification_status: 'PENDING',
+            verification_status: hasOcrData ? 'VERIFIED' : 'PENDING',
             status: status,
             expiry_date: expiryDate ? expiryDate.toISOString() : null,
             metadata: {
@@ -102,7 +105,8 @@ export async function POST(request: NextRequest) {
                 detected_type: ocrData?.detectedType,
                 verified_by_user: true,
                 processed_at: new Date().toISOString()
-            }
+            },
+            uploaded_at: new Date().toISOString(),
         };
 
         let resultData;

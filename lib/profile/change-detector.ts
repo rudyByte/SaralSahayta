@@ -66,6 +66,15 @@ export function detectProfileChanges(
                 impactsEligibility: true
             });
         }
+
+        if (extractedData.name && extractedData.name !== currentProfile.name) {
+             changes.push({
+                field: 'Full Name',
+                oldValue: currentProfile.name || 'Not set',
+                newValue: extractedData.name,
+                impactsEligibility: false
+            });
+        }
     }
 
     if (documentType === 'PAN') {

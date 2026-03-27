@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     const ip = headerList.get('x-forwarded-for') || '127.0.0.1';
     const userAgent = headerList.get('user-agent') || 'unknown';
 
-    // 3. Insert into "Application" (Tracking ID can be updated or generated later)
+    // 3. Insert into "Application" table (Align with Prisma schema)
     const { data: application, error: submitError } = await supabase
       .from('Application')
       .insert({
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      applicationNumber: application.trackingId 
+      applicationNumber: application.id || application.trackingId 
     });
 
   } catch (error: any) {

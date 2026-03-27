@@ -39,12 +39,3 @@ export function decryptSensitiveData(encryptedData: string): string {
   return decrypted;
 }
 
-/**
- * Masks sensitive strings (e.g., Aadhaar, Account Number)
- * Shows only last 4 digits.
- */
-export function maskSensitiveData(text: string, visibleDigits = 4): string {
-  if (!text || text.length <= visibleDigits) return text;
-  const maskedLength = text.length - visibleDigits;
-  return 'X'.repeat(maskedLength) + text.slice(-visibleDigits);
-}

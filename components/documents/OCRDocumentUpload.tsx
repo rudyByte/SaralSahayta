@@ -211,22 +211,6 @@ export default function OCRDocumentUpload({
         }
     };
 
-    const handleUploadWithoutProfileUpdate = async () => {
-        const success = await handleUpload();
-        if (success) {
-            await globalMutate(
-                (key: any) => typeof key === 'string' && (
-                    key.includes('/api/schemes') ||
-                    key.includes('/confidence') ||
-                    key.includes('/api/documents')
-                ),
-                undefined,
-                { revalidate: true }
-            );
-            onUploadComplete();
-        }
-    };
-
     return (
         <div className="space-y-4">
             {/* Upload Area */}
@@ -392,14 +376,14 @@ export default function OCRDocumentUpload({
 
                                         <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
                                             {Object.entries(extractedData || {}).map(([key, value]) => (
-                                                value ? (
-                                                    <div key={key} className="flex flex-col gap-1">
-                                                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                                                            {key.replace(/([A-Z])/g, ' $1').trim()}
-                                                        </span>
-                                                        <span className="text-xs font-bold text-slate-800 break-words">{value as string}</span>
-                                                    </div>
-                                                ) : null
+                                                <div key={key} className="flex flex-col gap-1">
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                                                        {key.replace(/([A-Z])/g, ' $1').trim()}
+                                                    </span>
+                                                    <span className={`text-xs font-bold break-words ${value ? 'text-slate-800' : 'text-slate-300 italic'}`}>
+                                                        {value ? (value as string) : 'Not found'}
+                                                    </span>
+                                                </div>
                                             ))}
                                         </div>
 
@@ -434,13 +418,6 @@ export default function OCRDocumentUpload({
                                                         Update Profile & Save
                                                     </>
                                                 )}
-                                            </button>
-                                            <button
-                                                onClick={handleUploadWithoutProfileUpdate}
-                                                disabled={isUploading}
-                                                className="px-4 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 disabled:opacity-50 font-bold text-sm transition-all text-center"
-                                            >
-                                                Save Only
                                             </button>
                                         </div>
                                         <div className="mt-3 text-center">

@@ -30,12 +30,12 @@ export default function DocumentAttachmentStatus({
 
       <div className="space-y-3">
         {requiredDocs.map((req) => {
-          const isAttached = attachedDocs.includes(req.document_id);
-          const isMandatory = req.is_mandatory;
+          const isAttached = attachedDocs.includes(req.documentId);
+          const isMandatory = req.isMandatory;
 
           return (
             <div 
-              key={req.document_id} 
+              key={req.documentId} 
               className="flex items-center justify-between p-3 rounded-xl bg-background border border-border/50 text-xs"
             >
               <div className="flex items-center gap-3">
