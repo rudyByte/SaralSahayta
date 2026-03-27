@@ -2,11 +2,10 @@
 
 import { ShieldAlert, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { createClient } from '@/lib/supabase-client';
+import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
 export default function SuspendedPage() {
-    const supabase = createClient();
     const router = useRouter();
 
     const handleLogout = async () => {
