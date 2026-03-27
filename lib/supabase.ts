@@ -7,11 +7,19 @@ if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Missing Supabase environment variables');
 }
 
-// Client-side Supabase client (Uses cookies by default, compatible with Next.js Middleware)
-export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
+// Client-side Supabase client singleton
+let client: ReturnType<typeof createBrowserClient> | undefined;
+
+export const supabase = (() => {
+    if (typeof window === 'undefined') return createBrowserClient(supabaseUrl, supabaseAnonKey);
+    if (!client) {
+        client = createBrowserClient(supabaseUrl, supabaseAnonKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true
+            }
+        });
     }
-});
+    return client;
+})();

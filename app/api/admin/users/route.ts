@@ -1,4 +1,4 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 
@@ -80,6 +80,23 @@ export async function PATCH(request: NextRequest) {
             .single();
 
         if (error) throw error;
+
+        // Create Admin Audit Log
+        const { data: { user: adminUser } } = await supabase.auth.getUser();
+        if (adminUser) {
+            let action = 'UPDATE_PROFILE';
+            if ('is_admin' in updates) action = updates.is_admin ? 'PROMOTE' : 'DEMOTE';
+            if ('is_suspended' in updates) action = updates.is_suspended ? 'SUSPEND' : 'ACTIVATE';
+
+            await supabase.from('admin_audit_logs').insert({
+                admin_id: adminUser.id,
+                target_user_id: userId,
+                action: action,
+                entity_type: 'USER',
+                entity_id: userId,
+                details: updates
+            });
+        }
 
         return NextResponse.json({ user: data });
     } catch (error: any) {

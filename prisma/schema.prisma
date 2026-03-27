@@ -45,6 +45,7 @@ model User {
   @@index([mobile])
   @@index([state])
   @@index([category])
+  @@map("users")
 }
 
 model UserProfile {
@@ -67,6 +68,8 @@ model UserProfile {
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@map("user_profiles")
 }
 
 model FamilyMember {

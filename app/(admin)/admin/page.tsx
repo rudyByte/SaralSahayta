@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
@@ -6,6 +6,7 @@ import { Users, FileText, CheckCircle, Clock } from 'lucide-react';
 import StatCard from '@/components/admin/StatCard';
 import { Card } from '@/components/ui/card';
 import useSWR from 'swr';
+import Link from 'next/link';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -33,7 +34,12 @@ export default function AdminDashboard() {
         );
     }
 
-    const stats = data?.stats || {};
+    const stats = data?.stats || {
+        totalUsers: 0,
+        totalApplications: 0,
+        pendingApplications: 0,
+        verifiedDocuments: 0
+    };
     const recentApplications = data?.recentApplications || [];
     const statusDistribution = data?.statusDistribution || {};
 
@@ -51,13 +57,11 @@ export default function AdminDashboard() {
                     title="Total Users"
                     value={stats.totalUsers}
                     icon={Users}
-                    trend={{ value: 12, isPositive: true }}
                 />
                 <StatCard
                     title="Total Applications"
                     value={stats.totalApplications}
                     icon={FileText}
-                    trend={{ value: 8, isPositive: true }}
                 />
                 <StatCard
                     title="Pending Review"
@@ -68,7 +72,6 @@ export default function AdminDashboard() {
                     title="Verified Documents"
                     value={stats.verifiedDocuments}
                     icon={CheckCircle}
-                    trend={{ value: 15, isPositive: true }}
                 />
             </div>
 
@@ -81,12 +84,13 @@ export default function AdminDashboard() {
                     </h2>
                     <div className="space-y-4">
                         {recentApplications.length === 0 ? (
-                            <p className="text-gray-500 text-sm">No recent applications</p>
+                            <p className="text-gray-500 text-sm text-center py-4">No recent applications</p>
                         ) : (
                             recentApplications.map((app: any) => (
-                                <div
+                                <Link 
                                     key={app.id}
-                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                                    href={`/admin/applications/${app.id}`}
+                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
                                     <div>
                                         <p className="font-medium text-gray-900">
@@ -106,7 +110,7 @@ export default function AdminDashboard() {
                                     >
                                         {app.status}
                                     </span>
-                                </div>
+                                </Link>
                             ))
                         )}
                     </div>
@@ -118,27 +122,28 @@ export default function AdminDashboard() {
                         Application Status
                     </h2>
                     <div className="space-y-3">
-                        {Object.entries(statusDistribution).map(([status, count]) => (
-                            <div key={status} className="flex items-center justify-between">
-                                <span className="text-gray-700">{status}</span>
-                                <div className="flex items-center space-x-3">
-                                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                                        <div
-                                            className="bg-primary-600 h-2 rounded-full"
-                                            style={{
-                                                width: `${((count as number) /
-                                                    stats.totalApplications) *
-                                                    100
-                                                    }%`,
-                                            }}
-                                        ></div>
+                        {Object.entries(statusDistribution).length === 0 ? (
+                            <p className="text-gray-500 text-sm text-center py-4">No data available</p>
+                        ) : (
+                            Object.entries(statusDistribution).map(([status, count]) => (
+                                <div key={status} className="flex items-center justify-between">
+                                    <span className="text-gray-700">{status}</span>
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-32 bg-gray-200 rounded-full h-2">
+                                            <div
+                                                className="bg-primary-600 h-2 rounded-full"
+                                                style={{
+                                                    width: `${Math.min(100, ((count as number) / (stats.totalApplications || 1)) * 100)}%`,
+                                                }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-900 w-8 text-right">
+                                            {count as number}
+                                        </span>
                                     </div>
-                                    <span className="text-sm font-medium text-gray-900 w-8 text-right">
-                                        {count as number}
-                                    </span>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </Card>
             </div>
@@ -147,25 +152,25 @@ export default function AdminDashboard() {
             <Card className="p-6">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
+                    <Link href="/admin/applications" className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left block">
                         <FileText className="h-6 w-6 text-primary-600 mb-2" />
                         <p className="font-medium text-gray-900">Review Applications</p>
                         <p className="text-sm text-gray-600 mt-1">
-                            {stats.pendingApplications} pending
+                            {stats.pendingApplications} pending review
                         </p>
-                    </button>
-                    <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
+                    </Link>
+                    <Link href="/admin/users" className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left block">
                         <Users className="h-6 w-6 text-primary-600 mb-2" />
                         <p className="font-medium text-gray-900">Manage Users</p>
                         <p className="text-sm text-gray-600 mt-1">
                             {stats.totalUsers} total users
                         </p>
-                    </button>
-                    <button className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left">
+                    </Link>
+                    <Link href="/admin/schemes" className="p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 hover:bg-primary-50 transition-colors text-left block">
                         <CheckCircle className="h-6 w-6 text-primary-600 mb-2" />
-                        <p className="font-medium text-gray-900">Verify Documents</p>
-                        <p className="text-sm text-gray-600 mt-1">View pending documents</p>
-                    </button>
+                        <p className="font-medium text-gray-900">Manage Schemes</p>
+                        <p className="text-sm text-gray-600 mt-1">View/Edit all schemes</p>
+                    </Link>
                 </div>
             </Card>
         </div>

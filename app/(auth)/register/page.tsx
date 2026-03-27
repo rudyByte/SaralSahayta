@@ -91,11 +91,11 @@ export default function RegisterPage() {
             <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-accent/0 via-accent/50 to-accent/0" />
 
             <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-accent/5 rounded-3xl mb-6 shadow-inner border border-accent/10">
-                    <UserPlus className="h-10 w-10 text-accent drop-shadow-md" />
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-3xl mb-6 shadow-inner border border-primary/20">
+                    <UserPlus className="h-10 w-10 text-primary drop-shadow-md" />
                 </div>
                 <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Create Account</h1>
-                <p className="text-slate-500 font-medium">Join thousands discovering their eligible schemes</p>
+                <p className="text-slate-600 font-medium text-balance">Join thousands discovering their eligible schemes</p>
             </div>
 
             <form onSubmit={handleRegister} className="space-y-4">
@@ -107,7 +107,7 @@ export default function RegisterPage() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="name" className="block text-sm font-bold text-slate-700 mb-2">
                             Full Name *
                         </label>
                         <Input
@@ -122,7 +122,7 @@ export default function RegisterPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="mobile" className="block text-sm font-bold text-slate-700 mb-2">
                             Mobile Number *
                         </label>
                         <Input
@@ -141,7 +141,7 @@ export default function RegisterPage() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="dateOfBirth" className="block text-sm font-bold text-slate-700 mb-2">
                             Date of Birth *
                         </label>
                         <Input
@@ -156,7 +156,7 @@ export default function RegisterPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="gender" className="block text-sm font-bold text-slate-700 mb-2">
                             Gender *
                         </label>
                         <Select
@@ -179,7 +179,7 @@ export default function RegisterPage() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="category" className="block text-sm font-bold text-slate-700 mb-2">
                             Category *
                         </label>
                         <Select
@@ -202,7 +202,7 @@ export default function RegisterPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="state" className="block text-sm font-bold text-slate-700 mb-2">
                             State *
                         </label>
                         <Select
@@ -227,7 +227,7 @@ export default function RegisterPage() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="password" className="block text-sm font-bold text-slate-700 mb-2">
                             Password *
                         </label>
                         <Input
@@ -243,7 +243,7 @@ export default function RegisterPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="confirmPassword" className="block text-sm font-bold text-slate-700 mb-2">
                             Confirm Password *
                         </label>
                         <Input
@@ -259,7 +259,7 @@ export default function RegisterPage() {
                     </div>
                 </div>
 
-                <Button type="submit" className="w-full h-12 rounded-xl font-black text-base shadow-xl shadow-accent/20 bg-accent hover:bg-accent/90 text-white" disabled={loading}>
+                <Button type="submit" className="w-full h-12 rounded-xl font-black text-base shadow-xl shadow-primary/25 bg-primary hover:bg-primary/90 text-white transition-all active:scale-[0.98]" disabled={loading}>
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

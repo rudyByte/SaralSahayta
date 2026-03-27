@@ -57,6 +57,22 @@ export async function middleware(request: NextRequest) {
     // Refresh session if expired
     const { data: { user } } = await supabase.auth.getUser();
 
+    // Check for suspension
+    if (user) {
+        const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('is_suspended, is_admin')
+            .eq('user_id', user.id)
+            .single();
+
+        if (profile?.is_suspended) {
+            // Allow access to suspension page only
+            if (!request.nextUrl.pathname.startsWith('/suspended')) {
+                return NextResponse.redirect(new URL('/suspended', request.url));
+            }
+        }
+    }
+
     // Protected routes - redirect to login if not authenticated
     const protectedPaths = ['/dashboard', '/life-events', '/discover', '/profile', '/applications', '/premium', '/settings', '/documents'];
     const isProtectedPath = protectedPaths.some(path =>
@@ -86,7 +102,7 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/login', request.url));
         }
 
-        // Check if user is admin
+        // We already fetched the profile for the suspension check
         const { data: profile } = await supabase
             .from('user_profiles')
             .select('is_admin')

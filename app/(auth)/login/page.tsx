@@ -110,11 +110,11 @@ export default function LoginPage() {
             <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
             
             <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/5 rounded-3xl mb-6 shadow-inner border border-primary/10">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-3xl mb-6 shadow-inner border border-primary/20">
                     <LogIn className="h-10 w-10 text-primary drop-shadow-md" />
                 </div>
                 <h1 className="text-3xl font-black text-slate-900 mb-2 tracking-tight">Welcome Back</h1>
-                <p className="text-slate-500 font-medium">Sign in to access your dashboard</p>
+                <p className="text-slate-600 font-medium text-balance">Sign in to access your dashboard</p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4">
@@ -125,7 +125,7 @@ export default function LoginPage() {
                 )}
 
                 <div>
-                    <label htmlFor="mobile" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="mobile" className="block text-sm font-bold text-slate-700 mb-2">
                         Mobile Number
                     </label>
                     <Input
@@ -143,7 +143,7 @@ export default function LoginPage() {
                 </div>
 
                 <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="password" className="block text-sm font-bold text-slate-700 mb-2">
                         Password
                     </label>
                     <Input
@@ -159,7 +159,7 @@ export default function LoginPage() {
                     />
                 </div>
 
-                <Button type="submit" className="w-full h-12 rounded-xl font-black text-base shadow-xl shadow-primary/20" disabled={loading}>
+                <Button type="submit" className="w-full h-12 rounded-xl font-black text-base shadow-xl shadow-primary/25 bg-primary hover:bg-primary/90 text-white transition-all active:scale-[0.98]" disabled={loading}>
                     {loading ? (
                         <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

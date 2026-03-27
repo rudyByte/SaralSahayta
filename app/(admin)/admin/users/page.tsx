@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 export const dynamic = 'force-dynamic';
 
 import { useState } from 'react';
@@ -38,10 +38,27 @@ export default function UsersPage() {
         ...(category && { category }),
     });
 
-    const { data, error, isLoading } = useSWR(
+    const { data, error, isLoading, mutate } = useSWR(
         `/api/admin/users?${queryParams}`,
         fetcher
     );
+
+    const handleUpdateUser = async (userId: string, updates: any) => {
+        try {
+            const res = await fetch('/api/admin/users', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, updates }),
+            });
+
+            if (!res.ok) throw new Error('Failed to update user');
+            
+            mutate(); // Refresh data
+        } catch (err) {
+            console.error(err);
+            alert('Failed to perform action');
+        }
+    };
 
     const users = data?.users || [];
     const pagination = data?.pagination || {};
@@ -186,9 +203,15 @@ export default function UsersPage() {
                                             {new Date(user.created_at).toLocaleDateString()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                Active
-                                            </span>
+                                            {user.is_suspended ? (
+                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                    Suspended
+                                                </span>
+                                            ) : (
+                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Active
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <DropdownMenu>
@@ -204,11 +227,14 @@ export default function UsersPage() {
                                                         </Link>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem>Edit Profile</DropdownMenuItem>
-                                                    <DropdownMenuItem>
-                                                        Promote to Admin
+                                                    <DropdownMenuItem onClick={() => handleUpdateUser(user.user_id, { is_admin: !user.is_admin })}>
+                                                        {user.is_admin ? 'Remove Admin' : 'Promote to Admin'}
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="text-red-600">
-                                                        Suspend User
+                                                    <DropdownMenuItem 
+                                                        className={user.is_suspended ? 'text-green-600' : 'text-red-600'}
+                                                        onClick={() => handleUpdateUser(user.user_id, { is_suspended: !user.is_suspended })}
+                                                    >
+                                                        {user.is_suspended ? 'Activate User' : 'Suspend User'}
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

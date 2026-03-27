@@ -19,7 +19,7 @@ const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Users', href: '/admin/users', icon: Users },
     { name: 'Applications', href: '/admin/applications', icon: FileText },
-    { name: 'Documents', href: '/admin/documents', icon: FolderOpen },
+    { name: 'Schemes', href: '/admin/schemes', icon: FolderOpen },
     { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
