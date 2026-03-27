@@ -73,8 +73,8 @@ export default function RegisterPage() {
             if (authError) throw authError;
 
             if (authData.user) {
-                // Redirect to login or dashboard
-                router.push('/discover');
+                // Redirect to dashboard (middleware will handle admin vs user routing)
+                router.push('/dashboard');
                 router.refresh();
             }
         } catch (err: any) {

@@ -83,6 +83,19 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
+    // Redirect admins from standard dashboard to admin panel
+    if (request.nextUrl.pathname === '/dashboard' && user) {
+        const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('is_admin')
+            .eq('user_id', user.id)
+            .single();
+
+        if (profile?.is_admin) {
+            return NextResponse.redirect(new URL('/admin', request.url));
+        }
+    }
+
     // Redirect authenticated users away from auth pages
     const authPaths = ['/login', '/register'];
     const isAuthPath = authPaths.some(path =>
@@ -90,7 +103,15 @@ export async function middleware(request: NextRequest) {
     );
 
     if (isAuthPath && user) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        // Check if admin to determine redirect path
+        const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('is_admin')
+            .eq('user_id', user.id)
+            .single();
+
+        const redirectPath = profile?.is_admin ? '/admin' : '/dashboard';
+        return NextResponse.redirect(new URL(redirectPath, request.url));
     }
 
     // Admin routes - check if user is admin

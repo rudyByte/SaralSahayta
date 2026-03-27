@@ -61,6 +61,9 @@ model UserProfile {
   
   consentData     Boolean  @default(false)
   consentMarketing Boolean @default(false)
+  
+  isAdmin         Boolean  @default(false) @map("is_admin")
+  isSuspended     Boolean  @default(false) @map("is_suspended")
 
   // Onboarding & Tracking
   lifeEventsCompleted Boolean  @default(false)

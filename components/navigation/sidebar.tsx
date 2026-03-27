@@ -14,7 +14,8 @@ import {
     Zap,
     LogOut,
     ChevronRight,
-    Sparkles
+    Sparkles,
+    ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -81,6 +82,35 @@ export function Sidebar() {
 
             {/* Navigation Section */}
             <nav className="flex-1 px-3 space-y-1 mt-4 overflow-y-auto no-scrollbar">
+                {/* Admin Link at the top for Admins */}
+                {profileData?.profile?.is_admin && (
+                    <Link href="/admin">
+                        <motion.div 
+                            whileHover={{ x: !isExpanded ? 0 : 4 }}
+                            className={cn(
+                            "relative flex items-center px-4 py-3.5 rounded-2xl transition-all duration-200 group mb-2",
+                            !isExpanded ? "justify-center" : "gap-3",
+                            pathname.startsWith('/admin') 
+                                ? "bg-primary/10 text-primary border border-primary/20" 
+                                : "text-amber-600 bg-amber-50/50 hover:bg-amber-100/50"
+                        )}>
+                            <ShieldCheck className={cn(
+                                "h-5 w-5 transition-colors shrink-0",
+                                pathname.startsWith('/admin') ? "text-primary" : "text-amber-500"
+                            )} />
+                            
+                            <div className={cn(
+                                "flex items-center flex-1 overflow-hidden transition-all duration-150",
+                                isExpanded ? "w-auto opacity-100 ml-3" : "w-0 opacity-0"
+                            )}>
+                                <span className="font-black text-sm tracking-wide flex-1 whitespace-nowrap">
+                                    Admin Panel
+                                </span>
+                            </div>
+                        </motion.div>
+                    </Link>
+                )}
+
                 {navItems.map((item) => {
                     const isActive = pathname === item.href;
                     const Icon = item.icon;
