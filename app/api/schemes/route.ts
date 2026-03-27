@@ -1,4 +1,4 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -125,12 +125,21 @@ export async function GET(request: Request) {
                 };
 
                 results = schemes.map(scheme => {
-                    const matchResult = calculateMatchScore(scheme as any, userProfileForMatching);
-                    return {
-                        ...scheme,
-                        matchScore: matchResult?.score ?? null,
-                        matchDetails: matchResult
-                    };
+                    try {
+                        const matchResult = calculateMatchScore(scheme as any, userProfileForMatching);
+                        return {
+                            ...scheme,
+                            matchScore: matchResult?.score ?? null,
+                            matchDetails: matchResult
+                        };
+                    } catch (err) {
+                        console.error(`Error matching scheme ${scheme.id}:`, err);
+                        return {
+                            ...scheme,
+                            matchScore: null,
+                            matchDetails: null
+                        };
+                    }
                 });
 
                 if (sortBy === 'matchScore' || sortBy === 'relevance') {

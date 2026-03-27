@@ -192,7 +192,7 @@ export default async function DocumentReadinessDashboard() {
                                             </div>
                                             <div>
                                                 <h5 className="font-bold text-slate-200 text-sm line-clamp-1">{ps.name}</h5>
-                                                <p className="text-xs text-slate-500 font-medium truncate">Estimated ₹{ps.benefit_amount?.toLocaleString()}</p>
+                                                <p className="text-xs text-slate-500 font-medium truncate">Estimated ₹{ps.benefitAmount?.toLocaleString()}</p>
                                             </div>
                                         </div>
                                     ))}

@@ -74,8 +74,8 @@ model UserProfile {
   isPremium       Boolean  @default(false)
   premiumExpiresAt DateTime?
   
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("user_profiles")
 }
@@ -136,8 +136,8 @@ model Scheme {
   
   applications      Application[]
   
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
   
   @@index([schemeType])
   @@index([category])

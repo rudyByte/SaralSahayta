@@ -29,9 +29,9 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
 
         // 2. Get all active schemes
         const { data: schemes } = await supabase
-            .from('schemes')
+            .from('Scheme')
             .select('*')
-            .eq('active_status', true);
+            .eq('isActive', true);
 
         if (!schemes) return { newMatchesFound: 0 };
 

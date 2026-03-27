@@ -5,7 +5,7 @@ import { differenceInYears, addYears } from 'date-fns';
 interface SimpleScheme {
   id: string;
   name: string;
-  benefit_amount: number;
+  benefitAmount: number;
 }
 
 interface Prediction {
@@ -44,16 +44,16 @@ export async function predictFutureOpportunities(userId: string): Promise<Predic
   for (const targetAge of upcomingThresholds) {
       let targetSchemes: SimpleScheme[] = [];
       if (targetAge === 18) {
-          const { data } = await supabase.from('schemes').select('id, name, benefit_amount').ilike('name', '%youth%').limit(2);
+          const { data } = await supabase.from('Scheme').select('id, name, benefitAmount').ilike('name', '%youth%').limit(2);
           targetSchemes = (data || []) as SimpleScheme[];
           if (targetSchemes.length === 0) {
-              targetSchemes = [{ id: 'mock1', name: 'Youth Empowerment Scheme', benefit_amount: 15000 }];
+              targetSchemes = [{ id: 'mock1', name: 'Youth Empowerment Scheme', benefitAmount: 15000 }];
           }
       } else if (targetAge === 60) {
-          const { data } = await supabase.from('schemes').select('id, name, benefit_amount').ilike('name', '%pension%').limit(2);
+          const { data } = await supabase.from('Scheme').select('id, name, benefitAmount').ilike('name', '%pension%').limit(2);
           targetSchemes = (data || []) as SimpleScheme[];
           if (targetSchemes.length === 0) {
-              targetSchemes = [{ id: 'mock2', name: 'Senior Citizen Pension Plan', benefit_amount: 3000 }];
+              targetSchemes = [{ id: 'mock2', name: 'Senior Citizen Pension Plan', benefitAmount: 3000 }];
           }
       }
 

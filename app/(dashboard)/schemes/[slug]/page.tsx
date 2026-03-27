@@ -40,21 +40,38 @@ export default function SchemeDetailPage({ params }: { params: { slug: string } 
         setUserId(session.user.id);
       }
       
-      // Get scheme by slug
-      const { data: schemeData, error } = await supabase
+      // 1. Try finding by internal ID
+      let { data: schemeData, error: fetchError } = await supabase
         .from('Scheme')
         .select('*')
         .eq('id', params.slug)
-        .single();
+        .maybeSingle();
       
-      if (error || !schemeData) {
+      // 2. Fallback to schemeId (slug) if not found by ID
+      if (!schemeData && !fetchError) {
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('Scheme')
+          .select('*')
+          .eq('schemeId', params.slug)
+          .maybeSingle();
+        
+        schemeData = fallbackData;
+        fetchError = fallbackError;
+      }
+      
+      if (fetchError || !schemeData) {
+        console.error("Scheme Fetch Failure:", fetchError || "Not found");
         throw new Error('Scheme not found');
       }
       
       setScheme(schemeData);
       
-      // 2. Increment view count (Background)
-      await supabase.rpc('increment_scheme_views', { target_scheme_id: schemeData.id });
+      // 3. Increment view count (Background) - Wrapped to prevent page failure
+      try {
+        await supabase.rpc('increment_scheme_views', { target_scheme_id: schemeData.id });
+      } catch (rpcErr) {
+        console.warn("Could not increment view count:", rpcErr);
+      }
       
       // Load required documents
       const { data: docReqs } = await supabase

@@ -120,16 +120,16 @@ export function calculateMatchScore(
 
     // 5. Income (10 points)
     if (criteria.incomeMax !== undefined) {
-        if (userProfile.annualIncome !== undefined) {
-            if (userProfile.annualIncome <= criteria.incomeMax) {
-                score += 10;
-                matched.push('Income within eligible limit');
+            if (userProfile.annualIncome !== undefined && userProfile.annualIncome !== null) {
+                if (userProfile.annualIncome <= criteria.incomeMax) {
+                    score += 10;
+                    matched.push('Income within eligible limit');
+                } else {
+                    missing.push(`Income ₹${Number(userProfile.annualIncome).toLocaleString()} exceeds ₹${criteria.incomeMax.toLocaleString()}`);
+                }
             } else {
-                missing.push(`Income ₹${userProfile.annualIncome.toLocaleString()} exceeds ₹${criteria.incomeMax.toLocaleString()}`);
+                missing.push('Income missing in profile');
             }
-        } else {
-            missing.push('Income missing in profile');
-        }
     } else {
         score += 10;
         matched.push('No income restrictions');

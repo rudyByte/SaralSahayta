@@ -37,14 +37,18 @@ export default async function MissedBenefitsReportPage() {
 
     // 1. Get Application Stats
     const { data: applications } = await supabase
-        .from('applications')
-        .select('status, scheme_id, schemes(benefit_amount)')
-        .eq('user_id', user.id);
+        .from('Application')
+        .select(`
+            status, 
+            schemeId, 
+            scheme:Scheme(benefitAmount)
+        `)
+        .eq('userId', user.id);
 
     const appliedCount = applications?.length || 0;
     const approved = applications?.filter(a => a.status === 'APPROVED') || [];
     const approvedCount = approved.length;
-    const totalBenefits = approved.reduce((sum, app) => sum + (Number((app.schemes as any)?.benefit_amount) || 0), 0);
+    const totalBenefits = approved.reduce((sum, app) => sum + (Number((app.scheme as any)?.benefitAmount) || 0), 0);
 
     // 2. Get Missed Benefits (Match score >= 70 but missed deadline and never applied)
     const { data: missedData } = await supabase
@@ -55,18 +59,18 @@ export default async function MissedBenefitsReportPage() {
         .order('match_score', { ascending: false });
 
     // Filter logic: deadline passed, and user didn't apply
-    const appliedSchemeIds = new Set(applications?.map(a => a.scheme_id));
+    const appliedSchemeIds = new Set(applications?.map(a => a.schemeId));
     
     // We mock the "missed" aspect securely here without complicated SQL
     const missedSchemes = missedData?.filter(match => {
         const s = match.schemes as any;
         if (!s) return false;
         if (appliedSchemeIds.has(s.id)) return false;
-        if (s.is_rolling) return false;
-        if (!s.application_deadline) return false;
+        if (s.isRolling) return false;
+        if (!s.deadline) return false;
         
         // Is deadline in the past?
-        return new Date(s.application_deadline) < new Date();
+        return new Date(s.deadline) < new Date();
     }).map(m => m.schemes) || [];
 
     // Find alternatives for up to 3 missed schemes
@@ -139,20 +143,20 @@ export default async function MissedBenefitsReportPage() {
                                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div className="flex-1">
                                             <p className="text-xs font-bold text-slate-400 mb-1.5 uppercase tracking-wider">
-                                                Alternative to {missed.scheme_name} (Closed {format(new Date(missed.application_deadline), 'MMM d, yyyy')})
+                                                Alternative to {missed.name} (Closed {format(new Date(missed.deadline), 'MMM d, yyyy')})
                                             </p>
                                             <h3 className="text-xl font-bold text-emerald-600 mb-2">
-                                                ✨ {alt.scheme_name}
+                                                ✨ {alt.name}
                                             </h3>
                                             <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 font-medium">
                                                 <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
                                                     <span className="text-slate-400">Benefit:</span>
-                                                    <span className="text-slate-900 font-bold">₹{alt.benefit_amount.toLocaleString()}</span>
+                                                    <span className="text-slate-900 font-bold">₹{alt.benefitAmount?.toLocaleString() || '0'}</span>
                                                 </span>
                                                 <span className="flex items-center gap-1.5 bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
                                                     <span className="text-slate-400">Deadline:</span>
                                                     <span className="text-slate-900 font-bold">
-                                                        {alt.is_rolling ? "Rolling" : format(new Date(alt.application_deadline), 'MMM d, yyyy')}
+                                                        {alt.isRolling ? "Rolling" : (alt.deadline ? format(new Date(alt.deadline), 'MMM d, yyyy') : "N/A")}
                                                     </span>
                                                 </span>
                                             </div>

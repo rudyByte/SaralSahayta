@@ -14,22 +14,22 @@ export async function findSimilarActiveSchemes(missedScheme: any) {
   // 2. Similar benefit amount (within generous bounds)
   // 3. Currently accepting applications
   
-  const minBenefit = missedScheme.benefit_amount ? missedScheme.benefit_amount * 0.5 : 0;
+  const minBenefit = missedScheme.benefitAmount ? missedScheme.benefitAmount * 0.5 : 0;
   
   let query = supabase
-    .from('schemes')
+    .from('Scheme')
     .select('*')
-    .eq('active_status', true)
+    .eq('isActive', true)
     // Category match
-    .eq('scheme_category', missedScheme.scheme_category)
+    .eq('category', missedScheme.category)
     // Must be active and not past deadline if it has one
-    .or(`application_deadline.gte.${new Date().toISOString()},is_rolling.eq.true`)
+    .or(`deadline.gte.${new Date().toISOString()},isRolling.eq.true`)
     // Don't recommend the exact same scheme if we're just comparing
     .neq('id', missedScheme.id)
     .limit(3);
 
-  if (missedScheme.benefit_amount) {
-      query = query.gte('benefit_amount', minBenefit);
+  if (missedScheme.benefitAmount) {
+      query = query.gte('benefitAmount', minBenefit);
   }
 
   const { data: activeSchemes } = await query;

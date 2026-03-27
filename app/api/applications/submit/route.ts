@@ -53,20 +53,15 @@ export async function POST(request: Request) {
     const ip = headerList.get('x-forwarded-for') || '127.0.0.1';
     const userAgent = headerList.get('user-agent') || 'unknown';
 
-    // 3. Insert into "applications" (Triggers auto-generate trackingId)
+    // 3. Insert into "Application" (Tracking ID can be updated or generated later)
     const { data: application, error: submitError } = await supabase
-      .from('applications')
+      .from('Application')
       .insert({
-        user_id: session.user.id,
-        scheme_id: schemeId,
-        form_data: sanitizedFormData,
-        "formDataEncrypted": JSON.stringify(encryptedData),
+        userId: session.user.id,
+        schemeId: schemeId,
+        formData: sanitizedFormData,
         status: 'SUBMITTED',
-        submitted_at: new Date().toISOString(),
-        "attachedDocuments": attachedDocs,
-        "ipAddress": ip,
-        "userAgent": userAgent,
-        "submissionSource": 'web'
+        submittedAt: new Date().toISOString()
       })
       .select()
       .single();
