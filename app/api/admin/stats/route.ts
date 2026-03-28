@@ -6,29 +6,33 @@ export async function GET() {
     try {
         const supabase = createClient();
 
-        // 1. Get Summary Stats
-        const { count: totalUsers } = await supabase.from('user_profiles').select('*', { count: 'exact', head: true });
-        const { count: totalApplications } = await supabase.from('applications').select('*', { count: 'exact', head: true });
-        const { count: pendingApplications } = await supabase.from('applications').select('*', { count: 'exact', head: true }).eq('status', 'SUBMITTED');
+        // 1. Get Summary Stats (Align with Prisma schema)
+        const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
+        const { count: totalApplications } = await supabase.from('Application').select('*', { count: 'exact', head: true });
+        const { count: pendingApplications } = await supabase.from('Application').select('*', { count: 'exact', head: true }).eq('status', 'SUBMITTED');
         
         // 2. Get Document Stats (Verification)
-        const { count: verifiedDocuments } = await supabase.from('Document').select('*', { count: 'exact', head: true }).eq('isVerified', true);
+        const { count: verifiedDocuments } = await supabase.from('user_documents').select('*', { count: 'exact', head: true }).eq('verification_status', 'VERIFIED');
 
         // 3. Get Recent Applications
-        const { data: recentApplications } = await supabase
-            .from('applications')
+        const { data: recentApplications, error: recentError } = await supabase
+            .from('Application')
             .select(`
                 id,
                 status,
-                created_at,
-                user_profiles!applications_user_id_fkey (full_name),
-                schemes (schemeName)
+                createdAt,
+                user:users (name),
+                scheme:Scheme (name)
             `)
-            .order('created_at', { ascending: false })
+            .order('createdAt', { ascending: false })
             .limit(5);
 
+        if (recentError) {
+            console.error('Recent applications fetch error:', recentError);
+        }
+
         // 4. Get Status Distribution
-        const { data: statusData } = await supabase.from('applications').select('status');
+        const { data: statusData } = await supabase.from('Application').select('status');
         const statusDistribution = statusData?.reduce((acc: any, curr: any) => {
             acc[curr.status] = (acc[curr.status] || 0) + 1;
             return acc;

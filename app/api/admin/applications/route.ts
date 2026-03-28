@@ -16,22 +16,17 @@ export async function GET(request: NextRequest) {
         const offset = (page - 1) * limit;
 
         let query = supabase
-            .from('applications')
+            .from('Application')
             .select(`
                 *,
-                user_profiles!applications_user_id_fkey (
-                    full_name,
+                user:users (
+                    name,
                     mobile,
-                    state,
-                    is_premium
+                    state
                 ),
-                schemes (
-                    schemeName,
+                scheme:Scheme (
+                    name,
                     category
-                ),
-                "ApplicationPremium" (
-                    status,
-                    serviceType
                 )
             `, { count: 'exact' });
 
@@ -41,15 +36,12 @@ export async function GET(request: NextRequest) {
         }
 
         if (search) {
-            // Search by user name or scheme name
-            query = query.or(`user_profiles.full_name.ilike.%${search}%`);
+            // Search by user name or ID
+            query = query.or(`trackingId.ilike.%${search}%,id.ilike.%${search}%`);
         }
 
-        // Apply pagination limit (avoid created_at order to allow custom mem sort if priority mode active, else use it)
-        if (!priorityOnly) {
-            query = query.order('created_at', { ascending: false });
-        }
-
+        // Apply pagination and order
+        query = query.order('createdAt', { ascending: false });
         query = query.range(offset, offset + limit - 1);
 
         const { data: applications, error, count } = await query;
@@ -58,20 +50,15 @@ export async function GET(request: NextRequest) {
 
         let processedApplications = applications || [];
 
-        // Apply Priority Sorting in memory for the current page if requested
+        // Apply Priority Sorting in memory if requested (e.g. check for isPremium if column exists)
         if (priorityOnly) {
             processedApplications.sort((a, b) => {
-                const aIsPremium = a.user_profiles?.is_premium || a.ApplicationPremium?.some((ap: any) => ap.status === 'ACTIVE');
-                const bIsPremium = b.user_profiles?.is_premium || b.ApplicationPremium?.some((ap: any) => ap.status === 'ACTIVE');
-
+                const aIsPremium = a.is_premium || false; 
+                const bIsPremium = b.is_premium || false;
                 if (aIsPremium && !bIsPremium) return -1;
                 if (!aIsPremium && bIsPremium) return 1;
-
-                // Fallback to created_at
-                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
             });
-            // Filter out non-premium if you only want priority
-            // processedApplications = processedApplications.filter(a => ...);
         }
 
         return NextResponse.json({

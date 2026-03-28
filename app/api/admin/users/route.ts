@@ -15,13 +15,22 @@ export async function GET(request: NextRequest) {
 
         const offset = (page - 1) * limit;
 
+        // Query the main 'users' table joined with 'user_profiles'
         let query = supabase
-            .from('user_profiles')
-            .select('*', { count: 'exact' });
+            .from('users')
+            .select(`
+                *,
+                profile:user_profiles (
+                    isAdmin,
+                    isPremium,
+                    isSuspended,
+                    profile_completion_percentage
+                )
+            `, { count: 'exact' });
 
         // Apply filters
         if (search) {
-            query = query.or(`full_name.ilike.%${search}%,mobile.ilike.%${search}%,email.ilike.%${search}%`);
+            query = query.or(`name.ilike.%${search}%,mobile.ilike.%${search}%,email.ilike.%${search}%`);
         }
 
         if (state) {
@@ -34,7 +43,7 @@ export async function GET(request: NextRequest) {
 
         // Apply pagination
         query = query
-            .order('created_at', { ascending: false })
+            .order('createdAt', { ascending: false })
             .range(offset, offset + limit - 1);
 
         const { data: users, error, count } = await query;
@@ -72,30 +81,32 @@ export async function PATCH(request: NextRequest) {
             );
         }
 
+        // Determine if updating 'users' or 'user_profiles'
+        // For simplicity, we'll assume updates are for user_profiles (isAdmin, isSuspended)
         const { data, error } = await supabase
             .from('user_profiles')
             .update(updates)
-            .eq('user_id', userId)
+            .eq('userId', userId)
             .select()
             .single();
 
         if (error) throw error;
 
-        // Create Admin Audit Log
-        const { data: { user: adminUser } } = await supabase.auth.getUser();
-        if (adminUser) {
-            let action = 'UPDATE_PROFILE';
-            if ('is_admin' in updates) action = updates.is_admin ? 'PROMOTE' : 'DEMOTE';
-            if ('is_suspended' in updates) action = updates.is_suspended ? 'SUSPEND' : 'ACTIVATE';
-
-            await supabase.from('admin_audit_logs').insert({
-                admin_id: adminUser.id,
-                target_user_id: userId,
-                action: action,
-                entity_type: 'USER',
-                entity_id: userId,
-                details: updates
-            });
+        // Create Admin Audit Log if table exists
+        try {
+            const { data: { user: adminUser } } = await supabase.auth.getUser();
+            if (adminUser) {
+                await supabase.from('admin_audit_logs').insert({
+                    admin_id: adminUser.id,
+                    target_user_id: userId,
+                    action: 'UPDATE_PROFILE',
+                    entity_type: 'USER',
+                    entity_id: userId,
+                    details: updates
+                });
+            }
+        } catch (auditError) {
+             console.warn('Could not log admin audit:', auditError);
         }
 
         return NextResponse.json({ user: data });

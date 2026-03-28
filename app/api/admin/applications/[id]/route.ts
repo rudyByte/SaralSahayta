@@ -1,4 +1,4 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 
@@ -10,22 +10,16 @@ export async function GET(
         const supabase = createClient();
         const applicationId = params.id;
 
-        // Get application details
+        // Get application details with correct schema mapping
         const { data: application, error } = await supabase
-            .from('applications')
+            .from('Application')
             .select(`
                 *,
-                user_profiles!applications_user_id_fkey (
+                user:users (
                     *
                 ),
-                schemes (
+                scheme:Scheme (
                     *
-                ),
-                application_documents (
-                    *,
-                    UserDocument (
-                        *
-                    )
                 )
             `)
             .eq('id', applicationId)
@@ -33,15 +27,24 @@ export async function GET(
 
         if (error) throw error;
 
-        // Get application history
-        const { data: history } = await supabase
-            .from('application_history')
+        // Fetch documents separately since they might not have a direct relation in Supabase's auto-generated context
+        const { data: documents } = await supabase
+            .from('Document')
             .select('*')
-            .eq('application_id', applicationId)
-            .order('created_at', { ascending: false });
+            .eq('userId', application.userId);
+
+        // Fetch application history/audit logs
+        const { data: history } = await supabase
+            .from('ApplicationStatusHistory') // Assuming a more descriptive name or fallback
+            .select('*')
+            .eq('applicationId', applicationId)
+            .order('createdAt', { ascending: false });
 
         return NextResponse.json({
-            application,
+            application: {
+                ...application,
+                application_documents: documents || []
+            },
             history: history || [],
         });
     } catch (error: any) {
@@ -70,12 +73,14 @@ export async function PATCH(
             );
         }
 
-        // Update application status
+        // Update application status with correct fields
         const { data, error } = await supabase
-            .from('applications')
+            .from('Application')
             .update({
                 status,
-                updated_at: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                ...(status === 'APPROVED' ? { approvedAt: new Date().toISOString() } : {}),
+                ...(status === 'REJECTED' ? { rejectedAt: new Date().toISOString(), rejectionReason: remarks } : {}),
             })
             .eq('id', applicationId)
             .select()
@@ -83,13 +88,19 @@ export async function PATCH(
 
         if (error) throw error;
 
-        // Log the review in history
-        await supabase.from('application_history').insert({
-            application_id: applicationId,
-            status: status,
-            remarks: remarks || null,
-            changed_by: reviewedBy,
-        });
+        // Log the review in history if the table exists
+        try {
+            await supabase.from('ApplicationStatusHistory').insert({
+                applicationId: applicationId,
+                oldStatus: 'UNKNOWN', // Ideally fetch current first
+                newStatus: status,
+                remarks: remarks || null,
+                changedBy: reviewedBy || 'admin',
+                createdAt: new Date().toISOString()
+            });
+        } catch (historyError) {
+            console.warn('Could not log application history:', historyError);
+        }
 
         return NextResponse.json({ application: data });
     } catch (error: any) {

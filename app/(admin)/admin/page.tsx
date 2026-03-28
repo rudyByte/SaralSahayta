@@ -92,14 +92,14 @@ export default function AdminDashboard() {
                                     href={`/admin/applications/${app.id}`}
                                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
-                                    <div>
-                                        <p className="font-medium text-gray-900">
-                                            {app.user_profiles?.full_name || 'Unknown User'}
-                                        </p>
-                                        <p className="text-sm text-gray-600">
-                                            {app.schemes?.schemeName || 'Unknown Scheme'}
-                                        </p>
-                                    </div>
+                                        <div className="space-y-0.5 overflow-hidden">
+                                            <p className="font-bold text-gray-900 text-sm truncate">
+                                                {app.user?.name || 'Unknown User'}
+                                            </p>
+                                            <p className="text-xs text-gray-500 truncate">
+                                                {app.scheme?.name || 'Unknown Scheme'}
+                                            </p>
+                                        </div>
                                     <span
                                         className={`px-3 py-1 rounded-full text-xs font-medium ${app.status === 'APPROVED'
                                             ? 'bg-green-100 text-green-800'

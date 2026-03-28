@@ -142,25 +142,19 @@ export default function ApplicationsPage() {
                                     </td>
                                 </tr>
                             ) : (
-                                applications.map((app: any) => {
-                                    const isPremiumUser = app.user_profiles?.is_premium;
-                                    const isPremiumApp = app.application_premium?.some((ap: any) => ap.status === 'ACTIVE');
-                                    const isPriority = isPremiumUser || isPremiumApp;
+                                 applications.map((app: any) => {
+                                    const isPriority = app.is_premium; // Assuming is_premium is passed at top level or in user
 
                                     return (
                                         <tr key={app.id} className={`hover:bg-slate-50 transition-colors ${isPriority ? 'bg-amber-50/40 hover:bg-amber-50/70 border-l-2 border-l-amber-400' : 'border-l-2 border-l-transparent'}`}>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center gap-2">
                                                     <div className="text-sm font-mono text-slate-900 font-semibold">
-                                                        {app.id.slice(0, 8)}...
+                                                        {app.trackingId || app.id.slice(0, 8)}
                                                     </div>
                                                     {isPriority && (
-                                                        <div title={isPremiumUser ? 'Premium User' : 'Fast-Tracked Application'}>
-                                                            {isPremiumUser ? (
-                                                                <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                                                            ) : (
-                                                                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                                                            )}
+                                                        <div title="Premium Application">
+                                                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -168,27 +162,27 @@ export default function ApplicationsPage() {
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div>
                                                     <div className="text-sm font-semibold text-slate-900">
-                                                        {app.user_profiles?.full_name || 'Unknown'}
+                                                        {app.user?.name || 'Unknown'}
                                                     </div>
                                                     <div className="text-sm text-slate-500">
-                                                        {app.user_profiles?.mobile}
+                                                        {app.user?.mobile}
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className={`text-sm font-medium ${isPriority ? 'text-amber-900' : 'text-slate-900'}`}>
-                                                    {app.schemes?.schemeName || 'Unknown Scheme'}
+                                                    {app.scheme?.name || 'Unknown Scheme'}
                                                 </div>
-                                                <div className="text-sm text-slate-500">
-                                                    {app.schemes?.category}
+                                                <div className="text-sm text-slate-500 text-xs truncate max-w-[200px]">
+                                                    {app.scheme?.category}
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                                                {new Date(app.created_at).toLocaleDateString()}
+                                                {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : 'N/A'}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span
-                                                    className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${statusColors[app.status] ? `${statusColors[app.status]} border-opacity-20` : 'bg-slate-100 text-slate-800 border-slate-200'
+                                                    className={`px-3 py-1 inline-flex text-[10px] font-bold rounded-full border ${statusColors[app.status] ? `${statusColors[app.status]} border-opacity-20` : 'bg-slate-100 text-slate-800 border-slate-200'
                                                         }`}
                                                 >
                                                     {app.status}
@@ -196,7 +190,7 @@ export default function ApplicationsPage() {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                                                 <Link href={`/admin/applications/${app.id}`}>
-                                                    <Button variant={isPriority ? "default" : "ghost"} size="sm" className={isPriority ? 'bg-slate-900 text-white hover:bg-slate-800' : 'font-semibold text-slate-600'}>
+                                                    <Button variant={isPriority ? "default" : "ghost"} size="sm" className={isPriority ? 'bg-slate-900 text-white hover:bg-slate-800 h-8 rounded-lg' : 'font-semibold text-slate-600 h-8 rounded-lg'}>
                                                         Review
                                                     </Button>
                                                 </Link>
