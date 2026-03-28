@@ -1,7 +1,7 @@
 ﻿export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 /**
  * API Route to generate signed URLs for viewing/downloading documents
@@ -10,6 +10,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 export async function GET(request: NextRequest) {
     try {
         const supabase = createClient();
+        const supabaseAdmin = createAdminClient();
 
         // Check authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser();

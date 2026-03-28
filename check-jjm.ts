@@ -1,6 +1,7 @@
-import { supabaseAdmin } from './lib/supabase-admin';
+import { createAdminClient } from './lib/supabase-admin';
 
 async function checkJJM() {
+    const supabaseAdmin = createAdminClient();
     const { data, error } = await supabaseAdmin
         .from('Scheme')
         .select('id, schemeId, name')

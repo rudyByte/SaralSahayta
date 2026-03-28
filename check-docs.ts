@@ -1,6 +1,7 @@
-import { supabaseAdmin } from './lib/supabase-admin';
+import { createAdminClient } from './lib/supabase-admin';
 
 async function checkDocs() {
+    const supabaseAdmin = createAdminClient();
     const res1 = await supabaseAdmin.from('documents').select('document_name').limit(5);
     const res2 = await supabaseAdmin.from('Document').select('document_name').limit(5);
     const res3 = await supabaseAdmin.from('document_master').select('document_name').limit(5);

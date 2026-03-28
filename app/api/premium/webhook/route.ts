@@ -1,11 +1,12 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { verifyWebhookSignature } from '@/lib/payments/razorpay';
 import { nanoid } from 'nanoid';
 
 export async function POST(request: NextRequest) {
     try {
+        const supabaseAdmin = createAdminClient();
         const body = await request.text(); // Raw body for signature verification
         const signature = request.headers.get('x-razorpay-signature');
         const secret = process.env.RAZORPAY_WEBHOOK_SECRET;

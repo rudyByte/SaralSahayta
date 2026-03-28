@@ -1,8 +1,9 @@
-import { supabaseAdmin } from './lib/supabase-admin';
+import { createAdminClient } from './lib/supabase-admin';
 
 async function listTables() {
     // We can list tables via querying pg_class through a raw query or checking information_schema if accessible, 
     // but easier to just try querying Application and applications.
+    const supabaseAdmin = createAdminClient();
     const promises = [
         supabaseAdmin.from('Scheme').select('id').limit(1),
         supabaseAdmin.from('schemes').select('id').limit(1),

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
 import { calculateExpiryDate, getDocumentExpiryStatus } from '@/lib/documents/expiry-calculator';
 import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
@@ -8,6 +8,7 @@ import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-
 export async function POST(request: NextRequest) {
     try {
         const supabase = createClient();
+        const supabaseAdmin = createAdminClient();
 
         // Check authentication
         const { data: { user }, error: authError } = await supabase.auth.getUser();

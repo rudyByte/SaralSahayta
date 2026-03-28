@@ -1,7 +1,7 @@
 ﻿export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
 import { validateFile } from '@/lib/file-validation';
 import { getDocumentExpiryStatus } from '@/lib/documents/expiry-calculator';
@@ -14,6 +14,7 @@ export async function POST(request: NextRequest) {
     console.log('[Upload API] Request received');
     try {
         const supabase = createClient();
+        const supabaseAdmin = createAdminClient();
 
         // 1. Auth Check
         const { data: { user }, error: authError } = await supabase.auth.getUser();
