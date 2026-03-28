@@ -30,6 +30,11 @@ export function calculateConfidence(
     requiredDocs: string[],
     userDocs: string[]
 ): ConfidenceResult {
+    // Weights: 50% Historical, 30% Documents, 20% Matching
+    const W_HIST = 0.5;
+    const W_DOCS = 0.3;
+    const W_MATCH = 0.2;
+
     // 1. Calculate document completeness
     const docsComplete = requiredDocs.length > 0
         ? requiredDocs.filter(doc => userDocs.includes(doc)).length / requiredDocs.length
@@ -37,35 +42,40 @@ export function calculateConfidence(
 
     // 2. Final Score
     const score = Math.round(
-        (historicalRate * 0.5 + docsComplete * 0.3 + (matchScore / 100) * 0.2) * 100
+        (historicalRate * W_HIST + docsComplete * W_DOCS + (matchScore / 100) * W_MATCH) * 100
     );
 
     // 3. Generate Suggestions
     const suggestions: ImprovementSuggestion[] = [];
 
-    // Document suggestions
+    // Document suggestions (Impact = (1/total_docs) * W_DOCS)
     if (docsComplete < 1) {
         const missingDocs = requiredDocs.filter(doc => !userDocs.includes(doc));
+        const perDocImpact = Math.round((1 / Math.max(1, requiredDocs.length)) * W_DOCS * 100);
+        
         missingDocs.slice(0, 2).forEach(doc => {
             suggestions.push({
-                text: `Upload ${doc} to increase approval odds`,
-                impact: Math.round(30 / Math.max(1, requiredDocs.length))
+                text: `Upload ${doc} to increase odds`,
+                impact: perDocImpact
             });
         });
     }
 
-    // Profile suggestions
+    // Profile suggestions (Impact = (remaining_match) * W_MATCH)
     if (matchScore < 95) {
-        suggestions.push({
-            text: "Complete your profile details for better matching",
-            impact: 10
-        });
+        const profileImpact = Math.round(((100 - matchScore) / 100) * W_MATCH * 100);
+        if (profileImpact > 0) {
+            suggestions.push({
+                text: "Complete profile details for a better match",
+                impact: profileImpact
+            });
+        }
     }
 
-    // Verification suggestions
+    // Historical note (No direct action, but good for context)
     if (historicalRate < 0.6) {
         suggestions.push({
-            text: "This scheme has high verification standards. Double-check all inputs.",
+            text: "High verification standards apply here",
             impact: 5
         });
     }

@@ -1,10 +1,10 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
     try {
-        const supabase = createClient();
+        const supabase = createAdminClient();
         const { searchParams } = new URL(request.url);
 
         const page = parseInt(searchParams.get('page') || '1');
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         const offset = (page - 1) * limit;
 
         let query = supabase
-            .from('Application')
+            .from('applications')
             .select(`
                 *,
                 user:users (
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
                     mobile,
                     state
                 ),
-                scheme:Scheme (
+                scheme:schemes (
                     name,
                     category
                 )
@@ -36,19 +36,26 @@ export async function GET(request: NextRequest) {
         }
 
         if (search) {
-            // Search by user name or ID
-            query = query.or(`trackingId.ilike.%${search}%,id.ilike.%${search}%`);
+            // Search by user name or ID (fallback tracking_id)
+            query = query.or(`tracking_id.ilike.%${search}%,id.ilike.%${search}%`);
         }
 
         // Apply pagination and order
-        query = query.order('createdAt', { ascending: false });
+        query = query.order('created_at', { ascending: false });
         query = query.range(offset, offset + limit - 1);
 
         const { data: applications, error, count } = await query;
 
         if (error) throw error;
 
-        let processedApplications = applications || [];
+        let processedApplications = (applications || []).map((app: any) => ({
+            ...app,
+            userId: app.user_id,
+            trackingId: app.tracking_id,
+            createdAt: app.created_at,
+            updatedAt: app.updated_at,
+            schemeId: app.scheme_id
+        }));
 
         // Apply Priority Sorting in memory if requested (e.g. check for isPremium if column exists)
         if (priorityOnly) {

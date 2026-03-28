@@ -5,7 +5,7 @@ import { createBrowserClient } from '@supabase/ssr';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 
-export function useRealtimeSchemeUpdates(userId: string | undefined) {
+export function useRealtimeSchemeUpdates(userId: string | undefined, onUpdate?: () => void) {
   const [newSchemes, setNewSchemes] = useState<string[]>([]);
   const router = useRouter();
 
@@ -18,28 +18,38 @@ export function useRealtimeSchemeUpdates(userId: string | undefined) {
     );
 
     const channel = supabase
-      .channel('scheme-matches')
+      .channel('scheme-matches-realtime')
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
-          table: 'scheme_match_history',
+          table: 'user_scheme_matches',
           filter: `user_id=eq.${userId}`
         },
         (payload) => {
-          const newMatch = payload.new;
-          if (newMatch.match_score >= 70) {
-            setNewSchemes(prev => [...prev, newMatch.scheme_id]);
-            
-            toast.success('New scheme unlocked! 🎉', {
-              description: 'Your recent profile update unlocked a new opportunity.',
-              action: {
-                label: 'View',
-                onClick: () => router.push('/schemes?filter=newly_eligible')
-              }
+          onUpdate?.();
+          const data = payload.new as any;
+          if (data && data.match_score >= 80 && payload.eventType === 'INSERT') {
+            setNewSchemes(prev => [...prev, data.scheme_id]);
+            toast.success('Better Match Found! 🎉', {
+              description: 'Your profile updates have significantly improved your approval chance.',
+              action: { label: 'View', onClick: () => router.push('/discover?filter=newly_eligible') }
             });
           }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_documents',
+          filter: `user_id=eq.${userId}`
+        },
+        () => {
+          // Trigger update when documents change
+          onUpdate?.();
         }
       )
       .subscribe();
@@ -47,7 +57,7 @@ export function useRealtimeSchemeUpdates(userId: string | undefined) {
     return () => {
       channel.unsubscribe();
     };
-  }, [userId, router]);
+  }, [userId, router, onUpdate]);
   
   return { newSchemes };
 }

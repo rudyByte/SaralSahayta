@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 
 interface ConfidenceBadgeProps {
     schemeId: string;
+    fallbackScore?: number | null;
     className?: string;
 }
 
@@ -39,14 +40,17 @@ function MiniCircle({ score, color }: { score: number; color: string }) {
     );
 }
 
-export function ConfidenceBadge({ schemeId, className }: ConfidenceBadgeProps) {
+export function ConfidenceBadge({ schemeId, fallbackScore, className }: ConfidenceBadgeProps) {
     const { data, error, isLoading } = useSWR(`/api/schemes/${schemeId}/confidence`, fetcher);
     const [isOpen, setIsOpen] = useState(false);
 
-    if (isLoading) return <div className="h-10 w-10 animate-pulse bg-slate-100 rounded-full" />;
-    if (error || !data) return null;
+    // If still loading and no fallback score is provided yet, show skeleton
+    if (isLoading && fallbackScore === undefined && !data) {
+        return <div className="h-10 w-10 animate-pulse bg-slate-100 rounded-full" />;
+    }
 
-    const score: number = data.score;
+    // Determine the active score (prefer data from API, but use fallback if not available)
+    const score: number = data?.score ?? fallbackScore ?? 0;
 
     const config =
         score >= 80
@@ -61,7 +65,6 @@ export function ConfidenceBadge({ schemeId, className }: ConfidenceBadgeProps) {
                 <button
                     onMouseEnter={() => setIsOpen(true)}
                     onMouseLeave={() => setIsOpen(false)}
-                    title={`${score}% Approval Chance`}
                     className={cn(
                         'relative inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-help rounded-full',
                         className
@@ -101,41 +104,55 @@ export function ConfidenceBadge({ schemeId, className }: ConfidenceBadgeProps) {
 
                 {/* Breakdown bars */}
                 <div className="p-4 space-y-3">
-                    {[
-                        { label: 'Historical Success', val: data.breakdown?.historicalRate ?? 0 },
-                        { label: 'Document Readiness', val: data.breakdown?.docsComplete ?? 0 },
-                    ].map(({ label, val }) => (
-                        <div key={label} className="space-y-1">
-                            <div className="flex justify-between text-[10px] font-bold text-slate-500">
-                                <span>{label}</span>
-                                <span>{Math.round(val * 100)}%</span>
-                            </div>
-                            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full rounded-full transition-all duration-700"
-                                    style={{ width: `${val * 100}%`, backgroundColor: config.color }}
-                                />
-                            </div>
+                    {(!data && isLoading) ? (
+                        <div className="space-y-4 py-2">
+                            <div className="h-2 bg-slate-100 rounded-full animate-pulse w-3/4" />
+                            <div className="h-2 bg-slate-100 rounded-full animate-pulse w-1/2" />
+                            <p className="text-[10px] font-bold text-slate-400 animate-pulse">Analysing your profile...</p>
                         </div>
-                    ))}
-
-                    {data.suggestions?.length > 0 && (
-                        <div className="pt-2 border-t border-slate-100">
-                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">
-                                How to improve
-                            </span>
-                            <div className="space-y-1.5">
-                                {data.suggestions.map((s: any, i: number) => (
-                                    <div key={i} className="flex items-start gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100">
-                                        <Target className="h-3 w-3 text-primary mt-0.5 shrink-0" />
-                                        <div>
-                                            <p className="text-[10px] font-semibold text-slate-700 leading-tight">{s.text}</p>
-                                            <p className="text-[9px] font-black text-emerald-600 mt-0.5">+{s.impact}% Impact</p>
+                    ) : (
+                        <>
+                            {[
+                                { label: 'Historical Success Rate', val: data?.breakdown?.historicalRate ?? 0, weight: '50%' },
+                                { label: 'Document Verification', val: data?.breakdown?.docsComplete ?? 0, weight: '30%' },
+                                { label: 'Profile Matching', val: data?.breakdown?.matchScore ?? 0, weight: '20%' },
+                            ].map(({ label, val, weight }) => (
+                                <div key={label} className="space-y-1">
+                                    <div className="flex justify-between text-[10px] font-bold text-slate-500">
+                                        <div className="flex items-center gap-1.5">
+                                            <span>{label}</span>
+                                            <span className="text-[8px] px-1 py-0.5 bg-slate-100 rounded text-slate-400 font-black tracking-tighter">{weight}</span>
                                         </div>
+                                        <span>{Math.round(val * 100)}%</span>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full rounded-full transition-all duration-700"
+                                            style={{ width: `${val * 100}%`, backgroundColor: config.color }}
+                                        />
+                                    </div>
+                                </div>
+                            ))}
+
+                            {data?.suggestions?.length > 0 && (
+                                <div className="pt-2 border-t border-slate-100">
+                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">
+                                        How to improve
+                                    </span>
+                                    <div className="space-y-1.5">
+                                        {data.suggestions.map((s: any, i: number) => (
+                                            <div key={i} className="flex items-start gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                                                <Target className="h-3 w-3 text-primary mt-0.5 shrink-0" />
+                                                <div>
+                                                    <p className="text-[10px] font-semibold text-slate-700 leading-tight">{s.text}</p>
+                                                    <p className="text-[9px] font-black text-emerald-600 mt-0.5">+{s.impact}% Impact</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
 

@@ -28,21 +28,38 @@ export async function GET() {
         }
 
         const { data: applications, error } = await supabase
-            .from('Application')
+            .from('applications')
             .select(`
                 *,
-                scheme:Scheme (
+                scheme:schemes (
                     name,
                     category,
                     ministry
                 )
             `)
-            .eq('userId', session.user.id)
-            .order('createdAt', { ascending: false });
+            .eq('user_id', session.user.id)
+            .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        return NextResponse.json({ applications: applications || [] });
+        // Map snake_case to camelCase for frontend (schemes)
+        // Diagnostic confirms created_at is snake_case even if core is camelCase
+        const mappedApplications = (applications || []).map((app: any) => ({
+            ...app,
+            userId: app.user_id,
+            trackingId: app.tracking_id,
+            createdAt: app.created_at,
+            updatedAt: app.updated_at,
+            schemeId: app.scheme_id,
+            scheme: app.scheme ? {
+                ...app.scheme,
+                name: app.scheme.name,
+                category: app.scheme.category,
+                ministry: app.scheme.ministry
+            } : null
+        }));
+
+        return NextResponse.json({ applications: mappedApplications });
 
     } catch (error: any) {
         console.error('Fetch user applications error:', error);

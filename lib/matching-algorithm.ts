@@ -37,9 +37,17 @@ export function calculateMatchScore(
     scheme: Scheme,
     userProfile: UserProfileForMatching
 ): MatchResult | null {
-    // 1. Check for incomplete profile
-    if (userProfile.profileCompletionPercentage < 80) {
-        return null;
+    // 1. Handle incomplete or missing profile (allow partial scoring)
+    const completion = userProfile.profileCompletionPercentage || 0;
+    
+    // We used to return null for < 80%, but now we allow scores for all.
+    // However, if it's < 10% (barely any info), we'll return 0.
+    if (completion < 10) {
+        return {
+            score: 0,
+            matched: [],
+            missing: ['Complete your profile to see matches']
+        };
     }
 
     const criteria = scheme.eligibilityCriteria as unknown as EligibilityCriteria;

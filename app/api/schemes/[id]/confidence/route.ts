@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
+import { createClient as getServerClient } from '@/lib/supabase-server';
 import { calculateConfidence } from '@/lib/ai/confidence-calculator';
 
 export async function GET(
@@ -8,18 +9,19 @@ export async function GET(
 ) {
     try {
         const schemeId = params.id;
-        const supabase = createClient();
+        const supabase = getServerClient();
+        const adminSupabase = createAdminClient();
 
-        // 1. Auth Check
+        // 1. Auth Check (Server Client for Session)
         const { data: { user }, error: authError } = await supabase.auth.getUser();
         if (authError || !user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // 2. Fetch Scheme Details
-        const { data: scheme, error: schemeError } = await supabase
-            .from('Scheme')
-            .select('id, name, category')
+        const { data: scheme, error: schemeError } = await adminSupabase
+            .from('schemes')
+            .select('id, name, category, requiredDocuments')
             .eq('id', schemeId)
             .single();
 
@@ -27,29 +29,13 @@ export async function GET(
             return NextResponse.json({ error: 'Scheme not found' }, { status: 404 });
         }
 
-        // 3. Fetch Required Doc Codes from SchemeDocumentRequirement table
-        // This is the proper normalised source, joined with master documents table
-        const { data: docReqs } = await supabase
-            .from('SchemeDocumentRequirement')
-            .select(`
-                documentId,
-                isMandatory,
-                documents (document_code, document_name)
-            `)
-            .eq('schemeId', schemeId);
+        // 3. Document Requirements (Normalize to uppercase for matching)
+        const requiredDocCodes: string[] = (Array.isArray(scheme.requiredDocuments) 
+            ? scheme.requiredDocuments 
+            : []).map((code: string) => code.trim().toUpperCase());
 
-        const requiredDocCodes: string[] = (docReqs || [])
-            .filter((r: any) => r.isMandatory && r.documents?.document_code)
-            .map((r: any) => r.documents.document_code as string);
-
-        // Also get optional doc codes for full list
-        const allDocCodes: string[] = (docReqs || [])
-            .filter((r: any) => r.documents?.document_code)
-            .map((r: any) => r.documents.document_code as string);
-
-        // 4. Fetch User's Uploaded Documents
-        // We check all documents to give credit for readiness
-        const { data: userDocRows, error: userDocError } = await supabase
+        // 4. Fetch User's Uploaded Documents (Actual Table: 'user_documents')
+        const { data: userDocRows, error: userDocError } = await adminSupabase
             .from('user_documents')
             .select(`
                 verification_status,
@@ -63,22 +49,16 @@ export async function GET(
 
         if (userDocError) console.error('Error fetching user docs for confidence:', userDocError);
 
-        // Collect the document codes and names for matching
         const userUploadedCodes = (userDocRows || [])
-            .map((d: any) => d.documents?.document_code?.toUpperCase())
+            .map((d: any) => d.documents?.document_code?.trim().toUpperCase())
             .filter(Boolean);
         
         const userUploadedNames = (userDocRows || [])
-            .map((d: any) => d.documents?.document_name?.toLowerCase())
+            .map((d: any) => d.documents?.document_name?.trim().toLowerCase())
             .filter(Boolean);
 
-        // Also for suggestion text - only count VERIFIED docs as truly "complete"
-        const userVerifiedCodes: string[] = (userDocRows || [])
-            .filter((d: any) => d.documents?.document_code && d.verification_status === 'VERIFIED')
-            .map((d: any) => d.documents.document_code as string);
-
-        // 5. Historical Stats (RPC with fallback)
-        const { data: statsData } = await supabase.rpc('get_scheme_stats', { target_scheme_id: schemeId });
+        // 5. Historical Stats (Using RPC - assumed snake_case in SQL already)
+        const { data: statsData } = await adminSupabase.rpc('get_scheme_stats', { target_scheme_id: schemeId });
 
         let historicalRate = 0.75;
         if (statsData && statsData.length > 0) {
@@ -95,8 +75,8 @@ export async function GET(
             historicalRate = categorySeeds[scheme.category] || 0.65;
         }
 
-        // 6. Fetch profile match score from pre-computed user_scheme_matches table
-        const { data: matchRow } = await supabase
+        // 6. Fetch profile match score (Actual Table: 'user_scheme_matches')
+        const { data: matchRow } = await adminSupabase
             .from('user_scheme_matches')
             .select('match_score')
             .eq('user_id', user.id)
@@ -105,16 +85,15 @@ export async function GET(
 
         const matchScore = matchRow?.match_score ?? 60;
 
-        // 7. Calculate Confidence using uploaded codes (any status = readiness)
+        // 7. Calculate Confidence
         const confidence = calculateConfidence(
             historicalRate,
             matchScore,
-            requiredDocCodes,      // Only mandatory docs count for readiness
-            userUploadedCodes      // Use uploaded (not just verified) for display readiness
+            requiredDocCodes,
+            userUploadedCodes
         );
 
-        // 8. Enrich suggestions — filter out documents the user already has
-        // We match case-insensitively against both code and name
+        // 8. Enrich suggestions
         const enrichedSuggestions = confidence.suggestions.filter(s => {
             const text = s.text.toLowerCase();
             const isDocSuggestion = text.startsWith('upload ');
@@ -127,7 +106,6 @@ export async function GET(
         return NextResponse.json({
             ...confidence,
             suggestions: enrichedSuggestions,
-            // Extra debug context for devs
             _debug: {
                 requiredDocCodes,
                 userUploadedCodes,
@@ -137,6 +115,9 @@ export async function GET(
 
     } catch (error: any) {
         console.error('[Confidence API] Error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({ 
+            error: 'Internal Server Error',
+            message: error.message 
+        }, { status: 500 });
     }
 }

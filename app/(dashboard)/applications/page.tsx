@@ -17,7 +17,10 @@ const STATUS_CONFIG: Record<string, { label: string; icon: any; color: string; b
 };
 
 export default function ApplicationsPage() {
-    const { data, error, isLoading } = useSWR('/api/applications', fetcher);
+    const { data, error, isLoading } = useSWR('/api/applications', fetcher, {
+        refreshInterval: 5000, // Near real-time sync (5 seconds)
+        revalidateOnFocus: true
+    });
 
     if (isLoading) {
         return (
@@ -43,7 +46,13 @@ export default function ApplicationsPage() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-2">
                     <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">My Applications</h1>
-                    <p className="text-lg text-gray-600">Track your journey through various government schemes</p>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 rounded-full border border-green-100">
+                             <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                             <span className="text-[10px] font-black text-green-700 uppercase tracking-widest">Live Sync Active</span>
+                        </div>
+                        <p className="text-lg text-gray-500 font-medium tracking-tight">Track your government scheme submissions</p>
+                    </div>
                 </div>
                 
                 <div className="flex items-center gap-4">
@@ -52,8 +61,8 @@ export default function ApplicationsPage() {
                             <FileText className="h-5 w-5 text-primary-600" />
                         </div>
                         <div>
-                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Total</p>
-                            <p className="text-xl font-bold text-gray-900">{applications.length}</p>
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Submitted</p>
+                            <p className="text-xl font-bold text-gray-900">{applications.filter((a: any) => a.status === 'SUBMITTED').length}</p>
                         </div>
                     </div>
                 </div>
@@ -72,7 +81,7 @@ export default function ApplicationsPage() {
                                 You haven't applied for any schemes yet. Our AI matched ones are waiting for you!
                             </p>
                             <Link 
-                                href="/schemes" 
+                                href="/discover" 
                                 className="mt-8 px-8 py-3.5 bg-primary-600 text-white font-bold rounded-2xl hover:bg-primary-700 transition-all shadow-lg shadow-primary-200 hover:scale-105 active:scale-95"
                             >
                                 Explore Schemes
@@ -83,12 +92,18 @@ export default function ApplicationsPage() {
                     applications.map((app: any) => {
                         const status = STATUS_CONFIG[app.status] || STATUS_CONFIG['SUBMITTED'];
                         const StatusIcon = status.icon;
+                        const isNew = new Date().getTime() - new Date(app.createdAt).getTime() < 5 * 60 * 1000; // 5 minutes
 
                         return (
-                            <Card key={app.id} className="group overflow-hidden border-gray-100 hover:border-primary-200 hover:shadow-2xl hover:shadow-primary-100/50 transition-all duration-500 rounded-3xl bg-white">
+                            <Card key={app.id} className={`group overflow-hidden border-gray-100 hover:border-primary-200 hover:shadow-2xl hover:shadow-primary-100/50 transition-all duration-500 rounded-3xl bg-white relative ${isNew ? 'ring-2 ring-primary-500 ring-offset-2' : ''}`}>
+                                {isNew && (
+                                    <div className="absolute top-0 right-0 px-4 py-1 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest rounded-bl-2xl z-10 shadow-lg">
+                                        Recently Submitted
+                                    </div>
+                                )}
                                 <div className="p-6 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                                     <div className="flex items-start gap-6">
-                                        <div className={`h-16 w-16 rounded-2xl ${status.bg} flex items-center justify-center flex-shrink-0 group-hover:rotate-6 transition-transform duration-500`}>
+                                        <div className={`h-16 w-16 rounded-2xl ${status.bg} flex items-center justify-center flex-shrink-0 group-hover:rotate-6 transition-transform duration-500 shadow-sm border border-current/10`}>
                                             <StatusIcon className={`h-8 w-8 ${status.color}`} />
                                         </div>
                                         
@@ -105,16 +120,16 @@ export default function ApplicationsPage() {
                                             
                                             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-gray-500 font-medium">
                                                 <div className="flex items-center">
-                                                    <span className="text-gray-300 mr-2">#</span>
-                                                    <span className="font-mono text-gray-700 bg-gray-50 px-2 py-0.5 rounded leading-none">
-                                                        {app.trackingId || app.id.slice(0, 8)}
+                                                    <span className="text-gray-300 mr-2 text-[10px] font-black uppercase tracking-widest">Tracking ID</span>
+                                                    <span className="font-mono font-bold text-gray-900 bg-gray-50 px-2 py-0.5 rounded leading-none border border-gray-100">
+                                                        {app.trackingId || app.id.slice(0, 12).toUpperCase()}
                                                     </span>
                                                 </div>
-                                                <div className="flex items-center">
-                                                    <Clock className="h-4 w-4 mr-2 opacity-50" />
-                                                    {format(new Date(app.createdAt), 'MMMM dd, yyyy')}
+                                                <div className="flex items-center text-xs font-black text-gray-400 uppercase tracking-widest">
+                                                    <Clock className="h-3.5 w-3.5 mr-2 opacity-60" />
+                                                    {format(new Date(app.createdAt), 'MMM dd, yyyy')}
                                                 </div>
-                                                <div className="flex items-center px-3 py-1 bg-gray-50 rounded-full">
+                                                <div className="flex items-center px-3 py-1 bg-gray-50 rounded-xl border border-gray-100 text-xs font-black uppercase tracking-widest text-gray-400">
                                                     <span className="h-2 w-2 rounded-full bg-primary-400 mr-2" />
                                                     {app.scheme?.ministry || 'State Dept'}
                                                 </div>
@@ -123,11 +138,15 @@ export default function ApplicationsPage() {
                                     </div>
                                     
                                     <div className="flex items-center justify-between lg:justify-end gap-4 w-full lg:w-auto pt-6 lg:pt-0 border-t lg:border-0 border-gray-50">
+                                        <div className="hidden sm:block text-right mr-4">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Estimated Review</p>
+                                            <p className="text-sm font-bold text-gray-900">7-10 Working Days</p>
+                                        </div>
                                         <Link 
                                             href={`/applications/${app.id}`}
                                             className="flex-1 lg:flex-none inline-flex items-center justify-center px-8 py-3.5 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-800 transition-all hover:shadow-xl active:scale-95 group/btn"
                                         >
-                                            Track Order
+                                            Track Updates
                                             <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover/btn:translate-x-1" />
                                         </Link>
                                     </div>

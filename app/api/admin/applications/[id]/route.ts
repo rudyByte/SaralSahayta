@@ -1,24 +1,24 @@
 export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase-server';
+import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(
     request: NextRequest,
     { params }: { params: { id: string } }
 ) {
     try {
-        const supabase = createClient();
+        const supabase = createAdminClient();
         const applicationId = params.id;
 
-        // Get application details with correct schema mapping
+        // Get application details with actual snake_case schema mapping
         const { data: application, error } = await supabase
-            .from('Application')
+            .from('applications')
             .select(`
                 *,
                 user:users (
                     *
                 ),
-                scheme:Scheme (
+                scheme:schemes (
                     *
                 )
             `)
@@ -27,25 +27,44 @@ export async function GET(
 
         if (error) throw error;
 
-        // Fetch documents separately since they might not have a direct relation in Supabase's auto-generated context
+        // Fetch user documents (snake_case table)
         const { data: documents } = await supabase
-            .from('Document')
+            .from('user_documents')
             .select('*')
-            .eq('userId', application.userId);
+            .eq('user_id', application.user_id);
 
-        // Fetch application history/audit logs
+        // Fetch application history/audit logs (Assuming snake_case table)
         const { data: history } = await supabase
-            .from('ApplicationStatusHistory') // Assuming a more descriptive name or fallback
+            .from('application_history') 
             .select('*')
-            .eq('applicationId', applicationId)
-            .order('createdAt', { ascending: false });
+            .eq('application_id', applicationId)
+            .order('created_at', { ascending: false });
+
+        const mappedApp = {
+            ...application,
+            userId: application.user_id,
+            trackingId: application.tracking_id,
+            createdAt: application.created_at,
+            updatedAt: application.updated_at,
+            schemeId: application.scheme_id,
+            application_documents: (documents || []).map((doc: any) => ({
+                ...doc,
+                userId: doc.user_id,
+                createdAt: doc.created_at
+            }))
+        };
+
+        const mappedHistory = (history || []).map((h: any) => ({
+            ...h,
+            applicationId: h.application_id,
+            createdAt: h.created_at,
+            oldStatus: h.old_status,
+            newStatus: h.new_status
+        }));
 
         return NextResponse.json({
-            application: {
-                ...application,
-                application_documents: documents || []
-            },
-            history: history || [],
+            application: mappedApp,
+            history: mappedHistory,
         });
     } catch (error: any) {
         console.error('Fetch application details error:', error);
@@ -61,7 +80,7 @@ export async function PATCH(
     { params }: { params: { id: string } }
 ) {
     try {
-        const supabase = createClient();
+        const supabase = createAdminClient();
         const applicationId = params.id;
         const body = await request.json();
         const { status, remarks, reviewedBy } = body;
@@ -73,14 +92,21 @@ export async function PATCH(
             );
         }
 
-        // Update application status with correct fields
+        // Get current application to log old status
+        const { data: currentApp } = await supabase
+            .from('applications')
+            .select('status')
+            .eq('id', applicationId)
+            .single();
+
+        // Update application status with actual snake_case fields
         const { data, error } = await supabase
-            .from('Application')
+            .from('applications')
             .update({
                 status,
-                updatedAt: new Date().toISOString(),
-                ...(status === 'APPROVED' ? { approvedAt: new Date().toISOString() } : {}),
-                ...(status === 'REJECTED' ? { rejectedAt: new Date().toISOString(), rejectionReason: remarks } : {}),
+                updated_at: new Date().toISOString(),
+                ...(status === 'APPROVED' ? { approved_at: new Date().toISOString() } : {}),
+                ...(status === 'REJECTED' ? { rejected_at: new Date().toISOString(), rejection_reason: remarks } : {}),
             })
             .eq('id', applicationId)
             .select()
@@ -88,21 +114,29 @@ export async function PATCH(
 
         if (error) throw error;
 
-        // Log the review in history if the table exists
+        // Log the review in history if the table exists (snake_case)
         try {
-            await supabase.from('ApplicationStatusHistory').insert({
-                applicationId: applicationId,
-                oldStatus: 'UNKNOWN', // Ideally fetch current first
-                newStatus: status,
+            await supabase.from('application_history').insert({
+                application_id: applicationId,
+                old_status: currentApp?.status || 'UNKNOWN',
+                new_status: status,
                 remarks: remarks || null,
-                changedBy: reviewedBy || 'admin',
-                createdAt: new Date().toISOString()
+                changed_by: reviewedBy || 'admin',
+                created_at: new Date().toISOString()
             });
         } catch (historyError) {
             console.warn('Could not log application history:', historyError);
         }
 
-        return NextResponse.json({ application: data });
+        const mappedUpdate = {
+            ...data,
+            userId: data.user_id,
+            trackingId: data.tracking_id,
+            createdAt: data.created_at,
+            updatedAt: data.updated_at
+        };
+
+        return NextResponse.json({ application: mappedUpdate });
     } catch (error: any) {
         console.error('Update application error:', error);
         return NextResponse.json(

@@ -15,8 +15,8 @@ export async function GET(request: NextRequest) {
         const offset = (page - 1) * limit;
 
         let query = supabase
-            .from('Scheme')
-            .select('*, applications(count)');
+            .from('schemes')
+            .select('*, applications(count)', { count: 'exact' });
 
         if (search) {
             query = query.or(`name.ilike.%${search}%,ministry.ilike.%${search}%`);
@@ -27,15 +27,23 @@ export async function GET(request: NextRequest) {
         }
 
         query = query
-            .order('createdAt', { ascending: false })
+            .order('created_at', { ascending: false })
             .range(offset, offset + limit - 1);
 
-        const { data: schemes, error, count } = await query;
+        const { data: rawSchemes, error, count } = await query;
 
         if (error) throw error;
 
+        // Map Results (Database returns camelCase for core fields, snake_case for timestamps)
+        const mappedSchemes = (rawSchemes || []).map((s: any) => ({
+            ...s,
+            createdAt: s.created_at,
+            updatedAt: s.updated_at,
+            applicationCount: s.applications?.[0]?.count || 0
+        }));
+
         return NextResponse.json({
-            schemes: schemes || [],
+            schemes: mappedSchemes,
             pagination: {
                 page,
                 limit,

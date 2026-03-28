@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase-admin';
+import { createAdminClient } from '@/lib/supabase-admin';
 import { calculateMatchScore } from '@/lib/matching-algorithm';
 import { Gender, Category, Education } from '@prisma/client';
 
@@ -24,9 +24,10 @@ const getSupabase = () => {
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
+        const supabaseAdmin = createAdminClient();
 
         // 1. Get user and profile
-        let user = null;
+        let user: any = null;
         try {
             const supabase = getSupabase();
             const { data: authData } = await supabase.auth.getUser();
@@ -35,26 +36,26 @@ export async function GET(request: Request) {
             console.warn("⚠️ Auth Check Failed:", authErr);
         }
 
-        // 2. Parse filters
+        // ... (rest of filtering logic)
         const search = searchParams.get('search');
         const categories = searchParams.getAll('category');
         const schemeType = searchParams.get('schemeType');
         const state = searchParams.get('state');
         const minBenefit = parseInt(searchParams.get('minBenefit') || '0');
-        const maxBenefit = parseInt(searchParams.get('maxBenefit') || '1000000');
+        const maxBenefit = parseInt(searchParams.get('maxBenefit') || '500000');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '20');
         const sortBy = searchParams.get('sortBy') || 'relevance';
 
-        // 3. Build Supabase Query
+        // 3. Build Supabase Query (Table: 'schemes', Columns: camelCase except timestamps)
         let query = supabaseAdmin
-            .from('Scheme')
+            .from('schemes')
             .select('*', { count: 'exact' })
             .eq('isActive', true);
 
         // Apply Search
         if (search) {
-            query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,benefitDescription.ilike.%${search}%`);
+            query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,benefitDescription.ilike.%${search}%,ministry.ilike.%${search}%`);
         }
 
         // Apply Category
@@ -96,9 +97,11 @@ export async function GET(request: Request) {
             throw fetchError;
         }
 
-        // 4. Calculate Match Scores
-        let results = (schemes || []).map(scheme => ({
+        // Final results mapping for matching
+        let results = (schemes || []).map((scheme: any) => ({
             ...scheme,
+            createdAt: scheme.created_at,
+            updatedAt: scheme.updated_at,
             matchScore: null as any
         }));
 
@@ -124,7 +127,7 @@ export async function GET(request: Request) {
                         undefined
                 };
 
-                results = schemes.map(scheme => {
+                results = schemes.map((scheme: any) => {
                     try {
                         const matchResult = calculateMatchScore(scheme as any, userProfileForMatching);
                         return {
@@ -143,7 +146,7 @@ export async function GET(request: Request) {
                 });
 
                 if (sortBy === 'matchScore' || sortBy === 'relevance') {
-                    results.sort((a, b) => ((b as any).matchScore || 0) - ((a as any).matchScore || 0));
+                    results.sort((a: any, b: any) => ((b as any).matchScore || 0) - ((a as any).matchScore || 0));
                 }
             }
         }

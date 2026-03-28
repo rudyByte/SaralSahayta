@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import useSWR from 'swr';
+import useSWR, { useSWRConfig } from 'swr';
 import {
     Search,
     SlidersHorizontal,
@@ -28,11 +28,16 @@ type SortOption = 'relevance' | 'matchScore' | 'deadline' | 'benefit' | 'recent'
 
 export default function DiscoverPageContent() {
     const { user, loading: authLoading } = useAuth();
+    const { mutate: globalMutate } = useSWRConfig();
     const router = useRouter();
     const searchParams = useSearchParams();
     
     // Real-time hook for listening to match recalculations
-    const { newSchemes } = useRealtimeSchemeUpdates(user?.id);
+    const { newSchemes } = useRealtimeSchemeUpdates(user?.id, () => {
+        // Refresh the main schemes list and all individual confidence score circles
+        mutate();
+        globalMutate((key: any) => typeof key === 'string' && key.includes('/confidence'));
+    });
     const isNewlyEligibleFilter = searchParams.get('filter') === 'newly_eligible';
 
     // -- State --

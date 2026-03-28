@@ -35,29 +35,29 @@ export async function GET(
 
         const applicationId = params.id;
 
-        // Fetch application using the correct 'Application' table and relation 'Scheme'
+        // Fetch application using the actual schema: 'applications' table and relation 'schemes'
         const { data: application, error } = await supabase
-            .from('Application')
+            .from('applications')
             .select(`
                 *,
-                scheme:Scheme (
+                scheme:schemes (
                     *
                 )
             `)
             .eq('id', applicationId)
-            .eq('userId', session.user.id)
+            .eq('user_id', session.user.id)
             .single();
 
         if (error || !application) {
-            // Try matching by trackingId if standard ID lookup fails
+            // Try matching by tracking_id if standard ID lookup fails
             const { data: altApp, error: altError } = await supabase
-                .from('Application')
+                .from('applications')
                 .select(`
                     *,
-                    scheme:Scheme (*)
+                    scheme:schemes (*)
                 `)
-                .eq('trackingId', applicationId)
-                .eq('userId', session.user.id)
+                .eq('tracking_id', applicationId)
+                .eq('user_id', session.user.id)
                 .single();
 
             if (altError || !altApp) {
@@ -67,10 +67,24 @@ export async function GET(
                 );
             }
             
-            return NextResponse.json({ application: altApp });
+            const mappedAlt = {
+                ...altApp,
+                userId: altApp.user_id,
+                trackingId: altApp.tracking_id,
+                createdAt: altApp.created_at,
+                schemeId: altApp.scheme_id
+            };
+            return NextResponse.json({ application: mappedAlt });
         }
 
-        return NextResponse.json({ application });
+        const mappedApp = {
+            ...application,
+            userId: application.user_id,
+            trackingId: application.tracking_id,
+            createdAt: application.created_at,
+            schemeId: application.scheme_id
+        };
+        return NextResponse.json({ application: mappedApp });
 
     } catch (error: any) {
         console.error('Fetch Application Detail Error:', error);

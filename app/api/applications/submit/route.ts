@@ -53,24 +53,34 @@ export async function POST(request: Request) {
     const ip = headerList.get('x-forwarded-for') || '127.0.0.1';
     const userAgent = headerList.get('user-agent') || 'unknown';
 
-    // 3. Insert into "Application" table (Align with Prisma schema)
+    // 3. Insert into "applications" table (Actual DB Schema)
     const { data: application, error: submitError } = await supabase
-      .from('Application')
+      .from('applications')
       .insert({
-        userId: session.user.id,
-        schemeId: schemeId,
-        formData: sanitizedFormData,
+        user_id: session.user.id,
+        scheme_id: schemeId,
+        form_data: sanitizedFormData,
         status: 'SUBMITTED',
-        submittedAt: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        tracking_id: `SARAL-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
       })
       .select()
       .single();
 
-    if (submitError) throw submitError;
+    if (submitError) {
+        console.error('Insert Error Detail:', submitError);
+        throw submitError;
+    }
 
     return NextResponse.json({ 
       success: true, 
-      applicationNumber: application.id || application.trackingId 
+      applicationNumber: application.tracking_id,
+      application: {
+          ...application,
+          userId: application.user_id,
+          trackingId: application.tracking_id,
+          createdAt: application.created_at
+      }
     });
 
   } catch (error: any) {

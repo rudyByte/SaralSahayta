@@ -78,7 +78,7 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                     {/* Compact circular approval chance + bookmark */}
                     <div className="flex items-center gap-1 shrink-0">
                         {user && <NewlyEligibleBadge schemeId={scheme.id} userId={user.id} />}
-                        <ConfidenceBadge schemeId={scheme.id} />
+                        <ConfidenceBadge schemeId={scheme.id} fallbackScore={scheme.matchScore} />
                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
                             <Bookmark className="h-5 w-5" />
                         </Button>
@@ -95,15 +95,7 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
             </CardHeader>
 
             <CardContent className="p-6 pt-4 flex-grow relative z-10">
-                {/* Premium Match Indicator */}
-                {scheme.matchDetails && (
-                    <MatchIndicator
-                        score={scheme.matchDetails.score}
-                        matched={scheme.matchDetails.matched}
-                        missing={scheme.matchDetails.missing}
-                        className="mb-6"
-                    />
-                )}
+
 
                 <div className="flex flex-col space-y-4">
                     <div className="flex items-center gap-2 p-3 rounded-2xl bg-slate-50 border border-slate-100">
