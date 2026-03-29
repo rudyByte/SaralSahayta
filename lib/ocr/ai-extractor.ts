@@ -1,9 +1,5 @@
 import Groq from 'groq-sdk';
 
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-});
-
 export interface ExtractedDocumentData {
     name?: string;
     aadhaarNumber?: string;
@@ -25,6 +21,7 @@ export async function extractDataWithAI(
     documentType: string
 ): Promise<{ data: ExtractedDocumentData; confidence: number; text?: string }> {
     try {
+        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
         const prompt = getPromptForDocument(documentType);
 
         const response = await groq.chat.completions.create({

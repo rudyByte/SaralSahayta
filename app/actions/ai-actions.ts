@@ -1,6 +1,6 @@
 "use server";
 
-import { groq, GROQ_MODEL } from "@/lib/ai/groq";
+import { getGroqClient, GROQ_MODEL } from "@/lib/ai/groq";
 import { Scheme, Gender, Category, Education } from "@prisma/client";
 
 interface AIAnalysisResult {
@@ -56,6 +56,7 @@ Format your response as a JSON object:
     `.trim();
 
         // 2. Call Groq
+        const groq = getGroqClient();
         const completion = await groq.chat.completions.create({
             messages: [
                 {
