@@ -3,14 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { extractTextFromImage, estimateImageQuality, preprocessImage, type OCRResult, type OCRProgress } from '@/lib/ocr/tesseract-ocr';
-import {
-    parseAadhaarData,
-    parsePANData,
-    parseIncomeCertificateData,
-    parseEducationDocumentData,
-    detectDocumentType,
-} from '@/lib/ocr/document-parsers';
+import { estimateImageQuality, type OCRProgress, type OCRResult } from '@/lib/ocr/tesseract-ocr';
 import useSWR, { useSWRConfig } from 'swr';
 import ProfileChangePreview from './ProfileChangePreview';
 import { detectProfileChanges } from '@/lib/profile/change-detector';
@@ -78,53 +71,52 @@ export default function OCRDocumentUpload({
 
         setOcrStatus('processing');
         setError(null);
+        setOcrProgress({ status: 'AI is analyzing document...', progress: 0.4 });
 
         try {
-            // Preprocess image for better accuracy
-            const processedFile = await preprocessImage(file);
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('documentType', documentCode);
 
-            // Run OCR
-            const result = await extractTextFromImage(
-                processedFile,
-                'eng+hin', // Support English + Hindi
-                (progress) => setOcrProgress(progress)
-            );
+            const response = await fetch('/api/documents/extract', {
+                method: 'POST',
+                body: formData
+            });
 
-            setOcrResult(result);
-
-            // Auto-detect document type if not specified
-            const docType = detectDocumentType(result.text);
-            setDetectedType(docType);
-
-            // Parse structured data based on document type
-            let parsed: any = null;
-
-            if (docType === 'AADHAAR' || documentCode === 'AADHAAR') {
-                parsed = parseAadhaarData(result.text);
-            } else if (docType === 'PAN' || documentCode === 'PAN') {
-                parsed = parsePANData(result.text);
-            } else if (docType === 'INCOME_CERT' || documentCode === 'INCOME_CERT') {
-                parsed = parseIncomeCertificateData(result.text);
-            } else if (docType === 'EDUCATION' || documentCode.includes('EDUCATION')) {
-                parsed = parseEducationDocumentData(result.text);
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'AI Extraction failed');
             }
 
-            setExtractedData(parsed);
+            const result = await response.json();
+            console.log('🚀 [AI-OCR] Result Received:', result.extractedData);
+            
+            setOcrProgress({ status: 'Finalizing...', progress: 0.9 });
+            setOcrResult({
+                text: result.text || '',
+                confidence: result.confidence || 90,
+                words: [],
+                language: 'eng+hin',
+                processingTime: 0
+            });
+
+            setDetectedType(result.extractedData?.documentType || documentCode);
+            setExtractedData(result.extractedData);
             setOcrStatus('success');
 
             // Notify parent component
-            if (parsed) {
+            if (result.extractedData) {
                 onDataExtracted({
-                    ...parsed,
+                    ...result.extractedData,
                     ocrConfidence: result.confidence,
                     ocrText: result.text,
-                    detectedType: docType
+                    detectedType: result.extractedData?.documentType || documentCode
                 });
             }
 
         } catch (err: any) {
             console.error('OCR Error:', err);
-            setError(err.message || 'OCR processing failed');
+            setError(err.message || 'AI extraction failed. Please try again or fill manually.');
             setOcrStatus('error');
         }
     };
@@ -171,12 +163,53 @@ export default function OCRDocumentUpload({
             const changes = detectProfileChanges(userProfile, extractedData, detectedType || documentCode);
             if (changes.length > 0) {
                 const updatePayload: any = {};
-                if (extractedData.annualIncome) updatePayload.annual_income = parseInt(extractedData.annualIncome.toString().replace(/,/g, ''));
-                if (extractedData.dateOfBirth) updatePayload.date_of_birth = extractedData.dateOfBirth;
-                if (extractedData.address) updatePayload.full_address = extractedData.address;
-                if (extractedData.gender) updatePayload.gender = extractedData.gender;
+                
+                // Map extracted data to profile schema fields (camelCase)
+                if (extractedData.annualIncome) {
+                    updatePayload.annualIncome = parseInt(extractedData.annualIncome.toString().replace(/[^0-9]/g, ''));
+                }
+                
+                if (extractedData.dateOfBirth) {
+                    // Try to convert DD/MM/YYYY to ISO YYYY-MM-DD
+                    const dateStr = extractedData.dateOfBirth;
+                    const parts = dateStr.includes('/') ? dateStr.split('/') : dateStr.split('-');
+                    if (parts.length === 3) {
+                        // Assuming DD/MM/YYYY
+                        if (parts[2].length === 4) {
+                            updatePayload.dateOfBirth = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                        } else if (parts[0].length === 4) {
+                            // Assuming YYYY/MM/DD
+                            updatePayload.dateOfBirth = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                        }
+                    } else {
+                        updatePayload.dateOfBirth = dateStr;
+                    }
+                }
+                
+                if (extractedData.gender) {
+                    const gender = extractedData.gender.toUpperCase();
+                    if (['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
+                        updatePayload.gender = gender;
+                    } else {
+                        updatePayload.gender = 'OTHER';
+                    }
+                }
+                
                 if (extractedData.name) updatePayload.name = extractedData.name;
-                if (extractedData.course) updatePayload.education = extractedData.course;
+                
+                // Map Course/Education
+                if (extractedData.course) {
+                    const course = extractedData.course.toUpperCase();
+                    if (course.includes('DEGREE') || course.includes('B.A') || course.includes('B.SC') || course.includes('B.COM') || course.includes('GRADUATE')) {
+                        updatePayload.education = 'GRADUATE';
+                    } else if (course.includes('MASTER') || course.includes('M.A') || course.includes('M.SC') || course.includes('M.COM') || course.includes('POSTGRADUATE')) {
+                        updatePayload.education = 'POSTGRADUATE';
+                    } else if (course.includes('12TH') || course.includes('HSC')) {
+                        updatePayload.education = 'CLASS_12TH';
+                    } else if (course.includes('10TH') || course.includes('SSC')) {
+                        updatePayload.education = 'CLASS_10TH';
+                    }
+                }
 
                 if (Object.keys(updatePayload).length > 0) {
                     const res = await fetch('/api/profile', {
@@ -184,7 +217,11 @@ export default function OCRDocumentUpload({
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(updatePayload)
                     });
-                    if (!res.ok) throw new Error('Failed to update profile');
+                    
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        throw new Error(errorData.error || 'Failed to update profile');
+                    }
                     await mutateProfile(); // refresh profile cache
                 }
             }
@@ -192,7 +229,6 @@ export default function OCRDocumentUpload({
             const success = await handleUpload();
             if (success) {
                 // Globally revalidate all confidence/scheme/document SWR caches
-                // so the eligibility % badges on Discover page update immediately
                 await globalMutate(
                     (key: any) => typeof key === 'string' && (
                         key.includes('/api/schemes') ||
@@ -206,7 +242,8 @@ export default function OCRDocumentUpload({
                 onUploadComplete();
             }
         } catch(err: any) {
-             setError(err.message);
+             console.error('Profile/Upload Error:', err);
+             setError(err.message || 'Operation failed');
              setIsUploading(false);
         }
     };
@@ -358,13 +395,13 @@ export default function OCRDocumentUpload({
 
                                 {ocrStatus === 'success' && extractedData && (
                                     <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                        <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-100 mb-6 flex items-center gap-3">
-                                            <div className="bg-emerald-500 p-1.5 rounded-full">
+                                        <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-100 mb-6 flex items-center gap-3">
+                                            <div className="bg-indigo-500 p-1.5 rounded-full">
                                                 <CheckCircle className="h-4 w-4 text-white" />
                                             </div>
                                             <div>
-                                                <p className="text-xs font-bold text-emerald-800">Extraction Complete</p>
-                                                <p className="text-[10px] text-emerald-600 font-medium">Confidence Score: {Math.round(ocrResult?.confidence || 0)}%</p>
+                                                <p className="text-xs font-bold text-indigo-800 tracking-tight">AI ADVANCED EXTRACTION</p>
+                                                <p className="text-[10px] text-indigo-600 font-medium tracking-tight">Smart Accuracy: {Math.round(ocrResult?.confidence || 0)}%</p>
                                             </div>
                                         </div>
 

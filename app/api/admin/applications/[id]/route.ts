@@ -10,30 +10,26 @@ export async function GET(
         const supabase = createAdminClient();
         const applicationId = params.id;
 
-        // Get application details with actual snake_case schema mapping
+        // Get application details with Supabase REST over HTTPS
         const { data: application, error } = await supabase
-            .from('applications')
-            .select(`
-                *,
-                user:users (
-                    *
-                ),
-                scheme:schemes (
-                    *
-                )
-            `)
+            .from('Application')
+            .select('*')
             .eq('id', applicationId)
             .single();
 
-        if (error) throw error;
+        if (error || !application) throw new Error('Application not found');
 
-        // Fetch user documents (snake_case table)
+        // Fetch related entities manually to bypass PostgREST cache issues
+        const { data: user } = await supabase.from('users').select('*').eq('id', application.userId || application.user_id).single();
+        const { data: scheme } = await supabase.from('Scheme').select('*').eq('id', application.schemeId || application.scheme_id).single();
+
+        // Fetch user documents (snake_case table from Supabase)
         const { data: documents } = await supabase
             .from('user_documents')
             .select('*')
-            .eq('user_id', application.user_id);
+            .eq('user_id', application.userId || application.user_id);
 
-        // Fetch application history/audit logs (Assuming snake_case table)
+        // Fetch application history/audit logs
         const { data: history } = await supabase
             .from('application_history') 
             .select('*')
@@ -42,11 +38,6 @@ export async function GET(
 
         const mappedApp = {
             ...application,
-            userId: application.user_id,
-            trackingId: application.tracking_id,
-            createdAt: application.created_at,
-            updatedAt: application.updated_at,
-            schemeId: application.scheme_id,
             application_documents: (documents || []).map((doc: any) => ({
                 ...doc,
                 userId: doc.user_id,
@@ -94,27 +85,29 @@ export async function PATCH(
 
         // Get current application to log old status
         const { data: currentApp } = await supabase
-            .from('applications')
+            .from('Application')
             .select('status')
             .eq('id', applicationId)
             .single();
 
-        // Update application status with actual snake_case fields
-        const { data, error } = await supabase
-            .from('applications')
+        // Update application status with Supabase REST
+        const { data: updatedApp, error } = await supabase
+            .from('Application')
             .update({
                 status,
-                updated_at: new Date().toISOString(),
-                ...(status === 'APPROVED' ? { approved_at: new Date().toISOString() } : {}),
-                ...(status === 'REJECTED' ? { rejected_at: new Date().toISOString(), rejection_reason: remarks } : {}),
+                ...(status === 'APPROVED' ? { approvedAt: new Date().toISOString() } : {}),
+                ...(status === 'REJECTED' ? { rejectedAt: new Date().toISOString(), rejectionReason: remarks } : {}),
             })
             .eq('id', applicationId)
             .select()
             .single();
 
-        if (error) throw error;
+        if (error) {
+            console.error(error);
+            throw new Error('Update failed');
+        }
 
-        // Log the review in history if the table exists (snake_case)
+        // Log the review in history if the table exists (snake_case via Supabase)
         try {
             await supabase.from('application_history').insert({
                 application_id: applicationId,
@@ -128,15 +121,7 @@ export async function PATCH(
             console.warn('Could not log application history:', historyError);
         }
 
-        const mappedUpdate = {
-            ...data,
-            userId: data.user_id,
-            trackingId: data.tracking_id,
-            createdAt: data.created_at,
-            updatedAt: data.updated_at
-        };
-
-        return NextResponse.json({ application: mappedUpdate });
+        return NextResponse.json({ application: updatedApp });
     } catch (error: any) {
         console.error('Update application error:', error);
         return NextResponse.json(

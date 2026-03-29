@@ -71,7 +71,7 @@ export default function ApplicationReviewPage({ params }: { params: { slug: stri
         body: JSON.stringify({
           schemeId: scheme.id,
           formData,
-          attachedDocs: readiness.attached
+          attachedDocs: readiness?.attached ?? []
         })
       });
 
@@ -108,7 +108,7 @@ export default function ApplicationReviewPage({ params }: { params: { slug: stri
           <ShieldCheck className="w-5 h-5 text-primary mt-1" />
           <div className="text-sm">
             <p className="font-bold text-primary italic">Verification Check Passed</p>
-            <p className="text-muted-foreground">All mandatory documents ({readiness?.attached.length}) are securely attached from your vault.</p>
+            <p className="text-muted-foreground">All mandatory documents ({readiness?.attached?.length ?? 0}) are securely attached from your vault.</p>
           </div>
         </Card>
 
@@ -146,9 +146,9 @@ export default function ApplicationReviewPage({ params }: { params: { slug: stri
 
         {/* Document Checklist Summary */}
         <Card className="p-6 border-primary/10">
-           <h3 className="font-bold text-sm mb-4">Attached Documents ({readiness?.attached.length})</h3>
+           <h3 className="font-bold text-sm mb-4">Attached Documents ({readiness?.attached?.length ?? 0})</h3>
            <div className="grid sm:grid-cols-2 gap-3">
-              {readiness?.requirements.filter((r: any) => readiness.attached.includes(r.documentId)).map((req: any) => (
+              {readiness?.requirements?.filter((r: any) => readiness?.attached?.includes(r.documentId)).map((req: any) => (
                 <div key={req.documentId} className="flex items-center gap-2 text-sm p-3 rounded-xl bg-primary/5 text-primary font-medium">
                    <CheckCircle className="w-4 h-4" />
                    {req.documents.document_name}

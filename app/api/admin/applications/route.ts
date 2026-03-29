@@ -4,7 +4,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
     try {
-        const supabase = createAdminClient();
+        const { prisma } = require('@/lib/prisma');
         const { searchParams } = new URL(request.url);
 
         const page = parseInt(searchParams.get('page') || '1');
@@ -15,56 +15,78 @@ export async function GET(request: NextRequest) {
 
         const offset = (page - 1) * limit;
 
-        let query = supabase
-            .from('applications')
-            .select(`
-                *,
-                user:users (
-                    name,
-                    mobile,
-                    state
-                ),
-                scheme:schemes (
-                    name,
-                    category
-                )
-            `, { count: 'exact' });
+        const supabase = createAdminClient();
 
-        // Apply filters
+        let query = supabase
+            .from('Application')
+            .select('*', { count: 'exact' });
+
         if (status) {
             query = query.eq('status', status);
         }
 
         if (search) {
-            // Search by user name or ID (fallback tracking_id)
-            query = query.or(`tracking_id.ilike.%${search}%,id.ilike.%${search}%`);
+            query = query.or(`trackingId.ilike.%${search}%,id.ilike.%${search}%`);
         }
 
-        // Apply pagination and order
-        query = query.order('created_at', { ascending: false });
+        query = query.order('createdAt', { ascending: false });
         query = query.range(offset, offset + limit - 1);
 
         const { data: applications, error, count } = await query;
 
-        if (error) throw error;
+        if (error) {
+            console.error("Supabase Admin App error:", error);
+            throw error;
+        }
 
-        let processedApplications = (applications || []).map((app: any) => ({
-            ...app,
-            userId: app.user_id,
-            trackingId: app.tracking_id,
-            createdAt: app.created_at,
-            updatedAt: app.updated_at,
-            schemeId: app.scheme_id
-        }));
+        const appList = applications || [];
+        const userIds = Array.from(new Set(appList.map((a: any) => a.userId || a.user_id))).filter(Boolean);
+        const schemeIds = Array.from(new Set(appList.map((a: any) => a.schemeId || a.scheme_id))).filter(Boolean);
 
-        // Apply Priority Sorting in memory if requested (e.g. check for isPremium if column exists)
+        let usersDict: any = {};
+        if (userIds.length > 0) {
+            const { data: usersData } = await supabase.from('users').select('id, name, mobile, state').in('id', userIds);
+            const { data: profilesData } = await supabase.from('user_profiles').select('user_id, isPremium').in('user_id', userIds);
+            
+            (usersData || []).forEach((u: any) => {
+                const profile = (profilesData || []).find((p: any) => p.user_id === u.id);
+                usersDict[u.id] = { ...u, profile };
+            });
+        }
+
+        let schemesDict: any = {};
+        if (schemeIds.length > 0) {
+            const { data: schemesData } = await supabase.from('Scheme').select('id, name, category').in('id', schemeIds);
+            (schemesData || []).forEach((s: any) => {
+                schemesDict[s.id] = s;
+            });
+        }
+
+        let processedApplications = appList.map((app: any) => {
+            const uid = app.userId || app.user_id;
+            const sid = app.schemeId || app.scheme_id;
+            const userObj = usersDict[uid] || null;
+            
+            return {
+                ...app,
+                userId: uid,
+                trackingId: app.trackingId || app.tracking_id,
+                createdAt: app.createdAt || app.created_at,
+                updatedAt: app.updatedAt || app.updated_at,
+                schemeId: sid,
+                user: userObj,
+                scheme: schemesDict[sid] || null,
+                is_premium: userObj?.profile?.isPremium || false
+            };
+        });
+
         if (priorityOnly) {
-            processedApplications.sort((a, b) => {
+            processedApplications.sort((a: any, b: any) => {
                 const aIsPremium = a.is_premium || false; 
                 const bIsPremium = b.is_premium || false;
                 if (aIsPremium && !bIsPremium) return -1;
                 if (!aIsPremium && bIsPremium) return 1;
-                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
             });
         }
 

@@ -47,7 +47,11 @@ export default function ApplicationsPage() {
 
     const { data, error, isLoading } = useSWR(
         `/api/admin/applications?${queryParams}`,
-        fetcher
+        fetcher,
+        {
+            refreshInterval: 5000,
+            revalidateOnFocus: true
+        }
     );
 
     const applications = data?.applications || [];
