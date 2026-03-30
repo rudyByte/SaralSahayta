@@ -41,7 +41,7 @@ export default function ApplicationsPage() {
     const queryParams = new URLSearchParams({
         page: page.toString(),
         ...(search && { search }),
-        ...(status && { status }),
+        ...(status && status !== 'ALL' && { status }),
         ...(priority && { priority: 'true' }),
     });
 
@@ -94,7 +94,7 @@ export default function ApplicationsPage() {
                                 <SelectValue placeholder="All Statuses" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">All Statuses</SelectItem>
+                                <SelectItem value="ALL">All Statuses</SelectItem>
                                 <SelectItem value="SUBMITTED">Submitted</SelectItem>
                                 <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
                                 <SelectItem value="APPROVED">Approved</SelectItem>

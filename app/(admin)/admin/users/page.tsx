@@ -34,8 +34,8 @@ export default function UsersPage() {
     const queryParams = new URLSearchParams({
         page: page.toString(),
         ...(search && { search }),
-        ...(state && { state }),
-        ...(category && { category }),
+        ...(state && state !== 'ALL_STATES' && { state }),
+        ...(category && category !== 'ALL_CATEGORIES' && { category }),
     });
 
     const { data, error, isLoading, mutate } = useSWR(
@@ -94,7 +94,7 @@ export default function UsersPage() {
                                 <SelectValue placeholder="All States" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-gray-100">
-                                <SelectItem value="">All States</SelectItem>
+                                <SelectItem value="ALL_STATES">All States</SelectItem>
                                 {INDIAN_STATES.map((s) => (
                                     <SelectItem key={s} value={s}>{s}</SelectItem>
                                 ))}
@@ -107,7 +107,7 @@ export default function UsersPage() {
                                 <SelectValue placeholder="Category" />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border-gray-100">
-                                <SelectItem value="">All Categories</SelectItem>
+                                <SelectItem value="ALL_CATEGORIES">All Categories</SelectItem>
                                 <SelectItem value="GENERAL">General</SelectItem>
                                 <SelectItem value="SC">SC</SelectItem>
                                 <SelectItem value="ST">ST</SelectItem>

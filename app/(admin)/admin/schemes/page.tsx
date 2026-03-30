@@ -26,7 +26,7 @@ export default function AdminSchemesPage() {
     const queryParams = new URLSearchParams({
         page: page.toString(),
         ...(search && { search }),
-        ...(category && { category }),
+        ...(category && category !== 'ALL_CATEGORIES' && { category }),
     });
 
     const { data, error, isLoading, mutate } = useSWR(
@@ -79,7 +79,7 @@ export default function AdminSchemesPage() {
                             <SelectValue placeholder="All Categories" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="">All Categories</SelectItem>
+                            <SelectItem value="ALL_CATEGORIES">All Categories</SelectItem>
                             <SelectItem value="EDUCATION">Education</SelectItem>
                             <SelectItem value="AGRICULTURE">Agriculture</SelectItem>
                             <SelectItem value="HEALTHCARE">Healthcare</SelectItem>

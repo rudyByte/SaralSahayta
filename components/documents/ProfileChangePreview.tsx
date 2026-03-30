@@ -29,14 +29,16 @@ export default function ProfileChangePreview({
         <div className="space-y-3">
             <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100 shadow-sm overflow-hidden">
                 {changes.map((change, i) => (
-                    <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-2">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{change.field}</span>
-                        <div className="flex items-center gap-3">
-                            <span className="text-xs font-bold text-slate-400 line-through decoration-slate-300 max-w-[120px] truncate" title={change.oldValue}>
+                    <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 gap-3 bg-white hover:bg-slate-50 transition-colors">
+                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest shrink-0 sm:w-1/3">
+                            {change.field}
+                        </span>
+                        <div className="flex items-center sm:justify-end gap-2 sm:gap-4 flex-1 min-w-0">
+                            <span className="text-xs font-bold text-slate-400 line-through decoration-slate-300 truncate text-right max-w-[50%]" title={change.oldValue}>
                                 {change.oldValue}
                             </span>
                             <ArrowRight className="h-4 w-4 text-primary shrink-0" />
-                            <span className="text-sm font-black text-emerald-600 max-w-[160px] truncate" title={change.newValue}>
+                            <span className="text-sm font-black text-emerald-600 break-words text-right flex-1 sm:flex-none" title={change.newValue}>
                                 {change.newValue}
                             </span>
                         </div>
