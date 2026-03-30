@@ -21,7 +21,8 @@ export async function extractDataWithAI(
     documentType: string
 ): Promise<{ data: ExtractedDocumentData; confidence: number; text?: string }> {
     try {
-        const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+        const apiKey = process.env.GROQ_API_KEY || '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';
+        const groq = new Groq({ apiKey });
         const prompt = getPromptForDocument(documentType);
 
         const response = await groq.chat.completions.create({
