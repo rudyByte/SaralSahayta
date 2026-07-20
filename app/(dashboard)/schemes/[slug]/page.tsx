@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ConfidenceBadge } from '@/components/scheme/confidence-badge';
 import DocumentRequirementsList from '@/components/schemes/DocumentRequirementsList';
+import { SmartDocumentKitWizard } from '@/components/documents/SmartDocumentKitWizard';
 import { toast } from 'sonner';
 
 export default function SchemeDetailPage({ params }: { params: { slug: string } }) {
@@ -331,6 +332,11 @@ export default function SchemeDetailPage({ params }: { params: { slug: string } 
             </div>
 
             <div className="space-y-3 pt-2">
+              <SmartDocumentKitWizard 
+                schemeName={scheme.name}
+                requiredDocuments={requiredDocuments}
+                initialDocumentStatus={documentStatus}
+              />
               <Button 
                 onClick={startApplication}
                 className="w-full h-14 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 transition-all active:scale-95 group"
