@@ -16,6 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { DocumentUpload } from '@/components/documents/document-upload';
 import { AIProcessing } from './ai-processing';
+import { DocumentValidationUI } from './document-validation-ui';
 
 interface RequiredDocument {
   id: string;
@@ -46,6 +47,7 @@ export function SmartDocumentKitWizard({
   const [generatingMsgIndex, setGeneratingMsgIndex] = useState(0);
   const [valMsgIndex, setValMsgIndex] = useState(0);
   const [completedTaskCount, setCompletedTaskCount] = useState(0);
+  const [currentDocForValidation, setCurrentDocForValidation] = useState<{req: RequiredDocument, doc: any} | null>(null);
 
   const missingMandatoryDocs = requiredDocuments.filter(
     req => req.isMandatory && !documentStatus[req.documentId]
@@ -136,27 +138,30 @@ export function SmartDocumentKitWizard({
   }, [generating, processingTasks.length, generateMessages.length]);
 
   const handleUploadSuccess = (req: RequiredDocument, uploadedDoc: any) => {
-    // Show validation step
+    setCurrentDocForValidation({ req, doc: uploadedDoc });
     setStep(3);
-    setValidating({ ...validating, [req.documentId]: true });
-    setValMsgIndex(0);
+  };
+
+  const handleValidationContinue = () => {
+    if (!currentDocForValidation) return;
+    const { req } = currentDocForValidation;
     
-    // Mock validation process
-    setTimeout(() => {
-      setValidating(prev => ({ ...prev, [req.documentId]: false }));
-      const newStatus = { ...documentStatus, [req.documentId]: true };
-      setDocumentStatus(newStatus);
-      
-      const remainingMissing = requiredDocuments.filter(
-        r => r.isMandatory && !newStatus[r.documentId]
-      );
-      
-      if (remainingMissing.length === 0) {
-        setStep(4);
-      } else {
-        setStep(2);
-      }
-    }, 3000);
+    const newStatus = { ...documentStatus, [req.documentId]: true };
+    setDocumentStatus(newStatus);
+    
+    const remainingMissing = requiredDocuments.filter(
+      r => r.isMandatory && !newStatus[r.documentId]
+    );
+    
+    if (remainingMissing.length === 0) {
+      setStep(4);
+    } else {
+      setStep(2);
+    }
+  };
+
+  const handleValidationReplace = () => {
+    setStep(2);
   };
 
   const handleGenerateClick = () => {
@@ -326,45 +331,14 @@ export function SmartDocumentKitWizard({
             )}
 
             {/* STEP 3: AI Validation Screen */}
-            {step === 3 && (
-              <motion.div
-                key="step3"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                className="flex flex-col items-center justify-center min-h-[400px] py-10"
-              >
-                <div className="relative mb-8">
-                  <div className="w-28 h-28 border-4 border-indigo-100 rounded-full animate-[pulse_2s_ease-in-out_infinite] absolute inset-0 m-auto" />
-                  <div className="w-28 h-28 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin relative z-10" />
-                  <ShieldCheck className="w-12 h-12 text-indigo-600 absolute inset-0 m-auto z-20" />
-                </div>
-                
-                <div className="text-center space-y-2 mb-10">
-                  <h3 className="text-2xl font-bold text-slate-900">AI Validation in Progress</h3>
-                  <p className="text-indigo-600 font-medium h-6 transition-all">
-                    {validationMessages[valMsgIndex]}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 w-full max-w-lg mx-auto bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                  {[
-                    'Correct File Type', 
-                    'Size OK',
-                    'Readable', 
-                    'Not Blurry', 
-                    'Proper Orientation', 
-                    'OCR Ready'
-                  ].map((check, i) => (
-                    <div key={check} className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm text-sm font-semibold text-slate-700 animate-pulse" style={{ animationDelay: `${i * 200}ms`}}>
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
-                        <CheckCircle className="w-4 h-4" />
-                      </div>
-                      {check}
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
+            {step === 3 && currentDocForValidation && (
+              <AnimatePresence mode="wait">
+                <DocumentValidationUI 
+                  document={currentDocForValidation.doc}
+                  onReplace={handleValidationReplace}
+                  onContinue={handleValidationContinue}
+                />
+              </AnimatePresence>
             )}
 
             {/* STEP 4: Document Readiness Summary */}
