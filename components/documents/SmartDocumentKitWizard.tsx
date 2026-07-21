@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { DocumentUpload } from '@/components/documents/document-upload';
+import { AIProcessing } from './ai-processing';
 
 interface RequiredDocument {
   id: string;
@@ -462,109 +463,15 @@ export function SmartDocumentKitWizard({
               );
             })()}
 
-            {/* STEP 5: Generate Smart Document Kit */}
+            {/* STEP 5: AI Processing Screen */}
             {step === 5 && (
               <motion.div
                 key="step5"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-6 py-6"
+                className="flex flex-col items-center justify-center min-h-[400px] w-full"
               >
-                {!generating ? (
-                  <>
-                    <div className="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-2xl rotate-3 flex items-center justify-center mb-2 border border-indigo-100 shadow-sm">
-                      <FileText className="w-10 h-10 -rotate-3" />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Smart Document Kit</h3>
-                      <p className="text-slate-500 max-w-sm mx-auto">
-                        Ready to process your documents with AI to create a flawless application kit.
-                      </p>
-                    </div>
-
-                    <div className="bg-white border rounded-2xl p-6 shadow-sm w-full max-w-md text-left space-y-4 my-6">
-                      <h4 className="font-bold text-slate-800 border-b pb-2">Included Features:</h4>
-                      <ul className="space-y-3">
-                        {[
-                          'Merge documents into one PDF',
-                          'Auto rotate pages',
-                          'Remove blank pages',
-                          'OCR Optimization',
-                          'Ready for Government Portal'
-                        ].map((feature, idx) => (
-                          <li key={idx} className="flex items-center gap-3 text-slate-700 font-medium">
-                            <div className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center flex-shrink-0">
-                              <CheckCircle className="w-4 h-4" />
-                            </div>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="flex justify-between items-center w-full max-w-md pt-2">
-                      <Button variant="ghost" onClick={() => setStep(4)}>Back</Button>
-                      <Button 
-                        size="lg"
-                        className="rounded-xl h-14 text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-xl shadow-indigo-600/20 transition-all active:scale-95"
-                        onClick={handleGenerateClick}
-                      >
-                        <Save className="mr-2 w-5 h-5" />
-                        Generate Smart Kit Now
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center w-full max-w-lg mx-auto py-4 space-y-6">
-                    <div className="text-center w-full space-y-3">
-                      <div className="flex items-center justify-center gap-2 mb-2">
-                        <Sparkles className="w-6 h-6 text-indigo-500 animate-pulse" />
-                        <h3 className="text-xl font-bold text-slate-900 transition-all">
-                          {generateMessages[generatingMsgIndex]}
-                        </h3>
-                      </div>
-                      <Progress value={(completedTaskCount / processingTasks.length) * 100} className="h-2 bg-indigo-100 w-full rounded-full transition-all duration-500" />
-                    </div>
-
-                    <div className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 max-h-[300px] overflow-hidden relative">
-                      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-slate-50 to-transparent z-10 pointer-events-none" />
-                      
-                      <div className="space-y-3 relative z-0 flex flex-col justify-end">
-                        <AnimatePresence initial={false}>
-                          {processingTasks.map((task, idx) => {
-                            if (idx > completedTaskCount) return null;
-                            
-                            const isCompleted = idx < completedTaskCount;
-                            const isCurrent = idx === completedTaskCount;
-
-                            return (
-                              <motion.div
-                                key={task}
-                                initial={{ opacity: 0, x: -20, height: 0 }}
-                                animate={{ opacity: isCurrent ? 1 : 0.6, x: 0, height: 'auto' }}
-                                className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm border border-slate-100"
-                              >
-                                {isCompleted ? (
-                                  <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
-                                    <Check className="w-4 h-4" />
-                                  </div>
-                                ) : (
-                                  <div className="w-6 h-6 flex-shrink-0">
-                                    <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
-                                  </div>
-                                )}
-                                <span className={`font-medium text-sm ${isCompleted ? 'text-slate-600' : 'text-slate-900'}`}>
-                                  {task}
-                                </span>
-                              </motion.div>
-                            );
-                          })}
-                        </AnimatePresence>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <AIProcessing onComplete={() => setStep(6)} />
               </motion.div>
             )}
 
