@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   CheckCircle, XCircle, Clock, UploadCloud, 
   FileText, ShieldCheck, Loader2, Download, Printer, Share2, Save,
-  Sparkles, Eye, CheckCircle2, Check
+  Sparkles, Eye, CheckCircle2, Check,
+  AlertTriangle, Shield, RefreshCw, Zap, Award
 } from 'lucide-react';
 import { 
   Dialog, DialogContent, DialogTitle, DialogTrigger 
@@ -182,7 +183,7 @@ export function SmartDocumentKitWizard({
             {[1, 2, 3, 4, 5].map(s => (
               <div 
                 key={s} 
-                className={`h-2 rounded-full transition-all duration-300 ${step === s || (step === 6 && s === 5) ? 'w-8 bg-indigo-600' : step > s ? 'w-4 bg-indigo-200' : 'w-4 bg-slate-200'}`} 
+                className={`h-2 rounded-full transition-all duration-300 ${step === s || (step >= 5 && s === 5) ? 'w-8 bg-indigo-600' : step > s ? 'w-4 bg-indigo-200' : 'w-4 bg-slate-200'}`} 
               />
             ))}
           </div>
@@ -672,27 +673,202 @@ export function SmartDocumentKitWizard({
                       { icon: <Eye className="w-4 h-4" />, label: "Preview Kit" },
                       { icon: <Printer className="w-4 h-4" />, label: "Print" },
                       { icon: <Share2 className="w-4 h-4" />, label: "Share" },
-                      { icon: <Save className="w-4 h-4" />, label: "Save to Vault", colSpan: 2 }
+                      { icon: <Save className="w-4 h-4" />, label: "Save to AI Document Vault", colSpan: 2, active: true }
                     ].map((btn, i) => (
                       <Button 
                         key={i} 
-                        disabled 
+                        disabled={!btn.active}
+                        onClick={() => {
+                          if (btn.active) setStep(7);
+                        }}
                         variant={btn.colSpan ? "default" : "outline"}
-                        className={`h-14 rounded-xl border-slate-200 relative overflow-hidden group ${btn.colSpan ? 'col-span-2 bg-slate-800 hover:bg-slate-800 text-white' : ''}`}
+                        className={`h-14 rounded-xl border-slate-200 relative overflow-hidden group ${btn.colSpan ? 'col-span-2 bg-slate-900 hover:bg-slate-800 text-white' : ''}`}
                       >
-                        <span className="flex items-center gap-2 opacity-40">
+                        <span className={`flex items-center gap-2 ${!btn.active ? 'opacity-40' : ''}`}>
                           {btn.icon} {btn.label}
                         </span>
-                        <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 backdrop-blur-[1px] opacity-100">
-                          <span className="text-xs font-bold text-slate-600 bg-white px-2 py-1 rounded shadow-sm">
-                            Available in Phase 4
-                          </span>
-                        </div>
+                        {!btn.active && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 backdrop-blur-[1px] opacity-100">
+                            <span className="text-xs font-bold text-slate-600 bg-white px-2 py-1 rounded shadow-sm">
+                              Available in Phase 4
+                            </span>
+                          </div>
+                        )}
                       </Button>
                     ))}
                   </div>
                 </motion.div>
               );
+            })()}
+
+            {/* STEP 7: AI Universal Document Vault */}
+            {step === 7 && (() => {
+              const uploadedDocs = requiredDocuments.filter(r => documentStatus[r.documentId]);
+              return (
+                <motion.div
+                  key="step7"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="py-4 w-full"
+                >
+                  <div className="flex items-center justify-between mb-8">
+                     <div className="flex items-center gap-4">
+                       <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
+                         <Shield className="w-7 h-7" />
+                       </div>
+                       <div>
+                         <h3 className="text-3xl font-extrabold text-slate-900">My AI Document Vault</h3>
+                         <p className="text-slate-500 font-medium mt-1">Your secure, intelligent, and reusable document system</p>
+                       </div>
+                     </div>
+                     <Button variant="ghost" onClick={() => setStep(6)}>Back to Kit</Button>
+                  </div>
+
+                  {/* Dashboard Summary */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                     {[
+                       { label: 'Total Documents', value: uploadedDocs.length, color: 'text-indigo-600' },
+                       { label: 'Verified', value: uploadedDocs.length, color: 'text-emerald-600' },
+                       { label: 'Overall Health', value: '98%', color: 'text-emerald-600' },
+                       { label: 'Reusable Schemes', value: '38', color: 'text-purple-600' },
+                     ].map((stat, i) => (
+                       <motion.div 
+                         key={i} 
+                         initial={{ opacity: 0, y: 10 }}
+                         animate={{ opacity: 1, y: 0 }}
+                         transition={{ delay: i * 0.1 }}
+                         className="bg-white border rounded-2xl p-5 shadow-sm text-center transform transition-transform hover:scale-105"
+                       >
+                          <p className={`text-4xl font-extrabold ${stat.color}`}>{stat.value}</p>
+                          <p className="text-xs text-slate-500 font-bold uppercase tracking-wide mt-2">{stat.label}</p>
+                       </motion.div>
+                     ))}
+                  </div>
+
+                  {/* AI Suggestions */}
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-8 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-5">
+                       <Zap className="w-32 h-32" />
+                    </div>
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-2 mb-5">
+                        <Sparkles className="w-6 h-6 text-indigo-600" />
+                        <h4 className="text-lg font-bold text-indigo-900">AI Insights & Suggestions</h4>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                          { text: "Income Certificate expires in 12 days.", type: 'warning' },
+                          { text: "Aadhaar is reusable for 42 schemes.", type: 'success' },
+                          { text: "Your documents are ready for government submission.", type: 'success' },
+                          { text: "Upload a higher quality scan for PAN Card.", type: 'info' }
+                        ].map((sug, i) => (
+                          <motion.div 
+                            key={i}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 + (i * 0.1) }} 
+                            className="flex items-start gap-3 bg-white/80 backdrop-blur p-4 rounded-xl shadow-sm border border-indigo-50/50 hover:bg-white transition-colors"
+                          >
+                            {sug.type === 'warning' ? <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" /> : 
+                             sug.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" /> :
+                             <Eye className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />}
+                            <p className="text-sm font-semibold text-slate-700">{sug.text}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Documents List */}
+                  <div className="space-y-5 max-h-[50vh] overflow-y-auto pr-2 pb-10">
+                    {uploadedDocs.map((doc, idx) => {
+                       const healthScore = idx === 0 ? 85 : 98;
+                       const expiryText = idx === 0 ? "Expires in 12 days" : "Expires in 2 years";
+                       const expiryColor = idx === 0 ? "text-amber-600 bg-amber-50 border-amber-200" : "text-emerald-600 bg-emerald-50 border-emerald-200";
+                       
+                       return (
+                         <motion.div 
+                           key={doc.id}
+                           initial={{ opacity: 0, y: 10 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           transition={{ delay: 0.5 + (idx * 0.1) }} 
+                           className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden"
+                         >
+                           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                              <ShieldCheck className="w-32 h-32" />
+                           </div>
+                           <div className="relative z-10 flex flex-col md:flex-row gap-6">
+                             
+                             <div className="flex-1 space-y-4">
+                               <div className="flex flex-wrap items-center gap-3">
+                                 <h4 className="text-xl font-bold text-slate-900">{doc.documents?.name}</h4>
+                                 <Badge className={expiryColor}>{expiryText}</Badge>
+                                 <Badge variant="outline" className="text-slate-500 border-slate-200">Issue Date: 12 Jan 2024</Badge>
+                               </div>
+                               
+                               <div className="flex flex-wrap gap-2">
+                                 {[
+                                   { label: 'Government Verified', icon: <Award className="w-3 h-3 mr-1" /> },
+                                   { label: 'AI Validated', icon: <Sparkles className="w-3 h-3 mr-1" /> },
+                                   { label: 'OCR Ready', icon: <Eye className="w-3 h-3 mr-1" /> },
+                                   { label: 'Cloud Ready', icon: <UploadCloud className="w-3 h-3 mr-1" /> },
+                                   { label: 'Reusable', icon: <RefreshCw className="w-3 h-3 mr-1" /> }
+                                 ].map(badge => (
+                                   <Badge key={badge.label} variant="outline" className="text-indigo-600 border-indigo-200 bg-indigo-50/50">
+                                     {badge.icon} {badge.label}
+                                   </Badge>
+                                 ))}
+                               </div>
+
+                               <div className="bg-slate-50 p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                  <p className="text-xs font-bold text-slate-500 uppercase flex-shrink-0">Reusable In:</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {['Scholarships', 'Education', 'Healthcare', 'Farmer Welfare'].map(r => (
+                                      <span key={r} className="text-xs font-semibold bg-white border px-2.5 py-1 rounded-md text-slate-600 shadow-sm">{r}</span>
+                                    ))}
+                                    <span className="text-xs font-bold bg-purple-100 border border-purple-200 px-2.5 py-1 rounded-md text-purple-700">
+                                      +34 Schemes
+                                    </span>
+                                  </div>
+                               </div>
+                             </div>
+
+                             <div className="w-full md:w-56 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l pt-6 md:pt-0 md:pl-6">
+                               <div className="text-center mb-3">
+                                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Health Score</p>
+                               </div>
+                               <div className="relative w-28 h-28 mb-3">
+                                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                   <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className={idx === 0 ? "text-amber-100" : "text-emerald-100"} />
+                                   <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
+                                     strokeDasharray={251.2}
+                                     strokeDashoffset={251.2 - (251.2 * healthScore) / 100}
+                                     strokeLinecap="round"
+                                     className={`${idx === 0 ? "text-amber-500" : "text-emerald-500"} transition-all duration-1000 ease-out`}
+                                   />
+                                 </svg>
+                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                   <span className="text-2xl font-extrabold text-slate-800">{healthScore}%</span>
+                                 </div>
+                               </div>
+                               
+                               {idx === 0 ? (
+                                 <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-md border border-amber-200">
+                                   <AlertTriangle className="w-3.5 h-3.5" /> Signature slightly blurred
+                                 </div>
+                               ) : (
+                                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-md border border-emerald-200">
+                                   <CheckCircle className="w-3.5 h-3.5" /> High Resolution
+                                 </div>
+                               )}
+                             </div>
+                           </div>
+                         </motion.div>
+                       )
+                    })}
+                  </div>
+                </motion.div>
+              )
             })()}
 
           </AnimatePresence>
