@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   CheckCircle, XCircle, Clock, UploadCloud, 
-  FileText, ShieldCheck, Loader2, Download, Printer, Share2, Save
+  FileText, ShieldCheck, Loader2, Download, Printer, Share2, Save,
+  Sparkles, Eye, CheckCircle2, Check
 } from 'lucide-react';
 import { 
   Dialog, DialogContent, DialogTitle, DialogTrigger 
@@ -42,6 +43,7 @@ export function SmartDocumentKitWizard({
   const [generating, setGenerating] = useState(false);
   const [generatingMsgIndex, setGeneratingMsgIndex] = useState(0);
   const [valMsgIndex, setValMsgIndex] = useState(0);
+  const [completedTaskCount, setCompletedTaskCount] = useState(0);
 
   const missingMandatoryDocs = requiredDocuments.filter(
     req => req.isMandatory && !documentStatus[req.documentId]
@@ -57,12 +59,28 @@ export function SmartDocumentKitWizard({
     "Almost done..."
   ];
 
+  const processingTasks = [
+    "Checking Required Documents",
+    "Organizing Uploaded Files",
+    "Auto Rotating Pages",
+    "Removing Blank Pages",
+    "Standardizing A4 Size",
+    "Renaming Documents",
+    "Compressing Files",
+    "OCR Optimization",
+    "Generating Cover Page",
+    "Creating Table of Contents",
+    "Arranging Documents in Government Order",
+    "Preparing Final Application Kit"
+  ];
+
   const generateMessages = [
-    "Checking Documents...",
-    "Preparing Files...",
-    "Optimizing PDFs...",
-    "Generating Smart Kit...",
-    "Almost Ready..."
+    "Analyzing uploaded documents...",
+    "Improving document quality...",
+    "Optimizing page layout...",
+    "Creating searchable PDF...",
+    "Preparing professional application kit...",
+    "Almost finished..."
   ];
 
   useEffect(() => {
@@ -71,6 +89,8 @@ export function SmartDocumentKitWizard({
       setDocumentStatus(initialDocumentStatus);
       setValidating({});
       setGenerating(false);
+      setCompletedTaskCount(0);
+      setGeneratingMsgIndex(0);
     }
   }, [open, initialDocumentStatus]);
 
@@ -85,20 +105,33 @@ export function SmartDocumentKitWizard({
   }, [validating, validationMessages.length]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let taskInterval: NodeJS.Timeout;
+    let msgInterval: NodeJS.Timeout;
     if (generating) {
-      interval = setInterval(() => {
-        setGeneratingMsgIndex((prev) => {
-          if (prev < generateMessages.length - 1) return prev + 1;
-          clearInterval(interval);
-          setGenerating(false);
-          setStep(6); // Go to final success screen
+      taskInterval = setInterval(() => {
+        setCompletedTaskCount((prev) => {
+          if (prev < processingTasks.length) return prev + 1;
+          clearInterval(taskInterval);
+          setTimeout(() => {
+            setGenerating(false);
+            setStep(6);
+          }, 1500);
           return prev;
         });
-      }, 1500);
+      }, 700);
+
+      msgInterval = setInterval(() => {
+        setGeneratingMsgIndex((prev) => {
+          if (prev < generateMessages.length - 1) return prev + 1;
+          return prev;
+        });
+      }, 2000);
     }
-    return () => clearInterval(interval);
-  }, [generating, generateMessages.length]);
+    return () => {
+      clearInterval(taskInterval);
+      clearInterval(msgInterval);
+    };
+  }, [generating, processingTasks.length, generateMessages.length]);
 
   const handleUploadSuccess = (req: RequiredDocument, uploadedDoc: any) => {
     // Show validation step
@@ -127,6 +160,7 @@ export function SmartDocumentKitWizard({
   const handleGenerateClick = () => {
     setGenerating(true);
     setGeneratingMsgIndex(0);
+    setCompletedTaskCount(0);
   };
 
   return (
@@ -481,25 +515,52 @@ export function SmartDocumentKitWizard({
                     </div>
                   </>
                 ) : (
-                  <div className="flex flex-col items-center justify-center space-y-8 w-full max-w-md mx-auto py-12">
-                    <div className="relative">
-                      <div className="w-24 h-24 border-4 border-indigo-100 rounded-full animate-pulse absolute inset-0 m-auto" />
-                      <div className="w-24 h-24 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin relative z-10" />
-                      <FileText className="w-10 h-10 text-indigo-600 absolute inset-0 m-auto z-20 animate-bounce" />
+                  <div className="flex flex-col items-center w-full max-w-lg mx-auto py-4 space-y-6">
+                    <div className="text-center w-full space-y-3">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Sparkles className="w-6 h-6 text-indigo-500 animate-pulse" />
+                        <h3 className="text-xl font-bold text-slate-900 transition-all">
+                          {generateMessages[generatingMsgIndex]}
+                        </h3>
+                      </div>
+                      <Progress value={(completedTaskCount / processingTasks.length) * 100} className="h-2 bg-indigo-100 w-full rounded-full transition-all duration-500" />
                     </div>
-                    
-                    <div className="text-center w-full space-y-4">
-                      <h3 className="text-2xl font-bold text-slate-900 transition-all">
-                        {generateMessages[generatingMsgIndex]}
-                      </h3>
-                      <Progress value={((generatingMsgIndex + 1) / generateMessages.length) * 100} className="h-3 bg-indigo-100 w-full rounded-full" />
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3 w-full opacity-60 mt-4">
-                       <div className="h-2 bg-slate-200 rounded-full animate-pulse"></div>
-                       <div className="h-2 bg-slate-200 rounded-full animate-pulse delay-75"></div>
-                       <div className="h-2 bg-slate-200 rounded-full animate-pulse delay-150"></div>
-                       <div className="h-2 bg-slate-200 rounded-full animate-pulse delay-300"></div>
+
+                    <div className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 max-h-[300px] overflow-hidden relative">
+                      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-slate-50 to-transparent z-10 pointer-events-none" />
+                      
+                      <div className="space-y-3 relative z-0 flex flex-col justify-end">
+                        <AnimatePresence initial={false}>
+                          {processingTasks.map((task, idx) => {
+                            if (idx > completedTaskCount) return null;
+                            
+                            const isCompleted = idx < completedTaskCount;
+                            const isCurrent = idx === completedTaskCount;
+
+                            return (
+                              <motion.div
+                                key={task}
+                                initial={{ opacity: 0, x: -20, height: 0 }}
+                                animate={{ opacity: isCurrent ? 1 : 0.6, x: 0, height: 'auto' }}
+                                className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm border border-slate-100"
+                              >
+                                {isCompleted ? (
+                                  <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                                    <Check className="w-4 h-4" />
+                                  </div>
+                                ) : (
+                                  <div className="w-6 h-6 flex-shrink-0">
+                                    <Loader2 className="w-6 h-6 text-indigo-600 animate-spin" />
+                                  </div>
+                                )}
+                                <span className={`font-medium text-sm ${isCompleted ? 'text-slate-600' : 'text-slate-900'}`}>
+                                  {task}
+                                </span>
+                              </motion.div>
+                            );
+                          })}
+                        </AnimatePresence>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -507,46 +568,132 @@ export function SmartDocumentKitWizard({
             )}
 
             {/* STEP 6: Final Success Screen */}
-            {step === 6 && (
-              <motion.div
-                key="step6"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="text-center space-y-8 py-8"
-              >
-                <div className="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-3xl rotate-12 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-indigo-100">
-                  <FileText className="w-12 h-12 -rotate-12" />
-                </div>
-                
-                <div className="space-y-2">
-                  <h3 className="text-3xl font-bold text-slate-900">Application Kit Ready</h3>
-                  <p className="text-slate-500 max-w-md mx-auto">
-                    Your documents have been perfectly aligned, compressed, and organized according to government standards.
-                  </p>
-                </div>
+            {step === 6 && (() => {
+              const uploadedCount = requiredDocuments.filter(r => documentStatus[r.documentId]).length;
+              
+              return (
+                <motion.div
+                  key="step6"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-4 w-full"
+                >
+                  <div className="relative mx-auto w-32 h-32 mb-6 flex items-center justify-center">
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", bounce: 0.5, duration: 0.8 }}
+                      className="absolute inset-0 bg-emerald-100 rounded-full"
+                    />
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", bounce: 0.5, duration: 0.8, delay: 0.1 }}
+                      className="absolute inset-2 bg-emerald-200 rounded-full"
+                    />
+                    <motion.div 
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", bounce: 0.5, duration: 0.8, delay: 0.2 }}
+                      className="absolute inset-4 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/30 flex items-center justify-center z-10"
+                    >
+                      <Check className="w-12 h-12 text-white" />
+                    </motion.div>
+                    
+                    {/* Lightweight Confetti Particles */}
+                    {[...Array(6)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 0, x: 0 }}
+                        animate={{ 
+                          opacity: [0, 1, 0], 
+                          y: -60 - Math.random() * 60,
+                          x: (Math.random() - 0.5) * 120
+                        }}
+                        transition={{ duration: 1.5, delay: 0.3 + Math.random() * 0.2, ease: "easeOut" }}
+                        className="absolute top-1/2 left-1/2 w-3 h-3 bg-indigo-500 rounded-sm rotate-45"
+                        style={{ backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ec4899'][i % 4] }}
+                      />
+                    ))}
+                  </div>
+                  
+                  <div className="space-y-2 mb-8">
+                    <h3 className="text-3xl font-extrabold text-slate-900">🎉 Smart Document Kit Ready</h3>
+                    <p className="text-slate-500 max-w-md mx-auto">
+                      Your application kit has been perfectly assembled to government standards.
+                    </p>
+                  </div>
 
-                <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto pt-4">
-                  <Button disabled variant="outline" className="h-14 rounded-xl border-slate-200">
-                    <Download className="mr-2 w-4 h-4" /> Download PDF
-                  </Button>
-                  <Button disabled variant="outline" className="h-14 rounded-xl border-slate-200">
-                    <Printer className="mr-2 w-4 h-4" /> Print
-                  </Button>
-                  <Button disabled variant="outline" className="h-14 rounded-xl border-slate-200">
-                    <Share2 className="mr-2 w-4 h-4" /> Share
-                  </Button>
-                  <Button disabled variant="outline" className="h-14 rounded-xl border-slate-200">
-                    <Save className="mr-2 w-4 h-4" /> Save for Future
-                  </Button>
-                </div>
-                
-                <div className="mt-8 pt-6 border-t border-slate-200 inline-block w-full">
-                  <Badge variant="secondary" className="bg-indigo-50 text-indigo-600 font-bold px-4 py-1.5 text-sm border border-indigo-100">
-                    Ready for Portal Upload
-                  </Badge>
-                </div>
-              </motion.div>
-            )}
+                  <div className="bg-white rounded-2xl border shadow-sm p-5 mb-8 max-w-2xl mx-auto flex flex-col md:flex-row gap-6">
+                    <div className="flex-1 grid grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Application Readiness</p>
+                        <p className="text-2xl font-bold text-emerald-600">100%</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Documents Included</p>
+                        <p className="text-2xl font-bold text-slate-800">{uploadedCount}</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Estimated File Size</p>
+                        <p className="text-2xl font-bold text-slate-800">2.4 MB</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
+                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Status</p>
+                        <div className="flex items-center gap-1 text-emerald-600 font-bold">
+                          <CheckCircle className="w-4 h-4" /> Ready
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-6 text-left">
+                      <h4 className="font-bold text-slate-800 mb-3">Kit Features</h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {[
+                          'Auto Organized',
+                          'OCR Optimized',
+                          'Print Ready',
+                          'Searchable PDF',
+                          'Government Format',
+                          'Future Reusable'
+                        ].map((badge, idx) => (
+                          <div key={idx} className="flex items-center gap-2 text-sm font-medium text-slate-600">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                            {badge}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
+                    {[
+                      { icon: <Download className="w-4 h-4" />, label: "Download Kit" },
+                      { icon: <Eye className="w-4 h-4" />, label: "Preview Kit" },
+                      { icon: <Printer className="w-4 h-4" />, label: "Print" },
+                      { icon: <Share2 className="w-4 h-4" />, label: "Share" },
+                      { icon: <Save className="w-4 h-4" />, label: "Save to Vault", colSpan: 2 }
+                    ].map((btn, i) => (
+                      <Button 
+                        key={i} 
+                        disabled 
+                        variant={btn.colSpan ? "default" : "outline"}
+                        className={`h-14 rounded-xl border-slate-200 relative overflow-hidden group ${btn.colSpan ? 'col-span-2 bg-slate-800 hover:bg-slate-800 text-white' : ''}`}
+                      >
+                        <span className="flex items-center gap-2 opacity-40">
+                          {btn.icon} {btn.label}
+                        </span>
+                        <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 backdrop-blur-[1px] opacity-100">
+                          <span className="text-xs font-bold text-slate-600 bg-white px-2 py-1 rounded shadow-sm">
+                            Available in Phase 4
+                          </span>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })()}
 
           </AnimatePresence>
         </div>
