@@ -15,8 +15,9 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { DocumentUpload } from '@/components/documents/document-upload';
-import { AIProcessing } from './ai-processing';
 import { DocumentValidationUI } from './document-validation-ui';
+import { SmartKitProcessingUI } from './smart-kit-processing-ui';
+import { SmartKitSuccessUI } from './smart-kit-success-ui';
 
 interface RequiredDocument {
   id: string;
@@ -430,7 +431,7 @@ export function SmartDocumentKitWizard({
                       className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 px-8 disabled:opacity-50"
                       onClick={() => setStep(5)}
                     >
-                      Continue
+                      Generate Smart Document Kit
                     </Button>
                   </div>
                 </motion.div>
@@ -439,146 +440,25 @@ export function SmartDocumentKitWizard({
 
             {/* STEP 5: AI Processing Screen */}
             {step === 5 && (
-              <motion.div
-                key="step5"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center justify-center min-h-[400px] w-full"
-              >
-                <AIProcessing onComplete={() => setStep(6)} />
-              </motion.div>
+              <SmartKitProcessingUI onComplete={() => setStep(6)} />
             )}
 
             {/* STEP 6: Final Success Screen */}
             {step === 6 && (() => {
               const uploadedCount = requiredDocuments.filter(r => documentStatus[r.documentId]).length;
-              
               return (
-                <motion.div
-                  key="step6"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-4 w-full"
-                >
-                  <div className="relative mx-auto w-32 h-32 mb-6 flex items-center justify-center">
-                    <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", bounce: 0.5, duration: 0.8 }}
-                      className="absolute inset-0 bg-emerald-100 rounded-full"
-                    />
-                    <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", bounce: 0.5, duration: 0.8, delay: 0.1 }}
-                      className="absolute inset-2 bg-emerald-200 rounded-full"
-                    />
-                    <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: "spring", bounce: 0.5, duration: 0.8, delay: 0.2 }}
-                      className="absolute inset-4 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/30 flex items-center justify-center z-10"
-                    >
-                      <Check className="w-12 h-12 text-white" />
-                    </motion.div>
-                    
-                    {/* Lightweight Confetti Particles */}
-                    {[...Array(6)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 0, x: 0 }}
-                        animate={{ 
-                          opacity: [0, 1, 0], 
-                          y: -60 - Math.random() * 60,
-                          x: (Math.random() - 0.5) * 120
-                        }}
-                        transition={{ duration: 1.5, delay: 0.3 + Math.random() * 0.2, ease: "easeOut" }}
-                        className="absolute top-1/2 left-1/2 w-3 h-3 bg-indigo-500 rounded-sm rotate-45"
-                        style={{ backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ec4899'][i % 4] }}
-                      />
-                    ))}
-                  </div>
-                  
-                  <div className="space-y-2 mb-8">
-                    <h3 className="text-3xl font-extrabold text-slate-900">🎉 Smart Document Kit Ready</h3>
-                    <p className="text-slate-500 max-w-md mx-auto">
-                      Your application kit has been perfectly assembled to government standards.
-                    </p>
-                  </div>
-
-                  <div className="bg-white rounded-2xl border shadow-sm p-5 mb-8 max-w-2xl mx-auto flex flex-col md:flex-row gap-6">
-                    <div className="flex-1 grid grid-cols-2 gap-4">
-                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
-                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Application Readiness</p>
-                        <p className="text-2xl font-bold text-emerald-600">100%</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
-                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Documents Included</p>
-                        <p className="text-2xl font-bold text-slate-800">{uploadedCount}</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
-                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Estimated File Size</p>
-                        <p className="text-2xl font-bold text-slate-800">2.4 MB</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-xl border text-left">
-                        <p className="text-xs text-slate-500 font-semibold uppercase mb-1">Status</p>
-                        <div className="flex items-center gap-1 text-emerald-600 font-bold">
-                          <CheckCircle className="w-4 h-4" /> Ready
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex-1 border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-6 text-left">
-                      <h4 className="font-bold text-slate-800 mb-3">Kit Features</h4>
-                      <div className="grid grid-cols-1 gap-2">
-                        {[
-                          'Auto Organized',
-                          'OCR Optimized',
-                          'Print Ready',
-                          'Searchable PDF',
-                          'Government Format',
-                          'Future Reusable'
-                        ].map((badge, idx) => (
-                          <div key={idx} className="flex items-center gap-2 text-sm font-medium text-slate-600">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                            {badge}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
-                    {[
-                      { icon: <Download className="w-4 h-4" />, label: "Download Kit" },
-                      { icon: <Eye className="w-4 h-4" />, label: "Preview Kit" },
-                      { icon: <Printer className="w-4 h-4" />, label: "Print" },
-                      { icon: <Share2 className="w-4 h-4" />, label: "Share" },
-                      { icon: <Save className="w-4 h-4" />, label: "Save to AI Document Vault", colSpan: 2, active: true }
-                    ].map((btn, i) => (
-                      <Button 
-                        key={i} 
-                        disabled={!btn.active}
-                        onClick={() => {
-                          if (btn.active) setStep(7);
-                        }}
-                        variant={btn.colSpan ? "default" : "outline"}
-                        className={`h-14 rounded-xl border-slate-200 relative overflow-hidden group ${btn.colSpan ? 'col-span-2 bg-slate-900 hover:bg-slate-800 text-white' : ''}`}
-                      >
-                        <span className={`flex items-center gap-2 ${!btn.active ? 'opacity-40' : ''}`}>
-                          {btn.icon} {btn.label}
-                        </span>
-                        {!btn.active && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-slate-100/80 backdrop-blur-[1px] opacity-100">
-                            <span className="text-xs font-bold text-slate-600 bg-white px-2 py-1 rounded shadow-sm">
-                              Available in Phase 4
-                            </span>
-                          </div>
-                        )}
-                      </Button>
-                    ))}
-                  </div>
-                </motion.div>
+                <SmartKitSuccessUI 
+                  stats={{
+                    required: requiredDocuments.length,
+                    uploaded: uploadedCount,
+                    validated: uploadedCount,
+                    readiness: 100,
+                  }}
+                  onPreview={() => {}}
+                  onDownload={() => {}}
+                  onBack={() => setOpen(false)}
+                  onSaveToVault={() => setStep(7)}
+                />
               );
             })()}
 
