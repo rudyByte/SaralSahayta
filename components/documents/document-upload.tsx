@@ -9,7 +9,7 @@ import { validateFile, checkImageQualityClient } from '@/lib/file-validation';
 interface DocumentUploadProps {
     documentCode: string;
     documentName: string;
-    onUploadSuccess: (document: any) => void;
+    onUploadSuccess: (document: any, file?: File) => void;
     maxSize?: number;
 }
 
@@ -112,7 +112,7 @@ export function DocumentUpload({
             }
 
             console.log('[Frontend] ✅ Upload successful!');
-            onUploadSuccess(data.document);
+            onUploadSuccess(data.document, file);
             setFile(null);
             setPreview(null);
             setQualityCheck(null);

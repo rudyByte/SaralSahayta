@@ -19,6 +19,7 @@ interface PreviewModalProps {
     status: string;
     isMandatory: boolean;
   }>;
+  pdfBlobUrl?: string | null;
 }
 
 export function SmartKitPreviewModal({
@@ -26,7 +27,8 @@ export function SmartKitPreviewModal({
   onOpenChange,
   schemeName,
   stats,
-  documents
+  documents,
+  pdfBlobUrl
 }: PreviewModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -146,6 +148,13 @@ export function SmartKitPreviewModal({
                 </tbody>
               </table>
             </div>
+            
+            {pdfBlobUrl && (
+              <div className="bg-white border rounded-2xl shadow-sm overflow-hidden h-[600px] mt-6">
+                <h3 className="px-4 py-3 font-semibold bg-slate-50 border-b">PDF Preview</h3>
+                <iframe src={`${pdfBlobUrl}#toolbar=0`} className="w-full h-[calc(100%-48px)] border-0" title="Smart Kit PDF Preview" />
+              </div>
+            )}
           </div>
         </div>
         <div className="bg-slate-50 border-t px-6 py-4 flex justify-end">

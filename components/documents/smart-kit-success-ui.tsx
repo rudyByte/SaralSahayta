@@ -14,10 +14,12 @@ interface SmartKitSuccessUIProps {
   onDownload: () => void;
   onBack: () => void;
   onSaveToVault: () => void;
+  onPrint?: () => void;
+  onShare?: () => void;
   isDownloading?: boolean;
 }
 
-export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSaveToVault, isDownloading = false }: SmartKitSuccessUIProps) {
+export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSaveToVault, onPrint, onShare, isDownloading = false }: SmartKitSuccessUIProps) {
   return (
     <motion.div
       key="smart-kit-success"
@@ -88,6 +90,17 @@ export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSave
                Download Kit
             </>
           )}
+        </Button>
+      </div>
+
+      <div className="flex flex-col sm:flex-row w-full gap-4 pt-2">
+        <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={onPrint} disabled={isDownloading}>
+          <Printer className="w-4 h-4 mr-2" />
+          Print Kit
+        </Button>
+        <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={onShare} disabled={isDownloading}>
+          <Share2 className="w-4 h-4 mr-2" />
+          Share Kit
         </Button>
       </div>
 

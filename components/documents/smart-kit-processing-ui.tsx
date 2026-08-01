@@ -17,39 +17,18 @@ const messages = [
 
 interface SmartKitProcessingUIProps {
   onComplete: () => void;
+  currentTaskName: string;
+  progress: number;
 }
 
-export function SmartKitProcessingUI({ onComplete }: SmartKitProcessingUIProps) {
-  const [msgIndex, setMsgIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
+export function SmartKitProcessingUI({ onComplete, currentTaskName, progress }: SmartKitProcessingUIProps) {
+
 
   useEffect(() => {
-    // Total duration: 8 seconds
-    const totalDuration = 8000;
-    const intervalTime = 50; // Update progress every 50ms for smoothness
-    const steps = totalDuration / intervalTime;
-    let currentStep = 0;
-
-    const progressInterval = setInterval(() => {
-      currentStep++;
-      const currentProgress = (currentStep / steps) * 100;
-      setProgress(Math.min(currentProgress, 100));
-
-      if (currentStep >= steps) {
-        clearInterval(progressInterval);
-        setTimeout(() => onComplete(), 500); // slight delay after reaching 100%
-      }
-    }, intervalTime);
-
-    const messageInterval = setInterval(() => {
-      setMsgIndex((prev) => (prev + 1) % messages.length);
-    }, 1200); // Change message every 1.2 seconds
-
-    return () => {
-      clearInterval(progressInterval);
-      clearInterval(messageInterval);
-    };
-  }, [onComplete]);
+    if (progress >= 100) {
+      setTimeout(() => onComplete(), 500);
+    }
+  }, [progress, onComplete]);
 
   return (
     <motion.div
@@ -72,14 +51,14 @@ export function SmartKitProcessingUI({ onComplete }: SmartKitProcessingUIProps) 
         <div className="h-6 overflow-hidden relative w-full flex justify-center">
           <AnimatePresence mode="wait">
             <motion.p
-              key={msgIndex}
+              key={currentTaskName}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -20, opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="text-indigo-600 font-medium absolute"
             >
-              {messages[msgIndex]}
+              {currentTaskName || "Processing..."}
             </motion.p>
           </AnimatePresence>
         </div>

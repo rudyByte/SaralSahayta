@@ -19,6 +19,9 @@ import { DocumentValidationUI } from './document-validation-ui';
 import { SmartKitProcessingUI } from './smart-kit-processing-ui';
 import { SmartKitSuccessUI } from './smart-kit-success-ui';
 import { SmartKitPreviewModal } from './smart-kit-preview-modal';
+import { KitGeneratorService } from '@/lib/smart-document-kit/KitGeneratorService';
+import { SmartKitDocument } from '@/lib/smart-document-kit/types';
+import { supabase } from '@/lib/supabase';
 import { downloadDocumentKit } from '@/lib/download-service';
 import { toast } from 'sonner';
 
@@ -54,6 +57,12 @@ export function SmartDocumentKitWizard({
   const [currentDocForValidation, setCurrentDocForValidation] = useState<{req: RequiredDocument, doc: any} | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  
+  const [localFiles, setLocalFiles] = useState<Record<string, File>>({});
+  const [generatedPdfBlob, setGeneratedPdfBlob] = useState<Blob | null>(null);
+  const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
+  const [genTaskName, setGenTaskName] = useState('Initializing...');
+  const [genProgress, setGenProgress] = useState(0);
 
   const missingMandatoryDocs = requiredDocuments.filter(
     req => req.isMandatory && !documentStatus[req.documentId]
@@ -114,36 +123,10 @@ export function SmartDocumentKitWizard({
     return () => clearInterval(interval);
   }, [validating, validationMessages.length]);
 
-  useEffect(() => {
-    let taskInterval: NodeJS.Timeout;
-    let msgInterval: NodeJS.Timeout;
-    if (generating) {
-      taskInterval = setInterval(() => {
-        setCompletedTaskCount((prev) => {
-          if (prev < processingTasks.length) return prev + 1;
-          clearInterval(taskInterval);
-          setTimeout(() => {
-            setGenerating(false);
-            setStep(6);
-          }, 1500);
-          return prev;
-        });
-      }, 700);
-
-      msgInterval = setInterval(() => {
-        setGeneratingMsgIndex((prev) => {
-          if (prev < generateMessages.length - 1) return prev + 1;
-          return prev;
-        });
-      }, 2000);
+  const handleUploadSuccess = (req: RequiredDocument, uploadedDoc: any, file?: File) => {
+    if (file) {
+      setLocalFiles(prev => ({ ...prev, [req.documentId]: file }));
     }
-    return () => {
-      clearInterval(taskInterval);
-      clearInterval(msgInterval);
-    };
-  }, [generating, processingTasks.length, generateMessages.length]);
-
-  const handleUploadSuccess = (req: RequiredDocument, uploadedDoc: any) => {
     setCurrentDocForValidation({ req, doc: uploadedDoc });
     setStep(3);
   };
@@ -170,10 +153,64 @@ export function SmartDocumentKitWizard({
     setStep(2);
   };
 
-  const handleGenerateClick = () => {
+  const handleGenerateClick = async () => {
     setGenerating(true);
-    setGeneratingMsgIndex(0);
-    setCompletedTaskCount(0);
+    setGenTaskName('Checking files...');
+    setGenProgress(5);
+    
+    try {
+      const docsToProcess = requiredDocuments.filter(r => documentStatus[r.documentId]);
+      
+      const { data: userDocs } = await supabase
+        .from('user_documents')
+        .select('document_id, file_url, file_name')
+        .in('document_id', docsToProcess.map(d => d.documentId));
+        
+      const kitDocs: SmartKitDocument[] = docsToProcess.map(req => {
+        const localFile = localFiles[req.documentId];
+        const remoteDoc = userDocs?.find(d => d.document_id === req.documentId);
+        
+        return {
+          id: req.id,
+          documentId: req.documentId,
+          name: req.documents?.name || 'Document',
+          isMandatory: req.isMandatory,
+          status: 'Validated',
+          file: localFile,
+          url: remoteDoc?.file_url
+        };
+      });
+
+      const requiredIds = requiredDocuments.filter(r => r.isMandatory).map(r => r.id);
+      
+      const stats = {
+        required: requiredDocuments.length,
+        uploaded: docsToProcess.length,
+        validated: docsToProcess.length,
+        readiness: 100
+      };
+      
+      const pdfBlob = await KitGeneratorService.generateKit(
+        schemeName,
+        'John Doe (Mock)', // Usually fetched from profile
+        kitDocs,
+        stats,
+        requiredIds,
+        (taskName, progress) => {
+          setGenTaskName(taskName);
+          setGenProgress(progress);
+        }
+      );
+      
+      setGeneratedPdfBlob(pdfBlob);
+      setGeneratedPdfUrl(URL.createObjectURL(pdfBlob));
+      setStep(6);
+      setGenerating(false);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to generate Kit');
+      setGenerating(false);
+    }
   };
 
   return (
@@ -434,7 +471,10 @@ export function SmartDocumentKitWizard({
                     <Button 
                       disabled={missingCount > 0}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 px-8 disabled:opacity-50"
-                      onClick={() => setStep(5)}
+                      onClick={() => {
+                        setStep(5);
+                        handleGenerateClick();
+                      }}
                     >
                       Generate Smart Document Kit
                     </Button>
@@ -445,7 +485,11 @@ export function SmartDocumentKitWizard({
 
             {/* STEP 5: AI Processing Screen */}
             {step === 5 && (
-              <SmartKitProcessingUI onComplete={() => setStep(6)} />
+              <SmartKitProcessingUI 
+                onComplete={() => setStep(6)} 
+                currentTaskName={genTaskName}
+                progress={genProgress}
+              />
             )}
 
             {/* STEP 6: Final Success Screen */}
@@ -461,22 +505,16 @@ export function SmartDocumentKitWizard({
                       readiness: 100,
                     }}
                     onPreview={() => setPreviewOpen(true)}
-                    onDownload={async () => {
+                    onDownload={() => {
+                      if (!generatedPdfBlob) return;
                       setIsDownloading(true);
                       try {
-                        await downloadDocumentKit({
-                          schemeName,
-                          stats: {
-                            required: requiredDocuments.length,
-                            uploaded: uploadedCount,
-                            validated: uploadedCount,
-                            readiness: 100
-                          },
-                          documents: requiredDocuments.filter(r => documentStatus[r.documentId]).map(r => ({
-                            name: r.documents?.name || 'Document',
-                            status: 'Validated'
-                          }))
-                        });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(generatedPdfBlob);
+                        link.download = `Smart_Kit_${schemeName.replace(/\s+/g, '_')}.pdf`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
                         toast.success('Document Kit Downloaded', {
                            description: 'Your Smart Document Kit has been downloaded successfully.'
                         });
@@ -484,6 +522,28 @@ export function SmartDocumentKitWizard({
                         toast.error('Failed to download document kit');
                       } finally {
                         setIsDownloading(false);
+                      }
+                    }}
+                    onPrint={() => {
+                      if (generatedPdfUrl) {
+                        window.open(generatedPdfUrl);
+                      }
+                    }}
+                    onShare={async () => {
+                      if (!generatedPdfBlob) return;
+                      try {
+                        const file = new File([generatedPdfBlob], `Smart_Kit_${schemeName.replace(/\s+/g, '_')}.pdf`, { type: 'application/pdf' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                          await navigator.share({
+                            files: [file],
+                            title: 'Smart Document Kit',
+                            text: `Application kit for ${schemeName}`,
+                          });
+                        } else {
+                          toast.error('Sharing not supported on this browser');
+                        }
+                      } catch (e) {
+                        console.error('Share failed', e);
                       }
                     }}
                     onBack={() => setOpen(false)}
@@ -506,6 +566,7 @@ export function SmartDocumentKitWizard({
                       status: documentStatus[r.documentId] ? 'Validated' : 'Missing',
                       isMandatory: r.isMandatory
                     }))}
+                    pdfBlobUrl={generatedPdfUrl}
                   />
                 </>
               );
