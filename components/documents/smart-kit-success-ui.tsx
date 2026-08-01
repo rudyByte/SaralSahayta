@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Eye, Download, Printer, ArrowLeft, FileText, CheckCircle, Percent, HardDrive, Save } from 'lucide-react';
+import { CheckCircle2, Eye, Download, Printer, ArrowLeft, FileText, CheckCircle, Percent, HardDrive, Save, Share2 } from 'lucide-react';
 
 interface SmartKitSuccessUIProps {
   stats: {
