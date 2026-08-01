@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Eye, Download, ArrowLeft, FileText, CheckCircle, Percent, HardDrive, Save } from 'lucide-react';
+import { CheckCircle2, Eye, Download, Printer, ArrowLeft, FileText, CheckCircle, Percent, HardDrive, Save } from 'lucide-react';
 
 interface SmartKitSuccessUIProps {
   stats: {
@@ -28,7 +28,7 @@ export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSave
       className="flex flex-col items-center justify-center min-h-[400px] py-8 w-full max-w-2xl mx-auto space-y-8"
     >
       <div className="text-center space-y-4">
-        <motion.div 
+        <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", bounce: 0.5, duration: 0.8 }}
@@ -36,7 +36,7 @@ export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSave
         >
           <CheckCircle2 className="w-12 h-12" />
         </motion.div>
-        
+
         <h2 className="text-3xl font-bold text-slate-900">Smart Document Kit Ready</h2>
         <p className="text-lg text-slate-500">Your documents have been prepared successfully.</p>
       </div>
@@ -81,13 +81,13 @@ export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSave
         <Button className="flex-1 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20" onClick={onDownload} disabled={isDownloading}>
           {isDownloading ? (
             <div className="flex items-center">
-               <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
-               Downloading...
+              <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+              Downloading...
             </div>
           ) : (
             <>
-               <Download className="w-4 h-4 mr-2" />
-               Download Kit
+              <Download className="w-4 h-4 mr-2" />
+              Download Kit
             </>
           )}
         </Button>
