@@ -14,9 +14,10 @@ interface SmartKitSuccessUIProps {
   onDownload: () => void;
   onBack: () => void;
   onSaveToVault: () => void;
+  isDownloading?: boolean;
 }
 
-export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSaveToVault }: SmartKitSuccessUIProps) {
+export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSaveToVault, isDownloading = false }: SmartKitSuccessUIProps) {
   return (
     <motion.div
       key="smart-kit-success"
@@ -67,21 +68,30 @@ export function SmartKitSuccessUI({ stats, onPreview, onDownload, onBack, onSave
       </div>
 
       <div className="flex flex-col sm:flex-row w-full gap-4 pt-4">
-        <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={onBack}>
+        <Button variant="outline" className="flex-1 h-12 rounded-xl" onClick={onBack} disabled={isDownloading}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Scheme
         </Button>
-        <Button variant="outline" className="flex-1 h-12 rounded-xl border-indigo-200 text-indigo-700 hover:bg-indigo-50" onClick={onPreview}>
+        <Button variant="outline" className="flex-1 h-12 rounded-xl border-indigo-200 text-indigo-700 hover:bg-indigo-50" onClick={onPreview} disabled={isDownloading}>
           <Eye className="w-4 h-4 mr-2" />
           Preview Kit
         </Button>
-        <Button className="flex-1 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20" onClick={onDownload}>
-          <Download className="w-4 h-4 mr-2" />
-          Download Kit
+        <Button className="flex-1 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20" onClick={onDownload} disabled={isDownloading}>
+          {isDownloading ? (
+            <div className="flex items-center">
+               <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2" />
+               Downloading...
+            </div>
+          ) : (
+            <>
+               <Download className="w-4 h-4 mr-2" />
+               Download Kit
+            </>
+          )}
         </Button>
       </div>
 
-      <Button className="w-full h-14 rounded-xl bg-slate-900 hover:bg-slate-800 text-white" onClick={onSaveToVault}>
+      <Button className="w-full h-14 rounded-xl bg-slate-900 hover:bg-slate-800 text-white" onClick={onSaveToVault} disabled={isDownloading}>
         <Save className="w-4 h-4 mr-2" />
         Save to AI Document Vault
       </Button>

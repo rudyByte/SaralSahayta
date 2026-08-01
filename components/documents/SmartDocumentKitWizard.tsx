@@ -18,6 +18,9 @@ import { DocumentUpload } from '@/components/documents/document-upload';
 import { DocumentValidationUI } from './document-validation-ui';
 import { SmartKitProcessingUI } from './smart-kit-processing-ui';
 import { SmartKitSuccessUI } from './smart-kit-success-ui';
+import { SmartKitPreviewModal } from './smart-kit-preview-modal';
+import { downloadDocumentKit } from '@/lib/download-service';
+import { toast } from 'sonner';
 
 interface RequiredDocument {
   id: string;
@@ -49,6 +52,8 @@ export function SmartDocumentKitWizard({
   const [valMsgIndex, setValMsgIndex] = useState(0);
   const [completedTaskCount, setCompletedTaskCount] = useState(0);
   const [currentDocForValidation, setCurrentDocForValidation] = useState<{req: RequiredDocument, doc: any} | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const missingMandatoryDocs = requiredDocuments.filter(
     req => req.isMandatory && !documentStatus[req.documentId]
@@ -447,18 +452,62 @@ export function SmartDocumentKitWizard({
             {step === 6 && (() => {
               const uploadedCount = requiredDocuments.filter(r => documentStatus[r.documentId]).length;
               return (
-                <SmartKitSuccessUI 
-                  stats={{
-                    required: requiredDocuments.length,
-                    uploaded: uploadedCount,
-                    validated: uploadedCount,
-                    readiness: 100,
-                  }}
-                  onPreview={() => {}}
-                  onDownload={() => {}}
-                  onBack={() => setOpen(false)}
-                  onSaveToVault={() => setStep(7)}
-                />
+                <>
+                  <SmartKitSuccessUI 
+                    stats={{
+                      required: requiredDocuments.length,
+                      uploaded: uploadedCount,
+                      validated: uploadedCount,
+                      readiness: 100,
+                    }}
+                    onPreview={() => setPreviewOpen(true)}
+                    onDownload={async () => {
+                      setIsDownloading(true);
+                      try {
+                        await downloadDocumentKit({
+                          schemeName,
+                          stats: {
+                            required: requiredDocuments.length,
+                            uploaded: uploadedCount,
+                            validated: uploadedCount,
+                            readiness: 100
+                          },
+                          documents: requiredDocuments.filter(r => documentStatus[r.documentId]).map(r => ({
+                            name: r.documents?.name || 'Document',
+                            status: 'Validated'
+                          }))
+                        });
+                        toast.success('Document Kit Downloaded', {
+                           description: 'Your Smart Document Kit has been downloaded successfully.'
+                        });
+                      } catch (error) {
+                        toast.error('Failed to download document kit');
+                      } finally {
+                        setIsDownloading(false);
+                      }
+                    }}
+                    onBack={() => setOpen(false)}
+                    onSaveToVault={() => setStep(7)}
+                    isDownloading={isDownloading}
+                  />
+
+                  <SmartKitPreviewModal 
+                    open={previewOpen}
+                    onOpenChange={setPreviewOpen}
+                    schemeName={schemeName}
+                    stats={{
+                      required: requiredDocuments.length,
+                      uploaded: uploadedCount,
+                      validated: uploadedCount,
+                      readiness: 100,
+                    }}
+                    documents={requiredDocuments.map(r => ({
+                      name: r.documents?.name || 'Document',
+                      status: documentStatus[r.documentId] ? 'Validated' : 'Missing',
+                      isMandatory: r.isMandatory
+                    }))}
+                  />
+                </>
               );
             })()}
 
