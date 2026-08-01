@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  CheckCircle, XCircle, Clock, UploadCloud, 
+import {
+  CheckCircle, XCircle, Clock, UploadCloud,
   FileText, ShieldCheck, Loader2, Download, Printer, Share2, Save,
   Sparkles, Eye, CheckCircle2, Check,
   AlertTriangle, Shield, RefreshCw, Zap, Award
 } from 'lucide-react';
-import { 
-  Dialog, DialogContent, DialogTitle, DialogTrigger 
+import {
+  Dialog, DialogContent, DialogTitle, DialogTrigger
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -41,10 +41,10 @@ interface SmartDocumentKitWizardProps {
   initialDocumentStatus: Record<string, boolean>;
 }
 
-export function SmartDocumentKitWizard({ 
-  schemeName, 
-  requiredDocuments, 
-  initialDocumentStatus 
+export function SmartDocumentKitWizard({
+  schemeName,
+  requiredDocuments,
+  initialDocumentStatus
 }: SmartDocumentKitWizardProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
@@ -54,10 +54,10 @@ export function SmartDocumentKitWizard({
   const [generatingMsgIndex, setGeneratingMsgIndex] = useState(0);
   const [valMsgIndex, setValMsgIndex] = useState(0);
   const [completedTaskCount, setCompletedTaskCount] = useState(0);
-  const [currentDocForValidation, setCurrentDocForValidation] = useState<{req: RequiredDocument, doc: any} | null>(null);
+  const [currentDocForValidation, setCurrentDocForValidation] = useState<{ req: RequiredDocument, doc: any } | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
-  
+
   const [localFiles, setLocalFiles] = useState<Record<string, File>>({});
   const [generatedPdfBlob, setGeneratedPdfBlob] = useState<Blob | null>(null);
   const [generatedPdfUrl, setGeneratedPdfUrl] = useState<string | null>(null);
@@ -67,7 +67,7 @@ export function SmartDocumentKitWizard({
   const missingMandatoryDocs = requiredDocuments.filter(
     req => req.isMandatory && !documentStatus[req.documentId]
   );
-  
+
   const hasMissingDocs = missingMandatoryDocs.length > 0;
 
   const validationMessages = [
@@ -134,14 +134,14 @@ export function SmartDocumentKitWizard({
   const handleValidationContinue = () => {
     if (!currentDocForValidation) return;
     const { req } = currentDocForValidation;
-    
+
     const newStatus = { ...documentStatus, [req.documentId]: true };
     setDocumentStatus(newStatus);
-    
+
     const remainingMissing = requiredDocuments.filter(
       r => r.isMandatory && !newStatus[r.documentId]
     );
-    
+
     if (remainingMissing.length === 0) {
       setStep(4);
     } else {
@@ -157,19 +157,19 @@ export function SmartDocumentKitWizard({
     setGenerating(true);
     setGenTaskName('Checking files...');
     setGenProgress(5);
-    
+
     try {
       const docsToProcess = requiredDocuments.filter(r => documentStatus[r.documentId]);
-      
+
       const { data: userDocs } = await supabase
         .from('user_documents')
         .select('document_id, file_url, file_name')
         .in('document_id', docsToProcess.map(d => d.documentId));
-        
+
       const kitDocs: SmartKitDocument[] = docsToProcess.map(req => {
         const localFile = localFiles[req.documentId];
         const remoteDoc = userDocs?.find(d => d.document_id === req.documentId);
-        
+
         return {
           id: req.id,
           documentId: req.documentId,
@@ -182,14 +182,14 @@ export function SmartDocumentKitWizard({
       });
 
       const requiredIds = requiredDocuments.filter(r => r.isMandatory).map(r => r.id);
-      
+
       const stats = {
         required: requiredDocuments.length,
         uploaded: docsToProcess.length,
         validated: docsToProcess.length,
         readiness: 100
       };
-      
+      console.log("Documents sent to generator:", kitDocs);
       const pdfBlob = await KitGeneratorService.generateKit(
         schemeName,
         'John Doe (Mock)', // Usually fetched from profile
@@ -201,7 +201,7 @@ export function SmartDocumentKitWizard({
           setGenProgress(progress);
         }
       );
-      
+
       setGeneratedPdfBlob(pdfBlob);
       setGeneratedPdfUrl(URL.createObjectURL(pdfBlob));
       setStep(6);
@@ -221,7 +221,7 @@ export function SmartDocumentKitWizard({
           Generate Smart Document Kit
         </Button>
       </DialogTrigger>
-      
+
       <DialogContent className="max-w-3xl p-0 overflow-hidden bg-slate-50">
         <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
           <DialogTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -230,9 +230,9 @@ export function SmartDocumentKitWizard({
           </DialogTitle>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map(s => (
-              <div 
-                key={s} 
-                className={`h-2 rounded-full transition-all duration-300 ${step === s || (step >= 5 && s === 5) ? 'w-8 bg-indigo-600' : step > s ? 'w-4 bg-indigo-200' : 'w-4 bg-slate-200'}`} 
+              <div
+                key={s}
+                className={`h-2 rounded-full transition-all duration-300 ${step === s || (step >= 5 && s === 5) ? 'w-8 bg-indigo-600' : step > s ? 'w-4 bg-indigo-200' : 'w-4 bg-slate-200'}`}
               />
             ))}
           </div>
@@ -240,7 +240,7 @@ export function SmartDocumentKitWizard({
 
         <div className="p-6 min-h-[400px] relative">
           <AnimatePresence mode="wait">
-            
+
             {/* STEP 1: Document Checklist */}
             {step === 1 && (
               <motion.div
@@ -277,7 +277,7 @@ export function SmartDocumentKitWizard({
                         </div>
                         <div className="text-sm font-medium">
                           {isUploaded ? (
-                            <span className="text-emerald-600 flex items-center gap-1"><CheckCircle className="w-4 h-4"/> Already Uploaded</span>
+                            <span className="text-emerald-600 flex items-center gap-1"><CheckCircle className="w-4 h-4" /> Already Uploaded</span>
                           ) : (
                             <span className={req.isMandatory ? 'text-rose-600 flex items-center gap-1' : 'text-slate-500 flex items-center gap-1'}>
                               {req.isMandatory ? <><XCircle className="w-4 h-4" /> Missing</> : <><Clock className="w-4 h-4" /> Pending Upload</>}
@@ -290,8 +290,8 @@ export function SmartDocumentKitWizard({
                 </div>
 
                 <div className="pt-6 flex justify-end">
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white"
                     onClick={() => hasMissingDocs ? setStep(2) : setStep(4)}
                   >
@@ -326,14 +326,14 @@ export function SmartDocumentKitWizard({
                             <p className="text-sm text-slate-500">Mandatory for {schemeName}</p>
                           </div>
                           {isUploaded ? (
-                             <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none"><CheckCircle className="w-4 h-4 mr-1"/> Uploaded</Badge>
+                            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none"><CheckCircle className="w-4 h-4 mr-1" /> Uploaded</Badge>
                           ) : (
-                             <Badge variant="destructive" className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-none"><XCircle className="w-4 h-4 mr-1"/> Missing</Badge>
+                            <Badge variant="destructive" className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-none"><XCircle className="w-4 h-4 mr-1" /> Missing</Badge>
                           )}
                         </div>
-                        
+
                         {!isUploaded ? (
-                          <DocumentUpload 
+                          <DocumentUpload
                             documentCode={req.documents?.code || 'DOC'}
                             documentName={req.documents?.name || 'Required Document'}
                             onUploadSuccess={(doc) => handleUploadSuccess(req, doc)}
@@ -350,7 +350,7 @@ export function SmartDocumentKitWizard({
                               </div>
                             </div>
                             <Button variant="outline" size="sm" onClick={() => {
-                                setDocumentStatus(prev => ({ ...prev, [req.documentId]: false }));
+                              setDocumentStatus(prev => ({ ...prev, [req.documentId]: false }));
                             }}>
                               Replace File
                             </Button>
@@ -360,10 +360,10 @@ export function SmartDocumentKitWizard({
                     );
                   })}
                 </div>
-                
+
                 <div className="pt-4 flex justify-between items-center border-t border-slate-100">
                   <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-                  <Button 
+                  <Button
                     className="bg-indigo-600 hover:bg-indigo-700 text-white"
                     onClick={() => setStep(4)}
                   >
@@ -376,7 +376,7 @@ export function SmartDocumentKitWizard({
             {/* STEP 3: AI Validation Screen */}
             {step === 3 && currentDocForValidation && (
               <AnimatePresence mode="wait">
-                <DocumentValidationUI 
+                <DocumentValidationUI
                   document={currentDocForValidation.doc}
                   onReplace={handleValidationReplace}
                   onContinue={handleValidationContinue}
@@ -390,7 +390,7 @@ export function SmartDocumentKitWizard({
               const uploadedCount = requiredDocuments.filter(r => r.isMandatory && documentStatus[r.documentId]).length;
               const missingCount = totalRequired - uploadedCount;
               const percentage = totalRequired === 0 ? 100 : Math.round((uploadedCount / totalRequired) * 100);
-              
+
               let progressColor = 'text-rose-500';
               let progressBg = 'text-rose-100';
               if (percentage >= 80) {
@@ -457,9 +457,9 @@ export function SmartDocumentKitWizard({
                         <div key={req.id} className="flex items-center justify-between py-2 border-b last:border-0 border-slate-100">
                           <span className="font-medium text-slate-700">{req.documents?.name}</span>
                           {isUp ? (
-                            <span className="flex items-center text-sm font-bold text-emerald-600"><CheckCircle className="w-4 h-4 mr-1"/> Ready</span>
+                            <span className="flex items-center text-sm font-bold text-emerald-600"><CheckCircle className="w-4 h-4 mr-1" /> Ready</span>
                           ) : (
-                            <span className="flex items-center text-sm font-bold text-amber-500"><Clock className="w-4 h-4 mr-1"/> Needs Upload</span>
+                            <span className="flex items-center text-sm font-bold text-amber-500"><Clock className="w-4 h-4 mr-1" /> Needs Upload</span>
                           )}
                         </div>
                       );
@@ -468,7 +468,7 @@ export function SmartDocumentKitWizard({
 
                   <div className="flex justify-between items-center pt-4 border-t">
                     <Button variant="ghost" onClick={() => setStep(2)}>Back to Upload</Button>
-                    <Button 
+                    <Button
                       disabled={missingCount > 0}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 px-8 disabled:opacity-50"
                       onClick={() => {
@@ -485,8 +485,8 @@ export function SmartDocumentKitWizard({
 
             {/* STEP 5: AI Processing Screen */}
             {step === 5 && (
-              <SmartKitProcessingUI 
-                onComplete={() => setStep(6)} 
+              <SmartKitProcessingUI
+                onComplete={() => setStep(6)}
                 currentTaskName={genTaskName}
                 progress={genProgress}
               />
@@ -497,7 +497,7 @@ export function SmartDocumentKitWizard({
               const uploadedCount = requiredDocuments.filter(r => documentStatus[r.documentId]).length;
               return (
                 <>
-                  <SmartKitSuccessUI 
+                  <SmartKitSuccessUI
                     stats={{
                       required: requiredDocuments.length,
                       uploaded: uploadedCount,
@@ -516,7 +516,7 @@ export function SmartDocumentKitWizard({
                         link.click();
                         document.body.removeChild(link);
                         toast.success('Document Kit Downloaded', {
-                           description: 'Your Smart Document Kit has been downloaded successfully.'
+                          description: 'Your Smart Document Kit has been downloaded successfully.'
                         });
                       } catch (error) {
                         toast.error('Failed to download document kit');
@@ -551,7 +551,7 @@ export function SmartDocumentKitWizard({
                     isDownloading={isDownloading}
                   />
 
-                  <SmartKitPreviewModal 
+                  <SmartKitPreviewModal
                     open={previewOpen}
                     onOpenChange={setPreviewOpen}
                     schemeName={schemeName}
@@ -583,43 +583,43 @@ export function SmartDocumentKitWizard({
                   className="py-4 w-full"
                 >
                   <div className="flex items-center justify-between mb-8">
-                     <div className="flex items-center gap-4">
-                       <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
-                         <Shield className="w-7 h-7" />
-                       </div>
-                       <div>
-                         <h3 className="text-3xl font-extrabold text-slate-900">My AI Document Vault</h3>
-                         <p className="text-slate-500 font-medium mt-1">Your secure, intelligent, and reusable document system</p>
-                       </div>
-                     </div>
-                     <Button variant="ghost" onClick={() => setStep(6)}>Back to Kit</Button>
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner">
+                        <Shield className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <h3 className="text-3xl font-extrabold text-slate-900">My AI Document Vault</h3>
+                        <p className="text-slate-500 font-medium mt-1">Your secure, intelligent, and reusable document system</p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" onClick={() => setStep(6)}>Back to Kit</Button>
                   </div>
 
                   {/* Dashboard Summary */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                     {[
-                       { label: 'Total Documents', value: uploadedDocs.length, color: 'text-indigo-600' },
-                       { label: 'Verified', value: uploadedDocs.length, color: 'text-emerald-600' },
-                       { label: 'Overall Health', value: '98%', color: 'text-emerald-600' },
-                       { label: 'Reusable Schemes', value: '38', color: 'text-purple-600' },
-                     ].map((stat, i) => (
-                       <motion.div 
-                         key={i} 
-                         initial={{ opacity: 0, y: 10 }}
-                         animate={{ opacity: 1, y: 0 }}
-                         transition={{ delay: i * 0.1 }}
-                         className="bg-white border rounded-2xl p-5 shadow-sm text-center transform transition-transform hover:scale-105"
-                       >
-                          <p className={`text-4xl font-extrabold ${stat.color}`}>{stat.value}</p>
-                          <p className="text-xs text-slate-500 font-bold uppercase tracking-wide mt-2">{stat.label}</p>
-                       </motion.div>
-                     ))}
+                    {[
+                      { label: 'Total Documents', value: uploadedDocs.length, color: 'text-indigo-600' },
+                      { label: 'Verified', value: uploadedDocs.length, color: 'text-emerald-600' },
+                      { label: 'Overall Health', value: '98%', color: 'text-emerald-600' },
+                      { label: 'Reusable Schemes', value: '38', color: 'text-purple-600' },
+                    ].map((stat, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="bg-white border rounded-2xl p-5 shadow-sm text-center transform transition-transform hover:scale-105"
+                      >
+                        <p className={`text-4xl font-extrabold ${stat.color}`}>{stat.value}</p>
+                        <p className="text-xs text-slate-500 font-bold uppercase tracking-wide mt-2">{stat.label}</p>
+                      </motion.div>
+                    ))}
                   </div>
 
                   {/* AI Suggestions */}
                   <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-6 mb-8 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-4 opacity-5">
-                       <Zap className="w-32 h-32" />
+                      <Zap className="w-32 h-32" />
                     </div>
                     <div className="relative z-10">
                       <div className="flex items-center gap-2 mb-5">
@@ -633,16 +633,16 @@ export function SmartDocumentKitWizard({
                           { text: "Your documents are ready for government submission.", type: 'success' },
                           { text: "Upload a higher quality scan for PAN Card.", type: 'info' }
                         ].map((sug, i) => (
-                          <motion.div 
+                          <motion.div
                             key={i}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: 0.3 + (i * 0.1) }} 
+                            transition={{ delay: 0.3 + (i * 0.1) }}
                             className="flex items-start gap-3 bg-white/80 backdrop-blur p-4 rounded-xl shadow-sm border border-indigo-50/50 hover:bg-white transition-colors"
                           >
-                            {sug.type === 'warning' ? <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" /> : 
-                             sug.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" /> :
-                             <Eye className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />}
+                            {sug.type === 'warning' ? <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" /> :
+                              sug.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" /> :
+                                <Eye className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />}
                             <p className="text-sm font-semibold text-slate-700">{sug.text}</p>
                           </motion.div>
                         ))}
@@ -653,89 +653,89 @@ export function SmartDocumentKitWizard({
                   {/* Documents List */}
                   <div className="space-y-5 max-h-[50vh] overflow-y-auto pr-2 pb-10">
                     {uploadedDocs.map((doc, idx) => {
-                       const healthScore = idx === 0 ? 85 : 98;
-                       const expiryText = idx === 0 ? "Expires in 12 days" : "Expires in 2 years";
-                       const expiryColor = idx === 0 ? "text-amber-600 bg-amber-50 border-amber-200" : "text-emerald-600 bg-emerald-50 border-emerald-200";
-                       
-                       return (
-                         <motion.div 
-                           key={doc.id}
-                           initial={{ opacity: 0, y: 10 }}
-                           animate={{ opacity: 1, y: 0 }}
-                           transition={{ delay: 0.5 + (idx * 0.1) }} 
-                           className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden"
-                         >
-                           <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                              <ShieldCheck className="w-32 h-32" />
-                           </div>
-                           <div className="relative z-10 flex flex-col md:flex-row gap-6">
-                             
-                             <div className="flex-1 space-y-4">
-                               <div className="flex flex-wrap items-center gap-3">
-                                 <h4 className="text-xl font-bold text-slate-900">{doc.documents?.name}</h4>
-                                 <Badge className={expiryColor}>{expiryText}</Badge>
-                                 <Badge variant="outline" className="text-slate-500 border-slate-200">Issue Date: 12 Jan 2024</Badge>
-                               </div>
-                               
-                               <div className="flex flex-wrap gap-2">
-                                 {[
-                                   { label: 'Government Verified', icon: <Award className="w-3 h-3 mr-1" /> },
-                                   { label: 'AI Validated', icon: <Sparkles className="w-3 h-3 mr-1" /> },
-                                   { label: 'OCR Ready', icon: <Eye className="w-3 h-3 mr-1" /> },
-                                   { label: 'Cloud Ready', icon: <UploadCloud className="w-3 h-3 mr-1" /> },
-                                   { label: 'Reusable', icon: <RefreshCw className="w-3 h-3 mr-1" /> }
-                                 ].map(badge => (
-                                   <Badge key={badge.label} variant="outline" className="text-indigo-600 border-indigo-200 bg-indigo-50/50">
-                                     {badge.icon} {badge.label}
-                                   </Badge>
-                                 ))}
-                               </div>
+                      const healthScore = idx === 0 ? 85 : 98;
+                      const expiryText = idx === 0 ? "Expires in 12 days" : "Expires in 2 years";
+                      const expiryColor = idx === 0 ? "text-amber-600 bg-amber-50 border-amber-200" : "text-emerald-600 bg-emerald-50 border-emerald-200";
 
-                               <div className="bg-slate-50 p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                                  <p className="text-xs font-bold text-slate-500 uppercase flex-shrink-0">Reusable In:</p>
-                                  <div className="flex flex-wrap gap-2">
-                                    {['Scholarships', 'Education', 'Healthcare', 'Farmer Welfare'].map(r => (
-                                      <span key={r} className="text-xs font-semibold bg-white border px-2.5 py-1 rounded-md text-slate-600 shadow-sm">{r}</span>
-                                    ))}
-                                    <span className="text-xs font-bold bg-purple-100 border border-purple-200 px-2.5 py-1 rounded-md text-purple-700">
-                                      +34 Schemes
-                                    </span>
-                                  </div>
-                               </div>
-                             </div>
+                      return (
+                        <motion.div
+                          key={doc.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5 + (idx * 0.1) }}
+                          className="bg-white border rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden"
+                        >
+                          <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                            <ShieldCheck className="w-32 h-32" />
+                          </div>
+                          <div className="relative z-10 flex flex-col md:flex-row gap-6">
 
-                             <div className="w-full md:w-56 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l pt-6 md:pt-0 md:pl-6">
-                               <div className="text-center mb-3">
-                                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Health Score</p>
-                               </div>
-                               <div className="relative w-28 h-28 mb-3">
-                                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                   <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className={idx === 0 ? "text-amber-100" : "text-emerald-100"} />
-                                   <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
-                                     strokeDasharray={251.2}
-                                     strokeDashoffset={251.2 - (251.2 * healthScore) / 100}
-                                     strokeLinecap="round"
-                                     className={`${idx === 0 ? "text-amber-500" : "text-emerald-500"} transition-all duration-1000 ease-out`}
-                                   />
-                                 </svg>
-                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                   <span className="text-2xl font-extrabold text-slate-800">{healthScore}%</span>
-                                 </div>
-                               </div>
-                               
-                               {idx === 0 ? (
-                                 <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-md border border-amber-200">
-                                   <AlertTriangle className="w-3.5 h-3.5" /> Signature slightly blurred
-                                 </div>
-                               ) : (
-                                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-md border border-emerald-200">
-                                   <CheckCircle className="w-3.5 h-3.5" /> High Resolution
-                                 </div>
-                               )}
-                             </div>
-                           </div>
-                         </motion.div>
-                       )
+                            <div className="flex-1 space-y-4">
+                              <div className="flex flex-wrap items-center gap-3">
+                                <h4 className="text-xl font-bold text-slate-900">{doc.documents?.name}</h4>
+                                <Badge className={expiryColor}>{expiryText}</Badge>
+                                <Badge variant="outline" className="text-slate-500 border-slate-200">Issue Date: 12 Jan 2024</Badge>
+                              </div>
+
+                              <div className="flex flex-wrap gap-2">
+                                {[
+                                  { label: 'Government Verified', icon: <Award className="w-3 h-3 mr-1" /> },
+                                  { label: 'AI Validated', icon: <Sparkles className="w-3 h-3 mr-1" /> },
+                                  { label: 'OCR Ready', icon: <Eye className="w-3 h-3 mr-1" /> },
+                                  { label: 'Cloud Ready', icon: <UploadCloud className="w-3 h-3 mr-1" /> },
+                                  { label: 'Reusable', icon: <RefreshCw className="w-3 h-3 mr-1" /> }
+                                ].map(badge => (
+                                  <Badge key={badge.label} variant="outline" className="text-indigo-600 border-indigo-200 bg-indigo-50/50">
+                                    {badge.icon} {badge.label}
+                                  </Badge>
+                                ))}
+                              </div>
+
+                              <div className="bg-slate-50 p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                <p className="text-xs font-bold text-slate-500 uppercase flex-shrink-0">Reusable In:</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {['Scholarships', 'Education', 'Healthcare', 'Farmer Welfare'].map(r => (
+                                    <span key={r} className="text-xs font-semibold bg-white border px-2.5 py-1 rounded-md text-slate-600 shadow-sm">{r}</span>
+                                  ))}
+                                  <span className="text-xs font-bold bg-purple-100 border border-purple-200 px-2.5 py-1 rounded-md text-purple-700">
+                                    +34 Schemes
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="w-full md:w-56 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l pt-6 md:pt-0 md:pl-6">
+                              <div className="text-center mb-3">
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Health Score</p>
+                              </div>
+                              <div className="relative w-28 h-28 mb-3">
+                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                  <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className={idx === 0 ? "text-amber-100" : "text-emerald-100"} />
+                                  <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
+                                    strokeDasharray={251.2}
+                                    strokeDashoffset={251.2 - (251.2 * healthScore) / 100}
+                                    strokeLinecap="round"
+                                    className={`${idx === 0 ? "text-amber-500" : "text-emerald-500"} transition-all duration-1000 ease-out`}
+                                  />
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                  <span className="text-2xl font-extrabold text-slate-800">{healthScore}%</span>
+                                </div>
+                              </div>
+
+                              {idx === 0 ? (
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-md border border-amber-200">
+                                  <AlertTriangle className="w-3.5 h-3.5" /> Signature slightly blurred
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1.5 rounded-md border border-emerald-200">
+                                  <CheckCircle className="w-3.5 h-3.5" /> High Resolution
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </motion.div>
+                      )
                     })}
                   </div>
                 </motion.div>
