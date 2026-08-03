@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle, XCircle, Clock, UploadCloud,
   FileText, ShieldCheck, Loader2, Download, Printer, Share2, Save,
-  Sparkles, Eye, CheckCircle2, Check,
+  Sparkles, Eye, CheckCircle2, Check, Lock,
   AlertTriangle, Shield, RefreshCw, Zap, Award
 } from 'lucide-react';
 import {
@@ -24,6 +24,7 @@ import { SmartKitDocument } from '@/lib/smart-document-kit/types';
 import { supabase } from '@/lib/supabase';
 import { downloadDocumentKit } from '@/lib/download-service';
 import { toast } from 'sonner';
+import { validateKitCompleteness } from '@/app/actions/validate-kit';
 
 interface RequiredDocument {
   id: string;
@@ -154,12 +155,31 @@ export function SmartDocumentKitWizard({
   };
 
   const handleGenerateClick = async () => {
+    // Collect stats and documents first
+    const requiredIds = requiredDocuments.filter(r => r.isMandatory).map(r => r.id);
+    const docsToProcess = requiredDocuments.filter(r => documentStatus[r.documentId]);
+    
+    // Perform server-side validation
     setGenerating(true);
-    setGenTaskName('Checking files...');
-    setGenProgress(5);
-
+    setGenTaskName('Validating kit completeness on server...');
+    setGenProgress(2);
+    
     try {
-      const docsToProcess = requiredDocuments.filter(r => documentStatus[r.documentId]);
+      const uploadStatuses = docsToProcess.map(req => ({
+        id: req.id,
+        status: 'Validated'
+      }));
+      
+      const validationResult = await validateKitCompleteness(requiredIds, uploadStatuses);
+      
+      if (!validationResult.success) {
+        toast.error(validationResult.message);
+        setGenerating(false);
+        return;
+      }
+      
+      setGenTaskName('Checking files...');
+      setGenProgress(5);
 
       const { data: userDocs } = await supabase
         .from('user_documents')
@@ -180,8 +200,6 @@ export function SmartDocumentKitWizard({
           url: remoteDoc?.file_url
         };
       });
-
-      const requiredIds = requiredDocuments.filter(r => r.isMandatory).map(r => r.id);
 
       const stats = {
         required: requiredDocuments.length,
@@ -390,16 +408,8 @@ export function SmartDocumentKitWizard({
               const uploadedCount = requiredDocuments.filter(r => r.isMandatory && documentStatus[r.documentId]).length;
               const missingCount = totalRequired - uploadedCount;
               const percentage = totalRequired === 0 ? 100 : Math.round((uploadedCount / totalRequired) * 100);
-
-              let progressColor = 'text-rose-500';
-              let progressBg = 'text-rose-100';
-              if (percentage >= 80) {
-                progressColor = 'text-emerald-500';
-                progressBg = 'text-emerald-100';
-              } else if (percentage >= 40) {
-                progressColor = 'text-amber-500';
-                progressBg = 'text-amber-100';
-              }
+              const isValidationInProgress = Object.values(validating).some(v => v);
+              const isComplete = missingCount === 0 && !isValidationInProgress;
 
               return (
                 <motion.div
@@ -410,72 +420,82 @@ export function SmartDocumentKitWizard({
                   className="space-y-8 py-4"
                 >
                   <div className="text-center space-y-2">
-                    <h3 className="text-2xl font-bold text-slate-900">Document Readiness Summary</h3>
+                    <h3 className="text-2xl font-bold text-slate-900">Required Documents Checklist</h3>
                     <p className="text-slate-500">Overview of your application documents.</p>
                   </div>
 
-                  <div className="flex flex-col md:flex-row items-center justify-center gap-10">
-                    {/* Circular Progress */}
-                    <div className="relative w-40 h-40 flex items-center justify-center">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className={progressBg} />
-                        <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
-                          strokeDasharray={251.2}
-                          strokeDashoffset={251.2 - (251.2 * percentage) / 100}
-                          strokeLinecap="round"
-                          className={`${progressColor} transition-all duration-1000 ease-out`}
-                        />
-                      </svg>
-                      <div className="absolute flex flex-col items-center justify-center">
-                        <span className="text-3xl font-bold text-slate-800">{percentage}%</span>
-                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Ready</span>
-                      </div>
+                  <div className="flex flex-col items-center justify-center space-y-6">
+                    {/* Checklist */}
+                    <div className="w-full max-w-md space-y-2 border rounded-xl p-4 bg-white shadow-sm">
+                      {requiredDocuments.filter(r => r.isMandatory).map(req => {
+                        const isUp = documentStatus[req.documentId];
+                        return (
+                          <div key={req.id} className="flex items-center gap-3 py-2 border-b last:border-0 border-slate-100">
+                            {isUp ? (
+                              <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                            ) : (
+                              <XCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />
+                            )}
+                            <span className="font-medium text-slate-700">{req.documents?.name}</span>
+                          </div>
+                        );
+                      })}
                     </div>
 
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-                      <div className="bg-slate-50 p-4 rounded-2xl border text-center">
-                        <p className="text-3xl font-bold text-slate-800">{totalRequired}</p>
-                        <p className="text-xs text-slate-500 font-medium uppercase mt-1">Total Required</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-2xl border text-center">
-                        <p className="text-3xl font-bold text-indigo-600">{uploadedCount}</p>
-                        <p className="text-xs text-slate-500 font-medium uppercase mt-1">Uploaded</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-2xl border text-center col-span-2 flex flex-col items-center justify-center">
-                        <p className="text-3xl font-bold text-rose-500">{missingCount}</p>
-                        <p className="text-xs text-slate-500 font-medium uppercase mt-1">Missing Documents</p>
-                      </div>
+                    <div className="w-full max-w-md text-center">
+                      <p className="font-bold text-slate-800 text-lg mb-2">
+                        {uploadedCount} / {totalRequired} Documents Uploaded ({percentage}%)
+                      </p>
+                      <Progress value={percentage} className="h-3 bg-slate-100" />
                     </div>
-                  </div>
 
-                  {/* Checklist */}
-                  <div className="max-h-[30vh] overflow-y-auto space-y-2 border rounded-xl p-4 bg-white">
-                    {requiredDocuments.filter(r => r.isMandatory).map(req => {
-                      const isUp = documentStatus[req.documentId];
-                      return (
-                        <div key={req.id} className="flex items-center justify-between py-2 border-b last:border-0 border-slate-100">
-                          <span className="font-medium text-slate-700">{req.documents?.name}</span>
-                          {isUp ? (
-                            <span className="flex items-center text-sm font-bold text-emerald-600"><CheckCircle className="w-4 h-4 mr-1" /> Ready</span>
-                          ) : (
-                            <span className="flex items-center text-sm font-bold text-amber-500"><Clock className="w-4 h-4 mr-1" /> Needs Upload</span>
-                          )}
+                    <div className="w-full max-w-md text-center">
+                      {isComplete ? (
+                        <div className="bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-200">
+                          <p className="font-bold flex items-center justify-center gap-2">
+                            <CheckCircle className="w-5 h-5" />
+                            All required documents available.
+                          </p>
+                          <p className="text-sm mt-1">Your Smart Application Kit is ready to generate.</p>
                         </div>
-                      );
-                    })}
+                      ) : (
+                        <div className="bg-rose-50 text-rose-700 p-4 rounded-xl border border-rose-200">
+                          <p className="font-bold flex items-center justify-center gap-2">
+                            <AlertTriangle className="w-5 h-5" />
+                            Incomplete Application
+                          </p>
+                          <p className="text-sm mt-1">Please upload and validate all required documents before generating your Application Kit.</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Helper actions */}
+                    {!isComplete && (
+                      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                        <Button variant="outline" size="sm" onClick={() => setStep(2)}>
+                          <UploadCloud className="w-4 h-4 mr-2" /> Upload Missing Document
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setStep(1)}>
+                          <Eye className="w-4 h-4 mr-2" /> View Missing Documents
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setStep(3)}>
+                          <RefreshCw className="w-4 h-4 mr-2" /> Retry Validation
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex justify-between items-center pt-4 border-t">
                     <Button variant="ghost" onClick={() => setStep(2)}>Back to Upload</Button>
                     <Button
-                      disabled={missingCount > 0}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 px-8 disabled:opacity-50"
+                      disabled={!isComplete}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 px-8 disabled:opacity-50 relative group"
                       onClick={() => {
                         setStep(5);
                         handleGenerateClick();
                       }}
                     >
+                      {!isComplete && <Lock className="w-4 h-4 mr-2 opacity-70" />}
                       Generate Smart Document Kit
                     </Button>
                   </div>

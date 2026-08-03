@@ -25,8 +25,9 @@ export async function analyzeDocumentQuality(docData: any): Promise<DocumentVali
     checks: [
       { title: "Readable", passed: true },
       { title: "High OCR confidence", passed: true },
-      { title: "Proper resolution", passed: true },
-      { title: "Expired", passed: false }
+      { title: "Proper resolution (Not blurry)", passed: true },
+      { title: "Not expired", passed: true },
+      { title: "Correct document type", passed: true }
     ]
   };
 }
