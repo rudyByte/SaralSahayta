@@ -1,6 +1,6 @@
 "use server";
 
-import { getGroqClient, GROQ_MODEL } from "@/lib/ai/groq";
+import { getGroqClient, GROQ_TEXT_MODEL } from "@/lib/ai/groq";
 import { Scheme, Gender, Category, Education } from "@prisma/client";
 
 interface AIAnalysisResult {
@@ -68,7 +68,7 @@ Format your response as a JSON object:
                     content: prompt,
                 },
             ],
-            model: GROQ_MODEL,
+            model: GROQ_TEXT_MODEL,
             response_format: { type: "json_object" },
         });
 

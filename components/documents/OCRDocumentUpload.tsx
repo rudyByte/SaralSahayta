@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { estimateImageQuality, type OCRProgress, type OCRResult } from '@/lib/ocr/tesseract-ocr';
+import { estimateImageQuality, extractTextFromImage, type OCRProgress, type OCRResult } from '@/lib/ocr/tesseract-ocr';
 import useSWR, { useSWRConfig } from 'swr';
 import ProfileChangePreview from './ProfileChangePreview';
 import { detectProfileChanges } from '@/lib/profile/change-detector';
@@ -30,19 +30,18 @@ export default function OCRDocumentUpload({
     const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
     const [extractedData, setExtractedData] = useState<any>(null);
     const [qualityCheck, setQualityCheck] = useState<any>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [error, setError] = useState<any>(null);
     const [detectedType, setDetectedType] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const { data: userProfile, mutate: mutateProfile } = useSWR('/api/profile');
     const { mutate: globalMutate } = useSWRConfig();
 
-    const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const onDrop = async (acceptedFiles: File[]) => {
         const selectedFile = acceptedFiles[0];
         if (!selectedFile) return;
 
         setError(null);
         setFile(selectedFile);
-        setOcrStatus('idle');
         setExtractedData(null);
         setDetectedType(null);
 
@@ -54,8 +53,10 @@ export default function OCRDocumentUpload({
         // Check quality
         const quality = await estimateImageQuality(selectedFile);
         setQualityCheck(quality);
-
-    }, []);
+        
+        // Auto-trigger OCR processing
+        processOCR(selectedFile);
+    };
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -66,25 +67,39 @@ export default function OCRDocumentUpload({
         multiple: false
     });
 
-    const handleOCR = async () => {
-        if (!file) return;
+    const processOCR = async (targetFile: File) => {
+        if (!targetFile) return;
 
         setOcrStatus('processing');
         setError(null);
-        setOcrProgress({ status: 'AI is analyzing document...', progress: 0.4 });
+        setOcrProgress({ status: 'Reading document text...', progress: 0.1 });
 
         try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('documentType', documentCode);
+            const ocrRes = await extractTextFromImage(targetFile, 'eng+hin', (prog) => {
+                setOcrProgress({ status: prog.status, progress: 0.1 + (prog.progress * 0.4) });
+            });
+
+            setOcrProgress({ status: 'AI is analyzing text...', progress: 0.6 });
 
             const response = await fetch('/api/documents/extract', {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ocrText: ocrRes.text,
+                    documentType: documentCode
+                })
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
+                if (errorData.expected && errorData.detected) {
+                    throw {
+                        isValidationError: true,
+                        expected: errorData.expected,
+                        detected: errorData.detected,
+                        message: errorData.message
+                    };
+                }
                 throw new Error(errorData.message || 'AI Extraction failed');
             }
 
@@ -116,8 +131,16 @@ export default function OCRDocumentUpload({
 
         } catch (err: any) {
             console.error('OCR Error:', err);
-            setError(err.message || 'AI extraction failed. Please try again or fill manually.');
-            setOcrStatus('error');
+            if (err.isValidationError) {
+                setError(err);
+                // Reject and delete uploaded file from state
+                setFile(null);
+                setPreview(null);
+                setOcrStatus('idle');
+            } else {
+                setError(err.message || 'AI extraction failed. Please try again or fill manually.');
+                setOcrStatus('error');
+            }
         }
     };
 
@@ -160,25 +183,43 @@ export default function OCRDocumentUpload({
         
         setIsUploading(true);
         try {
+            // STRICT VALIDATION FIX: 
+            // Execute the document upload first. The backend performs strict OCR validation.
+            // If the document is a mismatch, it returns a 400 error which handleUpload catches.
+            // This guarantees the upload stops immediately, no duplicate is saved, 
+            // and the profile is NEVER updated with wrong data.
+            const success = await handleUpload();
+            if (!success) {
+                return; // Stop processing. The error is already set by handleUpload.
+            }
+
+            // Profile update only happens if document validation succeeded
             const changes = detectProfileChanges(userProfile, extractedData, detectedType || documentCode);
+            
+            // Helper to safely extract string from potential multilingual object
+            const getString = (val: any): string => {
+                if (!val) return '';
+                if (typeof val === 'object') return String(val.english || val.hindi || Object.values(val)[0] || '');
+                return String(val);
+            };
+
             if (changes.length > 0) {
                 const updatePayload: any = {};
                 
                 // Map extracted data to profile schema fields (camelCase)
                 if (extractedData.annualIncome) {
-                    updatePayload.annualIncome = parseInt(extractedData.annualIncome.toString().replace(/[^0-9]/g, ''));
+                    const str = getString(extractedData.annualIncome);
+                    updatePayload.annualIncome = parseInt(str.replace(/[^0-9]/g, '')) || 0;
                 }
                 
                 if (extractedData.dateOfBirth) {
                     // Try to convert DD/MM/YYYY to ISO YYYY-MM-DD
-                    const dateStr = extractedData.dateOfBirth;
+                    const dateStr = getString(extractedData.dateOfBirth);
                     const parts = dateStr.includes('/') ? dateStr.split('/') : dateStr.split('-');
                     if (parts.length === 3) {
-                        // Assuming DD/MM/YYYY
                         if (parts[2].length === 4) {
                             updatePayload.dateOfBirth = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
                         } else if (parts[0].length === 4) {
-                            // Assuming YYYY/MM/DD
                             updatePayload.dateOfBirth = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
                         }
                     } else {
@@ -187,7 +228,7 @@ export default function OCRDocumentUpload({
                 }
                 
                 if (extractedData.gender) {
-                    const gender = extractedData.gender.toUpperCase();
+                    const gender = getString(extractedData.gender).toUpperCase();
                     if (['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
                         updatePayload.gender = gender;
                     } else {
@@ -195,11 +236,13 @@ export default function OCRDocumentUpload({
                     }
                 }
                 
-                if (extractedData.name) updatePayload.name = extractedData.name;
+                if (extractedData.name) {
+                    updatePayload.name = getString(extractedData.name);
+                }
                 
                 // Map Course/Education
                 if (extractedData.course) {
-                    const course = extractedData.course.toUpperCase();
+                    const course = getString(extractedData.course).toUpperCase();
                     if (course.includes('DEGREE') || course.includes('B.A') || course.includes('B.SC') || course.includes('B.COM') || course.includes('GRADUATE')) {
                         updatePayload.education = 'GRADUATE';
                     } else if (course.includes('MASTER') || course.includes('M.A') || course.includes('M.SC') || course.includes('M.COM') || course.includes('POSTGRADUATE')) {
@@ -226,21 +269,18 @@ export default function OCRDocumentUpload({
                 }
             }
             
-            const success = await handleUpload();
-            if (success) {
-                // Globally revalidate all confidence/scheme/document SWR caches
-                await globalMutate(
-                    (key: any) => typeof key === 'string' && (
-                        key.includes('/api/schemes') ||
-                        key.includes('/confidence') ||
-                        key.includes('/api/documents') ||
-                        key.includes('scheme_matches')
-                    ),
-                    undefined,
-                    { revalidate: true }
-                );
-                onUploadComplete();
-            }
+            // Globally revalidate all confidence/scheme/document SWR caches
+            await globalMutate(
+                (key: any) => typeof key === 'string' && (
+                    key.includes('/api/schemes') ||
+                    key.includes('/confidence') ||
+                    key.includes('/api/documents') ||
+                    key.includes('scheme_matches')
+                ),
+                undefined,
+                { revalidate: true }
+            );
+            onUploadComplete();
         } catch(err: any) {
              console.error('Profile/Upload Error:', err);
              setError(err.message || 'Operation failed');
@@ -356,23 +396,6 @@ export default function OCRDocumentUpload({
                             </h3>
 
                             <div className="flex-1">
-                                {ocrStatus === 'idle' && (
-                                    <div className="h-full flex flex-col items-center justify-center text-center py-10 bg-slate-50/50 rounded-lg border border-dashed border-slate-200">
-                                        <div className="bg-white p-4 rounded-full shadow-sm mb-4">
-                                            <FileText className="h-10 w-10 text-slate-300" />
-                                        </div>
-                                        <p className="text-sm font-medium text-slate-600">Ready for processing</p>
-                                        <p className="mt-1 text-xs text-slate-400 max-w-[200px]">Click below to automatically extract data from this document</p>
-                                        <button
-                                            onClick={handleOCR}
-                                            disabled={qualityCheck && qualityCheck.score < 40}
-                                            className="mt-6 px-8 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 font-semibold text-sm shadow-md shadow-primary/20 transition-all hover:scale-105 active:scale-95"
-                                        >
-                                            Process Document
-                                        </button>
-                                    </div>
-                                )}
-
                                 {ocrStatus === 'processing' && (
                                     <div className="h-full flex flex-col items-center justify-center text-center py-10">
                                         <div className="relative mb-6">
@@ -418,7 +441,7 @@ export default function OCRDocumentUpload({
                                                         {key.replace(/([A-Z])/g, ' $1').trim()}
                                                     </span>
                                                     <span className={`text-xs font-bold break-words ${value ? 'text-slate-800' : 'text-slate-300 italic'}`}>
-                                                        {value ? (value as string) : 'Not found'}
+                                                        {value ? (typeof value === 'object' ? ((value as any).english || (value as any).hindi || JSON.stringify(value)) : (value as string)) : 'Not found'}
                                                     </span>
                                                 </div>
                                             ))}
@@ -475,15 +498,19 @@ export default function OCRDocumentUpload({
                                             <XCircle className="h-10 w-10 text-rose-500" />
                                         </div>
                                         <h4 className="text-sm font-bold text-slate-800 uppercase">Extraction Failed</h4>
-                                        <p className="mt-2 text-xs text-rose-600 px-6 font-medium">{error}</p>
+                                        <p className="mt-2 text-xs text-rose-600 px-6 font-medium">{typeof error === 'string' ? error : 'An unexpected error occurred'}</p>
                                         <button
-                                            onClick={handleOCR}
+                                            onClick={() => file && processOCR(file)}
                                             className="mt-6 px-8 py-2.5 bg-slate-800 text-white rounded-lg hover:bg-slate-900 font-semibold text-sm shadow-lg"
                                         >
                                             Try Again
                                         </button>
                                         <button
-                                            onClick={() => setOcrStatus('idle')}
+                                            onClick={() => {
+                                                setFile(null);
+                                                setPreview(null);
+                                                setOcrStatus('idle');
+                                            }}
                                             className="mt-3 text-xs font-bold text-slate-400 hover:text-slate-600 uppercase"
                                         >
                                             Clear File
@@ -516,11 +543,37 @@ export default function OCRDocumentUpload({
                 </div>
             )}
 
-            {error && ocrStatus !== 'error' && (
-                <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl text-xs text-rose-600 font-bold animate-in fade-in zoom-in duration-300 flex items-center gap-3">
-                    <AlertCircle className="h-4 w-4" />
-                    {error}
-                </div>
+            {error && (
+                error.isValidationError ? (
+                    <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl animate-in fade-in zoom-in duration-300 shadow-sm mt-4">
+                        <div className="flex items-center gap-2 mb-3 pb-3 border-b border-rose-200/50">
+                            <XCircle className="h-5 w-5 text-rose-600" />
+                            <h4 className="text-sm font-bold text-rose-700 uppercase tracking-wide">Wrong Document Uploaded</h4>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4 mb-3">
+                            <div className="flex-1 bg-white p-3 rounded-lg border border-rose-100 shadow-sm">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Expected</p>
+                                <p className="text-sm font-bold text-emerald-600">{error.expected}</p>
+                            </div>
+                            <div className="flex-1 bg-white p-3 rounded-lg border border-rose-100 shadow-sm">
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Detected</p>
+                                <p className="text-sm font-bold text-rose-600">{error.detected}</p>
+                            </div>
+                        </div>
+                        
+                        <p className="text-xs text-rose-700 font-medium bg-rose-100/50 p-2.5 rounded-lg border border-rose-100">
+                            {error.message || `Expected ${error.expected} but detected ${error.detected}.`}
+                        </p>
+                    </div>
+                ) : (
+                    typeof error === 'string' && ocrStatus !== 'error' && (
+                        <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl text-xs text-rose-600 font-bold animate-in fade-in zoom-in duration-300 flex items-center gap-3 mt-4">
+                            <AlertCircle className="h-4 w-4" />
+                            {error}
+                        </div>
+                    )
+                )
             )}
         </div>
     );

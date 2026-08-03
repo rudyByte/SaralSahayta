@@ -34,12 +34,12 @@ export default function ProfileChangePreview({
                             {change.field}
                         </span>
                         <div className="flex items-center sm:justify-end gap-2 sm:gap-4 flex-1 min-w-0">
-                            <span className="text-xs font-bold text-slate-400 line-through decoration-slate-300 truncate text-right max-w-[50%]" title={change.oldValue}>
-                                {change.oldValue}
+                            <span className="text-xs font-bold text-slate-400 line-through decoration-slate-300 truncate text-right max-w-[50%]" title={typeof change.oldValue === 'object' ? JSON.stringify(change.oldValue) : change.oldValue}>
+                                {typeof change.oldValue === 'object' ? (change.oldValue.english || change.oldValue.hindi || JSON.stringify(change.oldValue)) : change.oldValue}
                             </span>
                             <ArrowRight className="h-4 w-4 text-primary shrink-0" />
-                            <span className="text-sm font-black text-emerald-600 break-words text-right flex-1 sm:flex-none" title={change.newValue}>
-                                {change.newValue}
+                            <span className="text-sm font-black text-emerald-600 break-words text-right flex-1 sm:flex-none" title={typeof change.newValue === 'object' ? JSON.stringify(change.newValue) : change.newValue}>
+                                {typeof change.newValue === 'object' ? (change.newValue.english || change.newValue.hindi || JSON.stringify(change.newValue)) : change.newValue}
                             </span>
                         </div>
                     </div>

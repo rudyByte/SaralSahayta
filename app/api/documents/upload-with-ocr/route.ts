@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
 import { calculateExpiryDate, getDocumentExpiryStatus } from '@/lib/documents/expiry-calculator';
 import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
+import { classifyDocument } from '@/lib/documents/groq-document-classifier';
 
 export async function POST(request: NextRequest) {
     try {
@@ -51,6 +52,66 @@ export async function POST(request: NextRequest) {
                 { error: 'Invalid document code' },
                 { status: 400 }
             );
+        }
+
+        // Validate document using Classifier Service if OCR data is present
+        if (ocrData && ocrData.text) {
+            const startTime = Date.now();
+            const classification = await classifyDocument(ocrData.text, document.document_name);
+            const processingTimeMs = Date.now() - startTime;
+            
+            console.log(`Expected document: ${document.document_name}`);
+            console.log(`Detected document: ${classification.detectedType}`);
+            console.log(`Comparison: ${classification.matched ? 'MATCH' : 'MISMATCH'}`);
+
+            // Log validation result for debugging (excluding sensitive OCR contents)
+            console.log(JSON.stringify({
+                event: 'DOCUMENT_VALIDATION',
+                timestamp: new Date().toISOString(),
+                expectedDocument: document.document_name,
+                detectedDocument: classification.detectedType,
+                confidence: classification.confidence,
+                validationResult: classification.matched ? 'PASSED' : 'FAILED',
+                processingTimeMs
+            }));
+
+            if (!classification.matched) {
+                console.log(`Upload rejected: Document type mismatch. Detected: ${classification.detectedType}, Expected: ${document.document_name}`);
+                return NextResponse.json(
+                    {
+                        success: false,
+                        detectedDocument: classification.detectedType,
+                        expectedDocument: document.document_name,
+                        message: `This document cannot be uploaded here. Please upload your ${document.document_name}.`
+                    },
+                    { status: 400 }
+                );
+            }
+        }
+
+        // Check for duplicate document based on OCR text
+        if (ocrData && ocrData.text) {
+            const { data: previousDocs } = await supabase
+                .from('user_documents')
+                .select('metadata')
+                .eq('user_id', userId);
+
+            if (previousDocs && previousDocs.length > 0) {
+                const normNewText = ocrData.text.replace(/\s+/g, '').toLowerCase();
+                const isDuplicate = previousDocs.some(doc => {
+                    const prevText = doc.metadata?.ocr_text;
+                    if (!prevText) return false;
+                    const normPrevText = prevText.replace(/\s+/g, '').toLowerCase();
+                    return normPrevText === normNewText;
+                });
+
+                if (isDuplicate) {
+                    return NextResponse.json(
+                        { error: 'This document has already been uploaded.' },
+                        { status: 400 }
+                    );
+                }
+            }
         }
 
         // Calculate Expiry Date if issue date is available in OCR data
@@ -134,6 +195,8 @@ export async function POST(request: NextRequest) {
         recalculateSchemeMatches(userId, `Document Uploaded: ${documentCode}`).catch(err => {
             console.warn('Background recalculation failed (non-critical):', err);
         });
+
+        console.log(`Upload saved: Document ${document.document_name} was successfully uploaded and saved for user ${userId}`);
 
         return NextResponse.json({
             success: true,
