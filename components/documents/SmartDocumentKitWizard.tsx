@@ -33,6 +33,7 @@ interface RequiredDocument {
   documents?: {
     name: string;
     code: string;
+    document_name?: string;
   };
 }
 
@@ -209,7 +210,7 @@ export function SmartDocumentKitWizard({
         return {
           id: req.id,
           documentId: req.documentId,
-          name: req.documents?.name || 'Document',
+          name: req.documents?.document_name || req.documents?.name || 'Document',
           isMandatory: req.isMandatory,
           status: 'Validated',
           file: localFile,
@@ -303,7 +304,7 @@ export function SmartDocumentKitWizard({
                             <Clock className="w-5 h-5 text-amber-500" />
                           )}
                           <div>
-                            <p className="font-semibold text-slate-800">{req.documents?.name || 'Document'}</p>
+                            <p className="font-semibold text-slate-800">{req.documents?.document_name || req.documents?.name || 'Document'}</p>
                             <Badge variant="outline" className={req.isMandatory ? 'text-rose-600 bg-rose-50 border-rose-200' : 'text-slate-500 bg-slate-50 border-slate-200'}>
                               {req.isMandatory ? 'Required' : 'Optional'}
                             </Badge>
@@ -356,7 +357,7 @@ export function SmartDocumentKitWizard({
                       <div id={`upload-doc-${req.id}`} key={req.id} className="p-5 bg-white border rounded-2xl shadow-sm space-y-4">
                         <div className="flex items-center justify-between pb-2 border-b">
                           <div>
-                            <h4 className="font-semibold text-slate-800">{req.documents?.name || 'Required Document'}</h4>
+                            <h4 className="font-semibold text-slate-800">{req.documents?.document_name || req.documents?.name || 'Required Document'}</h4>
                             <p className="text-sm text-slate-500">Mandatory for {schemeName}</p>
                           </div>
                           {isUploaded ? (
@@ -369,7 +370,7 @@ export function SmartDocumentKitWizard({
                         {!isUploaded ? (
                           <DocumentUpload
                             documentCode={req.documents?.code || 'DOC'}
-                            documentName={req.documents?.name || 'Required Document'}
+                            documentName={req.documents?.document_name || req.documents?.name || 'Required Document'}
                             onUploadSuccess={(doc) => handleUploadSuccess(req, doc)}
                           />
                         ) : (
@@ -379,7 +380,7 @@ export function SmartDocumentKitWizard({
                                 <FileText className="w-5 h-5" />
                               </div>
                               <div>
-                                <p className="font-medium text-slate-700">{req.documents?.name}.pdf</p>
+                                <p className="font-medium text-slate-700">{req.documents?.document_name || req.documents?.name || 'Document'}.pdf</p>
                                 <p className="text-xs text-slate-400">Ready for processing</p>
                               </div>
                             </div>
@@ -453,7 +454,7 @@ export function SmartDocumentKitWizard({
                               <XCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />
                             )}
                             <span className="font-medium text-slate-700">
-                              {req.documents?.name}
+                              {req.documents?.document_name || req.documents?.name || 'Document'}
                               {!isUp && <span className="text-rose-500 ml-1 font-semibold">(Missing)</span>}
                             </span>
                           </div>
@@ -470,7 +471,7 @@ export function SmartDocumentKitWizard({
                             <div key={req.id} className="flex items-center justify-between p-3 bg-rose-50 border border-rose-100 rounded-xl">
                               <div className="flex items-center gap-2">
                                 <XCircle className="w-5 h-5 text-rose-500 flex-shrink-0" />
-                                <span className="font-medium text-rose-900">{req.documents?.name}</span>
+                                <span className="font-medium text-rose-900">{req.documents?.document_name || req.documents?.name || 'Document'}</span>
                               </div>
                               <Button 
                                 size="sm" 
@@ -532,7 +533,7 @@ export function SmartDocumentKitWizard({
                           <p className="font-bold mb-2">Upload the following documents before generating your kit:</p>
                           <ul className="list-disc pl-5 space-y-1 font-medium">
                             {requiredDocuments.filter(r => r.isMandatory && !documentStatus[r.documentId]).map(req => (
-                              <li key={req.id}>{req.documents?.name}</li>
+                              <li key={req.id}>{req.documents?.document_name || req.documents?.name || 'Document'}</li>
                             ))}
                           </ul>
                         </div>
@@ -633,7 +634,7 @@ export function SmartDocumentKitWizard({
                       readiness: 100,
                     }}
                     documents={requiredDocuments.map(r => ({
-                      name: r.documents?.name || 'Document',
+                      name: r.documents?.document_name || r.documents?.name || 'Document',
                       status: documentStatus[r.documentId] ? 'Validated' : 'Missing',
                       isMandatory: r.isMandatory
                     }))}
@@ -743,7 +744,7 @@ export function SmartDocumentKitWizard({
 
                             <div className="flex-1 space-y-4">
                               <div className="flex flex-wrap items-center gap-3">
-                                <h4 className="text-xl font-bold text-slate-900">{doc.documents?.name}</h4>
+                                <h4 className="text-xl font-bold text-slate-900">{doc.documents?.document_name || doc.documents?.name || 'Document'}</h4>
                                 <Badge className={expiryColor}>{expiryText}</Badge>
                                 <Badge variant="outline" className="text-slate-500 border-slate-200">Issue Date: 12 Jan 2024</Badge>
                               </div>
