@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle, XCircle, Clock, UploadCloud,
   FileText, ShieldCheck, Loader2, Download, Printer, Share2, Save,
-  Sparkles, Eye, CheckCircle2, Check,
+  Sparkles, Eye, CheckCircle2, Check, Lock,
   AlertTriangle, Shield, RefreshCw, Zap, Award
 } from 'lucide-react';
 import {
@@ -24,6 +24,7 @@ import { SmartKitDocument } from '@/lib/smart-document-kit/types';
 import { supabase } from '@/lib/supabase';
 import { downloadDocumentKit } from '@/lib/download-service';
 import { toast } from 'sonner';
+import { validateKitCompleteness } from '@/app/actions/validate-kit';
 
 interface RequiredDocument {
   id: string;
@@ -32,6 +33,7 @@ interface RequiredDocument {
   documents?: {
     name: string;
     code: string;
+    document_name?: string;
   };
 }
 
@@ -57,6 +59,7 @@ export function SmartDocumentKitWizard({
   const [currentDocForValidation, setCurrentDocForValidation] = useState<{ req: RequiredDocument, doc: any } | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [targetUploadDocId, setTargetUploadDocId] = useState<string | null>(null);
 
   const [localFiles, setLocalFiles] = useState<Record<string, File>>({});
   const [generatedPdfBlob, setGeneratedPdfBlob] = useState<Blob | null>(null);
@@ -110,6 +113,7 @@ export function SmartDocumentKitWizard({
       setGenerating(false);
       setCompletedTaskCount(0);
       setGeneratingMsgIndex(0);
+      setTargetUploadDocId(null);
     }
   }, [open, initialDocumentStatus]);
 
@@ -122,6 +126,20 @@ export function SmartDocumentKitWizard({
     }
     return () => clearInterval(interval);
   }, [validating, validationMessages.length]);
+
+  useEffect(() => {
+    if (step === 2 && targetUploadDocId) {
+      setTimeout(() => {
+        const el = document.getElementById(`upload-doc-${targetUploadDocId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-2', 'ring-indigo-500', 'transition-all', 'duration-500');
+          setTimeout(() => el.classList.remove('ring-2', 'ring-indigo-500'), 2000);
+        }
+        setTargetUploadDocId(null);
+      }, 100);
+    }
+  }, [step, targetUploadDocId]);
 
   const handleUploadSuccess = (req: RequiredDocument, uploadedDoc: any, file?: File) => {
     if (file) {
@@ -154,12 +172,31 @@ export function SmartDocumentKitWizard({
   };
 
   const handleGenerateClick = async () => {
+    // Collect stats and documents first
+    const requiredIds = requiredDocuments.filter(r => r.isMandatory).map(r => r.id);
+    const docsToProcess = requiredDocuments.filter(r => documentStatus[r.documentId]);
+    
+    // Perform server-side validation
     setGenerating(true);
-    setGenTaskName('Checking files...');
-    setGenProgress(5);
-
+    setGenTaskName('Validating kit completeness on server...');
+    setGenProgress(2);
+    
     try {
-      const docsToProcess = requiredDocuments.filter(r => documentStatus[r.documentId]);
+      const uploadStatuses = docsToProcess.map(req => ({
+        id: req.id,
+        status: 'Validated'
+      }));
+      
+      const validationResult = await validateKitCompleteness(requiredIds, uploadStatuses);
+      
+      if (!validationResult.success) {
+        toast.error(validationResult.message);
+        setGenerating(false);
+        return;
+      }
+      
+      setGenTaskName('Checking files...');
+      setGenProgress(5);
 
       const { data: userDocs } = await supabase
         .from('user_documents')
@@ -173,15 +210,13 @@ export function SmartDocumentKitWizard({
         return {
           id: req.id,
           documentId: req.documentId,
-          name: req.documents?.name || 'Document',
+          name: req.documents?.document_name || req.documents?.name || 'Document',
           isMandatory: req.isMandatory,
           status: 'Validated',
           file: localFile,
           url: remoteDoc?.file_url
         };
       });
-
-      const requiredIds = requiredDocuments.filter(r => r.isMandatory).map(r => r.id);
 
       const stats = {
         required: requiredDocuments.length,
@@ -269,7 +304,7 @@ export function SmartDocumentKitWizard({
                             <Clock className="w-5 h-5 text-amber-500" />
                           )}
                           <div>
-                            <p className="font-semibold text-slate-800">{req.documents?.name || 'Document'}</p>
+                            <p className="font-semibold text-slate-800">{req.documents?.document_name || req.documents?.name || 'Document'}</p>
                             <Badge variant="outline" className={req.isMandatory ? 'text-rose-600 bg-rose-50 border-rose-200' : 'text-slate-500 bg-slate-50 border-slate-200'}>
                               {req.isMandatory ? 'Required' : 'Optional'}
                             </Badge>
@@ -319,10 +354,10 @@ export function SmartDocumentKitWizard({
                   {requiredDocuments.filter(r => r.isMandatory).map((req) => {
                     const isUploaded = documentStatus[req.documentId];
                     return (
-                      <div key={req.id} className="p-5 bg-white border rounded-2xl shadow-sm space-y-4">
+                      <div id={`upload-doc-${req.id}`} key={req.id} className="p-5 bg-white border rounded-2xl shadow-sm space-y-4">
                         <div className="flex items-center justify-between pb-2 border-b">
                           <div>
-                            <h4 className="font-semibold text-slate-800">{req.documents?.name || 'Required Document'}</h4>
+                            <h4 className="font-semibold text-slate-800">{req.documents?.document_name || req.documents?.name || 'Required Document'}</h4>
                             <p className="text-sm text-slate-500">Mandatory for {schemeName}</p>
                           </div>
                           {isUploaded ? (
@@ -335,7 +370,7 @@ export function SmartDocumentKitWizard({
                         {!isUploaded ? (
                           <DocumentUpload
                             documentCode={req.documents?.code || 'DOC'}
-                            documentName={req.documents?.name || 'Required Document'}
+                            documentName={req.documents?.document_name || req.documents?.name || 'Required Document'}
                             onUploadSuccess={(doc) => handleUploadSuccess(req, doc)}
                           />
                         ) : (
@@ -345,7 +380,7 @@ export function SmartDocumentKitWizard({
                                 <FileText className="w-5 h-5" />
                               </div>
                               <div>
-                                <p className="font-medium text-slate-700">{req.documents?.name}.pdf</p>
+                                <p className="font-medium text-slate-700">{req.documents?.document_name || req.documents?.name || 'Document'}.pdf</p>
                                 <p className="text-xs text-slate-400">Ready for processing</p>
                               </div>
                             </div>
@@ -384,22 +419,13 @@ export function SmartDocumentKitWizard({
               </AnimatePresence>
             )}
 
-            {/* STEP 4: Document Readiness Summary */}
             {step === 4 && (() => {
               const totalRequired = requiredDocuments.filter(r => r.isMandatory).length;
               const uploadedCount = requiredDocuments.filter(r => r.isMandatory && documentStatus[r.documentId]).length;
               const missingCount = totalRequired - uploadedCount;
               const percentage = totalRequired === 0 ? 100 : Math.round((uploadedCount / totalRequired) * 100);
-
-              let progressColor = 'text-rose-500';
-              let progressBg = 'text-rose-100';
-              if (percentage >= 80) {
-                progressColor = 'text-emerald-500';
-                progressBg = 'text-emerald-100';
-              } else if (percentage >= 40) {
-                progressColor = 'text-amber-500';
-                progressBg = 'text-amber-100';
-              }
+              const isValidationInProgress = Object.values(validating).some(v => v);
+              const isComplete = missingCount === 0 && !isValidationInProgress;
 
               return (
                 <motion.div
@@ -410,74 +436,123 @@ export function SmartDocumentKitWizard({
                   className="space-y-8 py-4"
                 >
                   <div className="text-center space-y-2">
-                    <h3 className="text-2xl font-bold text-slate-900">Document Readiness Summary</h3>
+                    <h3 className="text-2xl font-bold text-slate-900">Required Documents Checklist</h3>
                     <p className="text-slate-500">Overview of your application documents.</p>
                   </div>
 
-                  <div className="flex flex-col md:flex-row items-center justify-center gap-10">
-                    {/* Circular Progress */}
-                    <div className="relative w-40 h-40 flex items-center justify-center">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className={progressBg} />
-                        <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
-                          strokeDasharray={251.2}
-                          strokeDashoffset={251.2 - (251.2 * percentage) / 100}
-                          strokeLinecap="round"
-                          className={`${progressColor} transition-all duration-1000 ease-out`}
-                        />
-                      </svg>
-                      <div className="absolute flex flex-col items-center justify-center">
-                        <span className="text-3xl font-bold text-slate-800">{percentage}%</span>
-                        <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Ready</span>
+                  <div className="flex flex-col items-center justify-center space-y-6">
+                    {/* Unified Checklist */}
+                    <div className="w-full max-w-xl border rounded-xl overflow-hidden bg-white shadow-sm">
+                      <div className="bg-slate-50 px-4 py-3 border-b flex items-center justify-between font-bold text-slate-700 text-sm">
+                        <div className="flex-1">Document</div>
+                        <div className="w-32 text-center">Status</div>
+                        <div className="w-28 text-right">Action</div>
+                      </div>
+                      <div className="divide-y divide-slate-100">
+                        {requiredDocuments.filter(r => r.isMandatory).map(req => {
+                          const isUp = documentStatus[req.documentId];
+                          return (
+                            <div key={req.id} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition-colors">
+                              <div className="flex-1 font-medium text-slate-800 pr-4">
+                                {req.documents?.document_name || req.documents?.name || 'Document'}
+                              </div>
+                              <div className="w-32 flex justify-center">
+                                {isUp ? (
+                                  <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none px-2 py-0.5 whitespace-nowrap">
+                                    <CheckCircle className="w-3.5 h-3.5 mr-1" /> Uploaded
+                                  </Badge>
+                                ) : (
+                                  <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-none px-2 py-0.5 whitespace-nowrap">
+                                    <XCircle className="w-3.5 h-3.5 mr-1" /> Missing
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="w-28 flex justify-end">
+                                {isUp ? (
+                                  <div className="text-emerald-500 flex items-center justify-center w-full">
+                                    <Check className="w-5 h-5" />
+                                  </div>
+                                ) : (
+                                  <Button 
+                                    size="sm" 
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm h-8 px-3 text-xs" 
+                                    onClick={() => {
+                                      setTargetUploadDocId(req.id);
+                                      setStep(2);
+                                    }}
+                                  >
+                                    Upload Now
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
 
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-                      <div className="bg-slate-50 p-4 rounded-2xl border text-center">
-                        <p className="text-3xl font-bold text-slate-800">{totalRequired}</p>
-                        <p className="text-xs text-slate-500 font-medium uppercase mt-1">Total Required</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-2xl border text-center">
-                        <p className="text-3xl font-bold text-indigo-600">{uploadedCount}</p>
-                        <p className="text-xs text-slate-500 font-medium uppercase mt-1">Uploaded</p>
-                      </div>
-                      <div className="bg-slate-50 p-4 rounded-2xl border text-center col-span-2 flex flex-col items-center justify-center">
-                        <p className="text-3xl font-bold text-rose-500">{missingCount}</p>
-                        <p className="text-xs text-slate-500 font-medium uppercase mt-1">Missing Documents</p>
-                      </div>
+                    <div className="w-full max-w-xl text-center mt-4">
+                      <p className="font-bold text-slate-800 text-lg mb-1">
+                        {uploadedCount} of {totalRequired} Required Documents Uploaded
+                      </p>
+                      <p className="text-slate-500 font-bold mb-3">{percentage}% Complete</p>
+                      <Progress value={percentage} className="h-3 bg-slate-100" />
                     </div>
-                  </div>
 
-                  {/* Checklist */}
-                  <div className="max-h-[30vh] overflow-y-auto space-y-2 border rounded-xl p-4 bg-white">
-                    {requiredDocuments.filter(r => r.isMandatory).map(req => {
-                      const isUp = documentStatus[req.documentId];
-                      return (
-                        <div key={req.id} className="flex items-center justify-between py-2 border-b last:border-0 border-slate-100">
-                          <span className="font-medium text-slate-700">{req.documents?.name}</span>
-                          {isUp ? (
-                            <span className="flex items-center text-sm font-bold text-emerald-600"><CheckCircle className="w-4 h-4 mr-1" /> Ready</span>
-                          ) : (
-                            <span className="flex items-center text-sm font-bold text-amber-500"><Clock className="w-4 h-4 mr-1" /> Needs Upload</span>
-                          )}
+                    <div className="w-full max-w-xl text-center">
+                      {isComplete ? (
+                        <div className="bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-200">
+                          <p className="font-bold flex items-center justify-center gap-2">
+                            <CheckCircle className="w-5 h-5" />
+                            All required documents available.
+                          </p>
+                          <p className="text-sm mt-1">Your Smart Application Kit is ready to generate.</p>
                         </div>
-                      );
-                    })}
+                      ) : null}
+                    </div>
+                    
+                    {/* Helper actions */}
+                    {!isComplete && (
+                      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                        <Button variant="outline" size="sm" onClick={() => setStep(2)}>
+                          <UploadCloud className="w-4 h-4 mr-2" /> Upload Missing Documents
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setStep(1)}>
+                          <Eye className="w-4 h-4 mr-2" /> View All Requirements
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => setStep(3)}>
+                          <RefreshCw className="w-4 h-4 mr-2" /> Retry Validation
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="flex justify-between items-end pt-4 border-t mt-8">
                     <Button variant="ghost" onClick={() => setStep(2)}>Back to Upload</Button>
-                    <Button
-                      disabled={missingCount > 0}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 px-8 disabled:opacity-50"
-                      onClick={() => {
-                        setStep(5);
-                        handleGenerateClick();
-                      }}
-                    >
-                      Generate Smart Document Kit
-                    </Button>
+                    <div className="flex flex-col items-end gap-3 text-right">
+                      {!isComplete && (
+                        <div className="text-sm text-rose-700 text-left bg-rose-50 p-4 rounded-xl border border-rose-200 shadow-sm max-w-sm w-full">
+                          <div className="flex gap-3">
+                            <AlertTriangle className="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5" />
+                            <p className="font-semibold text-rose-900 leading-relaxed">
+                              Please upload and verify all mandatory documents before generating your Smart Document Kit.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      <Button
+                        disabled={!isComplete}
+                        title={!isComplete ? "Upload all mandatory documents to continue." : ""}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 px-8 disabled:opacity-50 relative group w-full sm:w-auto h-12 text-lg font-bold"
+                        onClick={() => {
+                          setStep(5);
+                          handleGenerateClick();
+                        }}
+                      >
+                        {!isComplete && <Lock className="w-4 h-4 mr-2 opacity-70" />}
+                        Generate Smart Document Kit
+                      </Button>
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -562,7 +637,7 @@ export function SmartDocumentKitWizard({
                       readiness: 100,
                     }}
                     documents={requiredDocuments.map(r => ({
-                      name: r.documents?.name || 'Document',
+                      name: r.documents?.document_name || r.documents?.name || 'Document',
                       status: documentStatus[r.documentId] ? 'Validated' : 'Missing',
                       isMandatory: r.isMandatory
                     }))}
@@ -672,7 +747,7 @@ export function SmartDocumentKitWizard({
 
                             <div className="flex-1 space-y-4">
                               <div className="flex flex-wrap items-center gap-3">
-                                <h4 className="text-xl font-bold text-slate-900">{doc.documents?.name}</h4>
+                                <h4 className="text-xl font-bold text-slate-900">{doc.documents?.document_name || doc.documents?.name || 'Document'}</h4>
                                 <Badge className={expiryColor}>{expiryText}</Badge>
                                 <Badge variant="outline" className="text-slate-500 border-slate-200">Issue Date: 12 Jan 2024</Badge>
                               </div>
