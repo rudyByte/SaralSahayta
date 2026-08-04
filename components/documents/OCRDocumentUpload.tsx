@@ -93,6 +93,13 @@ export default function OCRDocumentUpload({
             if (!response.ok) {
                 const errorData = await response.json();
                 if (errorData.expected && errorData.detected) {
+                    console.group('❌ [AI-CLASSIFICATION] Validation Failed');
+                    console.log('Expected:', errorData.expected);
+                    console.log('Detected:', errorData.detected);
+                    console.log('Classification Detail:', errorData.classification);
+                    console.log('Raw OCR Text:', ocrRes.text);
+                    console.groupEnd();
+
                     throw {
                         isValidationError: true,
                         expected: errorData.expected,
@@ -104,9 +111,17 @@ export default function OCRDocumentUpload({
             }
 
             const result = await response.json();
-            console.log('🚀 [AI-OCR] Result Received:', result.extractedData);
             
-            setOcrProgress({ status: 'Finalizing...', progress: 0.9 });
+            console.group('✅ [AI-CLASSIFICATION] Validation Passed');
+            console.log('Detected Document:', result.classification?.detectedType);
+            console.log('Confidence:', result.classification?.confidence + '%');
+            console.log('Indicators:', result.classification?.indicators);
+            console.log('Raw OCR Text:', result.text || ocrRes.text);
+            console.groupEnd();
+            
+            console.log('🚀 [AI-OCR] Extracted Data:', result.extractedData);
+            
+            // Update UI state
             setOcrResult({
                 text: result.text || '',
                 confidence: result.confidence || 90,
@@ -114,10 +129,8 @@ export default function OCRDocumentUpload({
                 language: 'eng+hin',
                 processingTime: 0
             });
-
             setDetectedType(result.extractedData?.documentType || documentCode);
             setExtractedData(result.extractedData);
-            setOcrStatus('success');
 
             // Notify parent component
             if (result.extractedData) {
@@ -128,6 +141,15 @@ export default function OCRDocumentUpload({
                     detectedType: result.extractedData?.documentType || documentCode
                 });
             }
+
+            // Immediately trigger automatic save and upload
+            await executeSaveAndUpload(
+                targetFile,
+                result.extractedData,
+                result.extractedData?.documentType || documentCode,
+                result.text || '',
+                result.confidence || 90
+            );
 
         } catch (err: any) {
             console.error('OCR Error:', err);
@@ -141,22 +163,30 @@ export default function OCRDocumentUpload({
                 setError(err.message || 'AI extraction failed. Please try again or fill manually.');
                 setOcrStatus('error');
             }
+            setIsUploading(false);
         }
     };
 
-    const handleUpload = async () => {
-        if (!file || !extractedData) return;
-
+    const executeSaveAndUpload = async (
+        targetFile: File,
+        extractedDataPayload: any,
+        detectedDocType: string,
+        ocrText: string,
+        ocrConfidence: number
+    ) => {
         setIsUploading(true);
         try {
+            setOcrProgress({ status: 'Saving document...', progress: 0.95 });
+
+            // 1. Upload Document
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append('file', targetFile);
             formData.append('documentCode', documentCode);
             formData.append('ocrData', JSON.stringify({
-                text: ocrResult?.text,
-                confidence: ocrResult?.confidence,
-                extractedData,
-                detectedType
+                text: ocrText,
+                confidence: ocrConfidence,
+                extractedData: extractedDataPayload,
+                detectedType: detectedDocType
             }));
 
             const response = await fetch('/api/documents/upload-with-ocr', {
@@ -166,110 +196,80 @@ export default function OCRDocumentUpload({
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.error || 'Upload failed');
+                throw new Error(data.error || data.message || 'Upload failed');
             }
 
-            return true;
-        } catch (err: any) {
-            setError(err.message);
-            return false;
-        } finally {
-            setIsUploading(false);
-        }
-    };
+            // 2. Update Profile (if necessary)
+            if (userProfile && extractedDataPayload) {
+                const changes = detectProfileChanges(userProfile, extractedDataPayload, detectedDocType);
+                
+                const getString = (val: any): string => {
+                    if (!val) return '';
+                    if (typeof val === 'object') return String(val.english || val.hindi || Object.values(val)[0] || '');
+                    return String(val);
+                };
 
-    const handleUpdateProfileAndUpload = async () => {
-        if (!userProfile || !extractedData) return;
-        
-        setIsUploading(true);
-        try {
-            // STRICT VALIDATION FIX: 
-            // Execute the document upload first. The backend performs strict OCR validation.
-            // If the document is a mismatch, it returns a 400 error which handleUpload catches.
-            // This guarantees the upload stops immediately, no duplicate is saved, 
-            // and the profile is NEVER updated with wrong data.
-            const success = await handleUpload();
-            if (!success) {
-                return; // Stop processing. The error is already set by handleUpload.
-            }
-
-            // Profile update only happens if document validation succeeded
-            const changes = detectProfileChanges(userProfile, extractedData, detectedType || documentCode);
-            
-            // Helper to safely extract string from potential multilingual object
-            const getString = (val: any): string => {
-                if (!val) return '';
-                if (typeof val === 'object') return String(val.english || val.hindi || Object.values(val)[0] || '');
-                return String(val);
-            };
-
-            if (changes.length > 0) {
-                const updatePayload: any = {};
-                
-                // Map extracted data to profile schema fields (camelCase)
-                if (extractedData.annualIncome) {
-                    const str = getString(extractedData.annualIncome);
-                    updatePayload.annualIncome = parseInt(str.replace(/[^0-9]/g, '')) || 0;
-                }
-                
-                if (extractedData.dateOfBirth) {
-                    // Try to convert DD/MM/YYYY to ISO YYYY-MM-DD
-                    const dateStr = getString(extractedData.dateOfBirth);
-                    const parts = dateStr.includes('/') ? dateStr.split('/') : dateStr.split('-');
-                    if (parts.length === 3) {
-                        if (parts[2].length === 4) {
-                            updatePayload.dateOfBirth = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-                        } else if (parts[0].length === 4) {
-                            updatePayload.dateOfBirth = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-                        }
-                    } else {
-                        updatePayload.dateOfBirth = dateStr;
-                    }
-                }
-                
-                if (extractedData.gender) {
-                    const gender = getString(extractedData.gender).toUpperCase();
-                    if (['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
-                        updatePayload.gender = gender;
-                    } else {
-                        updatePayload.gender = 'OTHER';
-                    }
-                }
-                
-                if (extractedData.name) {
-                    updatePayload.name = getString(extractedData.name);
-                }
-                
-                // Map Course/Education
-                if (extractedData.course) {
-                    const course = getString(extractedData.course).toUpperCase();
-                    if (course.includes('DEGREE') || course.includes('B.A') || course.includes('B.SC') || course.includes('B.COM') || course.includes('GRADUATE')) {
-                        updatePayload.education = 'GRADUATE';
-                    } else if (course.includes('MASTER') || course.includes('M.A') || course.includes('M.SC') || course.includes('M.COM') || course.includes('POSTGRADUATE')) {
-                        updatePayload.education = 'POSTGRADUATE';
-                    } else if (course.includes('12TH') || course.includes('HSC')) {
-                        updatePayload.education = 'CLASS_12TH';
-                    } else if (course.includes('10TH') || course.includes('SSC')) {
-                        updatePayload.education = 'CLASS_10TH';
-                    }
-                }
-
-                if (Object.keys(updatePayload).length > 0) {
-                    const res = await fetch('/api/profile', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatePayload)
-                    });
+                if (changes.length > 0) {
+                    const updatePayload: any = {};
                     
-                    if (!res.ok) {
-                        const errorData = await res.json();
-                        throw new Error(errorData.error || 'Failed to update profile');
+                    if (extractedDataPayload.annualIncome) {
+                        const str = getString(extractedDataPayload.annualIncome);
+                        updatePayload.annualIncome = parseInt(str.replace(/[^0-9]/g, '')) || 0;
                     }
-                    await mutateProfile(); // refresh profile cache
+                    if (extractedDataPayload.dateOfBirth) {
+                        const dateStr = getString(extractedDataPayload.dateOfBirth);
+                        const parts = dateStr.includes('/') ? dateStr.split('/') : dateStr.split('-');
+                        if (parts.length === 3) {
+                            if (parts[2].length === 4) {
+                                updatePayload.dateOfBirth = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                            } else if (parts[0].length === 4) {
+                                updatePayload.dateOfBirth = `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                            }
+                        } else {
+                            updatePayload.dateOfBirth = dateStr;
+                        }
+                    }
+                    if (extractedDataPayload.gender) {
+                        const gender = getString(extractedDataPayload.gender).toUpperCase();
+                        if (['MALE', 'FEMALE', 'OTHER'].includes(gender)) {
+                            updatePayload.gender = gender;
+                        } else {
+                            updatePayload.gender = 'OTHER';
+                        }
+                    }
+                    if (extractedDataPayload.name) {
+                        updatePayload.name = getString(extractedDataPayload.name);
+                    }
+                    if (extractedDataPayload.course) {
+                        const course = getString(extractedDataPayload.course).toUpperCase();
+                        if (course.includes('DEGREE') || course.includes('B.A') || course.includes('B.SC') || course.includes('B.COM') || course.includes('GRADUATE')) {
+                            updatePayload.education = 'GRADUATE';
+                        } else if (course.includes('MASTER') || course.includes('M.A') || course.includes('M.SC') || course.includes('M.COM') || course.includes('POSTGRADUATE')) {
+                            updatePayload.education = 'POSTGRADUATE';
+                        } else if (course.includes('12TH') || course.includes('HSC')) {
+                            updatePayload.education = 'CLASS_12TH';
+                        } else if (course.includes('10TH') || course.includes('SSC')) {
+                            updatePayload.education = 'CLASS_10TH';
+                        }
+                    }
+
+                    if (Object.keys(updatePayload).length > 0) {
+                        const res = await fetch('/api/profile', {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updatePayload)
+                        });
+                        
+                        if (!res.ok) {
+                            const errorData = await res.json();
+                            throw new Error(errorData.error || 'Failed to update profile');
+                        }
+                        await mutateProfile(); // refresh profile cache
+                    }
                 }
             }
             
-            // Globally revalidate all confidence/scheme/document SWR caches
+            // Globally revalidate all caches
             await globalMutate(
                 (key: any) => typeof key === 'string' && (
                     key.includes('/api/schemes') ||
@@ -280,10 +280,15 @@ export default function OCRDocumentUpload({
                 undefined,
                 { revalidate: true }
             );
+            
+            setOcrStatus('success');
             onUploadComplete();
+            
         } catch(err: any) {
              console.error('Profile/Upload Error:', err);
              setError(err.message || 'Operation failed');
+             setOcrStatus('error');
+        } finally {
              setIsUploading(false);
         }
     };
@@ -461,33 +466,18 @@ export default function OCRDocumentUpload({
                                             </div>
                                         )}
 
-                                        <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                                            <button
-                                                onClick={handleUpdateProfileAndUpload}
-                                                disabled={isUploading}
-                                                className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 font-bold text-sm shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                                            >
-                                                {isUploading ? (
-                                                    <>
-                                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                                        Saving...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <CheckCircle className="h-4 w-4" />
-                                                        Update Profile & Save
-                                                    </>
-                                                )}
-                                            </button>
-                                        </div>
-                                        <div className="mt-3 text-center">
-                                            <button
-                                                onClick={() => setOcrStatus('idle')}
-                                                disabled={isUploading}
-                                                className="text-xs font-bold text-slate-400 hover:text-slate-600 uppercase transition-all"
-                                            >
-                                                Cancel & Scan Again
-                                            </button>
+                                        <div className="mt-8 flex flex-col gap-3">
+                                            {isUploading ? (
+                                                <div className="flex-1 px-4 py-3 bg-emerald-600/50 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2">
+                                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                                    Saving and Updating Profile...
+                                                </div>
+                                            ) : (
+                                                <div className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-emerald-200 flex items-center justify-center gap-2">
+                                                    <CheckCircle className="h-5 w-5" />
+                                                    Document Uploaded Successfully!
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 )}
