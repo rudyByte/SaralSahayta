@@ -1,7 +1,6 @@
 import React from 'react';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase-server';
 import { format } from 'date-fns';
 import { analyzeDocumentReadiness } from '@/lib/documents/analyze-requirements';
 import { predictFutureOpportunities } from '@/lib/intelligence/opportunity-predictor';
@@ -28,12 +27,7 @@ const ReadinessChart = nextDynamic(() => import('@/components/documents/Readines
 export const dynamic = 'force-dynamic';
 
 export default async function DocumentReadinessDashboard() {
-    const cookieStore = cookies();
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        { cookies: { get(name: string) { return cookieStore.get(name)?.value; } } }
-    );
+    const supabase = createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect('/login');

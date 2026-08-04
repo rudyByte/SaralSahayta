@@ -1,27 +1,11 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase-server';
 
 export const dynamic = 'force-dynamic';
 
-const getSupabase = () => {
-    const cookieStore = cookies();
-    return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                get(name: string) { return cookieStore.get(name)?.value; },
-                set(name: string, value: string, options: CookieOptions) { try { cookieStore.set({ name, value, ...options }); } catch (error) { } },
-                remove(name: string, options: CookieOptions) { try { cookieStore.set({ name, value: '', ...options }); } catch (error) { } },
-            },
-        }
-    );
-};
-
 export async function GET(request: Request) {
   try {
-    const supabase = getSupabase();
+    const supabase = createClient();
     const { searchParams } = new URL(request.url);
     const schemeId = searchParams.get('schemeId');
 

@@ -1,4 +1,0 @@
-app/(dashboard)/documents/readiness/page.tsx(35,26): error TS7006: Parameter 'name' implicitly has an 'any' type.
-app/(dashboard)/reports/missed-benefits/page.tsx(30,26): error TS7006: Parameter 'name' implicitly has an 'any' type.
-lib/documents/analyze-requirements.ts(9,22): error TS7006: Parameter 'name' implicitly has an 'any' type.
-lib/recommendations/find-similar-schemes.ts(9,22): error TS7006: Parameter 'name' implicitly has an 'any' type.

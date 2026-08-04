@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
 import { MatchIndicator } from './match-indicator';
 import { ConfidenceBadge } from './confidence-badge';
-import NewlyEligibleBadge from '../schemes/NewlyEligibleBadge';
+import NewlyEligibleBadge from './NewlyEligibleBadge';
 import { PricingPlans } from '../premium/PricingPlans';
 import { useAuth } from '@/lib/auth-context';
 

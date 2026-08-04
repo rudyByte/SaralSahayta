@@ -1,4 +1,4 @@
-import { createAdminClient } from './lib/supabase-admin';
+import { createAdminClient } from '../../lib/supabase-admin';
 
 async function checkJJM() {
     const supabaseAdmin = createAdminClient();

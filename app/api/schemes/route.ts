@@ -1,25 +1,9 @@
 export const dynamic = 'force-dynamic';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { calculateMatchScore } from '@/lib/matching-algorithm';
 import { Gender, Category, Education } from '@prisma/client';
-
-const getSupabase = () => {
-    const cookieStore = cookies();
-    return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                get(name: string) { return cookieStore.get(name)?.value; },
-                set(name: string, value: string, options: CookieOptions) { try { cookieStore.set({ name, value, ...options }); } catch (error) { } },
-                remove(name: string, options: CookieOptions) { try { cookieStore.set({ name, value: '', ...options }); } catch (error) { } },
-            },
-        }
-    );
-};
 
 export async function GET(request: Request) {
     try {
@@ -29,7 +13,7 @@ export async function GET(request: Request) {
         // 1. Get user and profile
         let user: any = null;
         try {
-            const supabase = getSupabase();
+            const supabase = createClient();
             const { data: authData } = await supabase.auth.getUser();
             user = authData?.user;
         } catch (authErr) {
@@ -106,7 +90,7 @@ export async function GET(request: Request) {
         }));
 
         if (user && schemes && schemes.length > 0) {
-            const clientSupabase = getSupabase();
+            const clientSupabase = createClient();
             const { data: profile } = await clientSupabase
                 .from('user_profiles')
                 .select('*')

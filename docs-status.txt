@@ -1,2 +1,0 @@
-npm error could not determine executable to run
-npm error A complete log of this run can be found in: C:\Users\ASUS\AppData\Local\npm-cache\_logs\2026-03-27T18_11_09_046Z-debug-0.log

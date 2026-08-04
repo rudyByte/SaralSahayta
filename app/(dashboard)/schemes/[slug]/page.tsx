@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ConfidenceBadge } from '@/components/scheme/confidence-badge';
-import DocumentRequirementsList from '@/components/schemes/DocumentRequirementsList';
+import DocumentRequirementsList from '@/components/scheme/DocumentRequirementsList';
 import { SmartDocumentKitWizard } from '@/components/documents/SmartDocumentKitWizard';
 import { toast } from 'sonner';
 

@@ -1,4 +1,4 @@
-import { createAdminClient } from './lib/supabase-admin';
+import { createAdminClient } from '../../lib/supabase-admin';
 
 async function listTables() {
     // We can list tables via querying pg_class through a raw query or checking information_schema if accessible, 

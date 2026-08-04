@@ -19,16 +19,24 @@ dist
 .DS_Store
 *.pem
 
-# Debug
-
-# Prompt Blocks
+# Prompt Blocks (docs)
 "phase4 prompt blocks"
 phase5\ promptBlocks/
 phase6\ promptBlocks/
 phase8-9\ promptBlocks/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+
+# Debug artifacts
+*.log
+lint_output.txt
+ts-errors*.txt
+diag_output.txt
+docs-output.txt
+docs-status.txt
+revs*.txt
+tmp/
+
+# TypeScript
+*.tsbuildinfo
 
 # Local env files
 .env
@@ -38,16 +46,13 @@ yarn-error.log*
 # Vercel
 .vercel
 
-# TypeScript
-*.tsbuildinfo
-
 # Prisma
 prisma/migrations/
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/tasks.json
 .idea/
 *.swp
 *.swo
 *~
-# Debug

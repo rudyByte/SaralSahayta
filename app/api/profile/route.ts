@@ -1,29 +1,12 @@
 export const dynamic = 'force-dynamic';
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase-server';
 import { fullProfileUpdateSchema } from '@/lib/validations';
 import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
 
-// Helper to get supabase client
-const getSupabase = () => {
-    const cookieStore = cookies();
-    return createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                get(name: string) { return cookieStore.get(name)?.value; },
-                set(name: string, value: string, options: CookieOptions) { try { cookieStore.set({ name, value, ...options }); } catch (error) { } },
-                remove(name: string, options: CookieOptions) { try { cookieStore.set({ name, value: '', ...options }); } catch (error) { } },
-            },
-        }
-    );
-};
-
 export async function GET() {
     try {
-        const supabase = getSupabase();
+        const supabase = createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {
@@ -55,7 +38,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
     try {
-        const supabase = getSupabase();
+        const supabase = createClient();
         const { data: { user }, error: authError } = await supabase.auth.getUser();
 
         if (authError || !user) {

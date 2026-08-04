@@ -1,11 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
+import * as path from 'path';
 
 const prisma = new PrismaClient();
 
 async function run() {
   try {
-    const sql = fs.readFileSync('scripts/align_document_schema.sql', 'utf8');
+    const sql = fs.readFileSync(path.join(__dirname, '..', 'align_document_schema.sql'), 'utf8');
     await prisma.$executeRawUnsafe(sql);
     console.log('Successfully executed align_document_schema.sql');
   } catch (error) {
