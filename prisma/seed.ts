@@ -99,7 +99,41 @@ async function main() {
             eligibilityCriteria: {
                 ageMin: 18,
                 gender: [Gender.FEMALE],
-                casteCategories: [Category.SC, Category.ST]
+            }
+        }
+    });
+
+    // 5. Digital Gujarat (DigiGov) College Scholarship (Education)
+    await prisma.scheme.upsert({
+        where: { schemeId: 'DIGIGOV-COLLEGE-SCHOLARSHIP' },
+        update: {},
+        create: {
+            schemeId: 'DIGIGOV-COLLEGE-SCHOLARSHIP',
+            name: 'Digital Gujarat (DigiGov) College Scholarship',
+            nameHindi: 'डिजिटल गुजरात (डिजीगोव) कॉलेज छात्रवृत्ति',
+            description: 'Centralized government scholarship for college students providing tuition fee reimbursement up to ₹50,000/yr, hostel maintenance allowance, and annual book stipends.',
+            ministry: 'Department of Social Justice and Empowerment, Govt. of Gujarat',
+            schemeType: SchemeType.STATE,
+            category: SchemeCategory.EDUCATION,
+            benefitType: 'SCHOLARSHIP',
+            benefitAmount: 50000,
+            benefitDescription: 'Tuition fee reimbursement up to ₹50,000/yr, ₹1,200/month hostel allowance, and ₹2,000 annual book stipend via direct bank transfer.',
+            applicationLink: 'https://www.digitalgujarat.gov.in/',
+            deadline: new Date('2026-10-31'),
+            isRolling: false,
+            requiredDocuments: [
+                'Aadhaar Card',
+                'College ID Card / Fee Receipt',
+                'Income Certificate',
+                'Previous Year Marksheet',
+                'Bank Account Passbook',
+                'Caste Certificate'
+            ],
+            eligibilityCriteria: {
+                educationLevels: [Education.UNDERGRADUATE, Education.GRADUATE, Education.POSTGRADUATE],
+                incomeMax: 250000,
+                ageMin: 17,
+                ageMax: 30
             }
         }
     });

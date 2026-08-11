@@ -64,19 +64,22 @@ export async function middleware(request: NextRequest) {
     // Refresh session if expired
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Check for suspension
+    // --- OPTIMIZED: Single DB query fetches both is_suspended AND is_admin ---
+    let profile: { is_suspended: boolean; is_admin: boolean } | null = null;
+
     if (user) {
-        const { data: profile } = await supabase
+        const { data } = await supabase
             .from('user_profiles')
             .select('is_suspended, is_admin')
             .eq('user_id', user.id)
             .single();
+        profile = data;
+    }
 
-        if (profile?.is_suspended) {
-            // Allow access to suspension page only
-            if (!request.nextUrl.pathname.startsWith('/suspended')) {
-                return NextResponse.redirect(new URL('/suspended', request.url));
-            }
+    // Check for suspension — redirect to /suspended page
+    if (profile?.is_suspended) {
+        if (!request.nextUrl.pathname.startsWith('/suspended')) {
+            return NextResponse.redirect(new URL('/suspended', request.url));
         }
     }
 
@@ -90,61 +93,38 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
 
-    // Redirect admins from standard dashboard to admin panel
-    if (request.nextUrl.pathname === '/dashboard' && user) {
-        const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('is_admin')
-            .eq('user_id', user.id)
-            .single();
-
-        if (profile?.is_admin) {
-            return NextResponse.redirect(new URL('/admin', request.url));
-        }
+    // Redirect admins from standard dashboard to admin panel (reuse cached profile)
+    if (request.nextUrl.pathname === '/dashboard' && user && profile?.is_admin) {
+        return NextResponse.redirect(new URL('/admin', request.url));
     }
 
-    // Redirect authenticated users away from auth pages
+    // Redirect authenticated users away from auth pages (reuse cached profile)
     const authPaths = ['/login', '/register'];
     const isAuthPath = authPaths.some(path =>
         request.nextUrl.pathname.startsWith(path)
     );
 
     if (isAuthPath && user) {
-        // Check if admin to determine redirect path
-        const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('is_admin')
-            .eq('user_id', user.id)
-            .single();
-
         const redirectPath = profile?.is_admin ? '/admin' : '/dashboard';
         return NextResponse.redirect(new URL(redirectPath, request.url));
     }
 
-    // Admin routes - check if user is admin
+    // Admin routes - check if user is admin (reuse cached profile)
     const isAdminPath = request.nextUrl.pathname.startsWith('/admin');
 
     if (isAdminPath) {
         if (!user) {
-            // Not logged in, redirect to login
             return NextResponse.redirect(new URL('/login', request.url));
         }
 
-        // We already fetched the profile for the suspension check
-        const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('is_admin')
-            .eq('user_id', user.id)
-            .single();
-
         if (!profile?.is_admin) {
-            // Not an admin, redirect to dashboard page
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
     }
 
     return response;
 }
+
 
 export const config = {
     matcher: [

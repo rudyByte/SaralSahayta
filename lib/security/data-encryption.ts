@@ -3,7 +3,14 @@ import crypto from 'crypto';
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12; // Standard for GCM
 const AUTH_TAG_LENGTH = 16;
-const KEY = crypto.scryptSync(process.env.ENCRYPTION_KEY || 'default_key_placeholder_change_me', 'salt', 32);
+
+// Validate encryption key at module load time
+const rawKey = process.env.ENCRYPTION_KEY;
+if (!rawKey && process.env.NODE_ENV === 'production') {
+  throw new Error('[Security] ENCRYPTION_KEY environment variable is not set. This is required in production.');
+}
+const KEY = crypto.scryptSync(rawKey || 'dev_only_placeholder_never_use_in_prod', 'salt', 32);
+
 
 /**
  * Encrypts sensitive data strings.

@@ -3,23 +3,21 @@ import Groq from 'groq-sdk';
 export const GROQ_TEXT_MODEL = "llama-3.3-70b-versatile";
 export const GROQ_VISION_MODEL = "llama-3.2-90b-vision-preview"; // Use correct vision model
 
-// Create a singleton Groq client
+// Create a singleton Groq client — server-side ONLY
 export const getGroqClient = () => {
+    // Guard: prevent accidental browser-side instantiation which would leak the API key
+    if (typeof window !== 'undefined') {
+        throw new Error('[Security] Groq client must only be used in server-side code (API routes, server actions). Never call from client components.');
+    }
+
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
         throw new Error("Missing GROQ_API_KEY environment variable");
     }
     
-    // We pass a custom fetch to avoid the node-fetch "Premature close" bug
-    return new Groq({ 
-        apiKey,
-        dangerouslyAllowBrowser: true, // If it runs in Next.js edge/client sometimes
-        fetch: (url, init) => {
-            // Force using Next.js global fetch instead of the SDK's node-fetch polyfill
-            return fetch(url, init);
-        }
-    });
+    return new Groq({ apiKey });
 };
+
 
 export async function generateText(prompt: string): Promise<string> {
     const groq = getGroqClient();

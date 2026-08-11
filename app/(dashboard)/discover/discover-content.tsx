@@ -12,11 +12,13 @@ import {
     Loader2,
     AlertCircle,
     RotateCcw,
-    Sparkles
+    Sparkles,
+    X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { SchemeCard } from '@/components/scheme/scheme-card';
 import { SchemeFilter, FilterState } from '@/components/scheme/scheme-filter';
 import { Scheme, SchemeType, SchemeCategory } from '@prisma/client';
@@ -31,6 +33,7 @@ export default function DiscoverPageContent() {
     const { mutate: globalMutate } = useSWRConfig();
     const router = useRouter();
     const searchParams = useSearchParams();
+    const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
     
     // Real-time hook for listening to match recalculations
     const { newSchemes } = useRealtimeSchemeUpdates(user?.id, () => {
@@ -168,8 +171,8 @@ export default function DiscoverPageContent() {
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Left Sidebar: Filters (30%) */}
-                    <aside className="lg:w-1/4">
+                    {/* Sidebar: Filters — desktop only */}
+                    <aside className="hidden lg:block lg:w-1/4">
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sticky top-8">
                             <SchemeFilter
                                 filters={filters}
@@ -179,6 +182,39 @@ export default function DiscoverPageContent() {
                             />
                         </div>
                     </aside>
+
+                    {/* Mobile: Filter Sheet */}
+                    <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
+                        <SheetContent side="left" className="w-full max-w-xs p-0 overflow-y-auto">
+                            <SheetHeader className="px-6 pt-6 pb-4 border-b border-slate-100">
+                                <SheetTitle className="flex items-center gap-2 font-black">
+                                    <SlidersHorizontal className="w-4 h-4" />
+                                    Filters
+                                    {activeFilterCount > 0 && (
+                                        <span className="ml-auto inline-flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-[10px] font-black">
+                                            {activeFilterCount}
+                                        </span>
+                                    )}
+                                </SheetTitle>
+                            </SheetHeader>
+                            <div className="p-6">
+                                <SchemeFilter
+                                    filters={filters}
+                                    onChange={(f) => { setFilters(f); }}
+                                    onReset={() => { handleReset(); setMobileFilterOpen(false); }}
+                                    activeCount={activeFilterCount}
+                                />
+                            </div>
+                            <div className="px-6 pb-6">
+                                <Button
+                                    className="w-full h-12 rounded-2xl font-bold"
+                                    onClick={() => setMobileFilterOpen(false)}
+                                >
+                                    Show {total} Results
+                                </Button>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
 
                     {/* Main Content: Results (70%) */}
                     <section className="lg:w-3/4 space-y-6">
@@ -227,7 +263,7 @@ export default function DiscoverPageContent() {
                                 </Button>
                             </div>
                         ) : (
-                            <div className="grid md:grid-cols-2 gap-6">
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                                 {schemes.map((scheme: any) => (
                                     <SchemeCard key={scheme.id} scheme={scheme} />
                                 ))}
@@ -236,7 +272,7 @@ export default function DiscoverPageContent() {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="flex justify-center items-center gap-2 pt-8">
+                            <div className="flex justify-center items-center gap-2 pt-8 pb-4">
                                 <Button
                                     variant="outline"
                                     disabled={page === 1}
@@ -258,7 +294,20 @@ export default function DiscoverPageContent() {
                         )}
                     </section>
                 </div>
+
+                {/* Mobile Filter FAB */}
+                <button
+                    className="lg:hidden fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-primary text-white font-bold px-5 py-3.5 rounded-full shadow-2xl shadow-primary/30 hover:bg-primary/90 transition-all active:scale-95"
+                    onClick={() => setMobileFilterOpen(true)}
+                >
+                    <SlidersHorizontal className="w-4 h-4" />
+                    Filters
+                    {activeFilterCount > 0 && (
+                        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-white text-primary text-[10px] font-black">
+                            {activeFilterCount}
+                        </span>
+                    )}
+                </button>
         </div>
     );
 }
-

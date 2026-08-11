@@ -68,7 +68,7 @@ export function calculateMatchScore(
     // 1. State (25 points) - CRITICAL
     if (scheme.schemeType === 'CENTRAL') {
         score += 25;
-        matched.push('Central Scheme (Available in Maharashtra)');
+        matched.push(`Central Scheme (Available in ${userProfile.state || 'All India'})`);
     } else if (criteria.states && criteria.states.length > 0) {
         if (criteria.states.includes(userProfile.state)) {
             score += 25;

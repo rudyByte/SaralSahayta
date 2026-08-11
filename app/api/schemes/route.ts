@@ -135,7 +135,51 @@ export async function GET(request: Request) {
             }
         }
 
+        // Fetch document requirement counts from the normalized relational table
+        // This is what the detail page uses, so the card count will now match
+        let docCountMap: Record<string, number> = {};
+        if (results.length > 0) {
+            try {
+                const schemeIds = results.map((s: any) => s.id);
+                const { data: docCounts } = await supabaseAdmin
+                    .from('scheme_document_requirements')
+                    .select('scheme_id')
+                    .in('scheme_id', schemeIds);
+
+                if (docCounts) {
+                    docCounts.forEach((row: any) => {
+                        docCountMap[row.scheme_id] = (docCountMap[row.scheme_id] || 0) + 1;
+                    });
+                }
+            } catch (docErr) {
+                console.warn('Could not fetch document requirement counts:', docErr);
+            }
+        }
+
+        // Merge normalized doc count into results
+        results = results.map((s: any) => {
+            const relationalCount = docCountMap[s.id];
+            let rawDocs: string[] = [];
+            const raw = s.requiredDocuments || s.required_documents;
+            if (Array.isArray(raw)) {
+                rawDocs = raw;
+            } else if (typeof raw === 'string') {
+                try { rawDocs = JSON.parse(raw); } catch { if (raw.trim()) rawDocs = [raw]; }
+            }
+
+            const docCount = (relationalCount !== undefined && relationalCount > 0)
+                ? relationalCount
+                : rawDocs.length;
+
+            return {
+                ...s,
+                requiredDocumentsCount: docCount,
+            };
+        });
+
+
         const responsePayload = {
+
             schemes: results,
             total: total || 0,
             page,

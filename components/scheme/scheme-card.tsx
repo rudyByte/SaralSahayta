@@ -38,6 +38,8 @@ interface SchemeCardProps {
             matched: string[];
             missing: string[];
         } | null;
+        // From the normalized API — matches what the detail page shows
+        requiredDocumentsCount?: number | null;
     };
 }
 
@@ -139,7 +141,8 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                             <div className="flex flex-col">
                                 <span className="text-[9px] font-bold uppercase opacity-60 leading-none mb-0.5">Documents</span>
                                 <span className="text-[11px] font-bold truncate">
-                                    {scheme.requiredDocuments.length} Required
+                                    {/* Use normalized count from relational table when available, so card matches detail page */}
+                                    {(scheme.requiredDocumentsCount ?? scheme.requiredDocuments.length)} Required
                                 </span>
                             </div>
                         </div>
