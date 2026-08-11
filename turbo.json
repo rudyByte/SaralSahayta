@@ -1,5 +1,25 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "NEXT_PUBLIC_APP_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "DATABASE_URL",
+    "ENCRYPTION_KEY",
+    "GROQ_API_KEY",
+    "RAZORPAY_KEY_ID",
+    "RAZORPAY_KEY_SECRET",
+    "RAZORPAY_WEBHOOK_SECRET",
+    "TWILIO_ACCOUNT_SID",
+    "TWILIO_AUTH_TOKEN",
+    "TWILIO_PHONE_NUMBER",
+    "MSG91_AUTH_KEY",
+    "MSG91_SENDER_ID",
+    "BREVO_API_KEY",
+    "SENDER_EMAIL",
+    "SENDER_NAME"
+  ],
   "tasks": {
     "build:next": {
       "outputs": [".next/**", "!.next/cache/**"]
