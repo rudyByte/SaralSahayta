@@ -257,23 +257,23 @@ export function SmartDocumentKitWizard({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-slate-50">
-        <div className="bg-white border-b px-6 py-4 flex items-center justify-between">
-          <DialogTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-indigo-600" />
-            Smart Document Kit
+      <DialogContent className="w-[95vw] sm:max-w-3xl p-0 overflow-y-auto max-h-[90vh] bg-slate-50 rounded-3xl">
+        <div className="bg-white border-b px-4 py-4 sm:px-6 flex items-center justify-between sticky top-0 z-20">
+          <DialogTitle className="text-base sm:text-xl font-bold text-slate-800 flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600 shrink-0" />
+            <span className="truncate">Smart Document Kit</span>
           </DialogTitle>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 shrink-0">
             {[1, 2, 3, 4, 5].map(s => (
               <div
                 key={s}
-                className={`h-2 rounded-full transition-all duration-300 ${step === s || (step >= 5 && s === 5) ? 'w-8 bg-indigo-600' : step > s ? 'w-4 bg-indigo-200' : 'w-4 bg-slate-200'}`}
+                className={`h-2 rounded-full transition-all duration-300 ${step === s || (step >= 5 && s === 5) ? 'w-6 sm:w-8 bg-indigo-600' : step > s ? 'w-3 sm:w-4 bg-indigo-200' : 'w-3 sm:w-4 bg-slate-200'}`}
               />
             ))}
           </div>
         </div>
 
-        <div className="p-6 min-h-[400px] relative">
+        <div className="p-4 sm:p-6 min-h-[350px] relative">
           <AnimatePresence mode="wait">
 
             {/* STEP 1: Document Checklist */}
