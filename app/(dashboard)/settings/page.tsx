@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProfileForm from '@/components/profile/profile-form';
 import NotificationSettingsPage from './notifications/page';
@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { User, Bell, Shield, Zap, Lock, Mail, Smartphone, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
-export default function SettingsPage() {
+function SettingsContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user } = useAuth();
@@ -164,5 +164,21 @@ export default function SettingsPage() {
                 </TabsContent>
             </Tabs>
         </div>
+    );
+}
+
+export default function SettingsPage() {
+    return (
+        <Suspense fallback={
+            <div className="container max-w-5xl mx-auto py-8 px-4 sm:px-6">
+                <div className="animate-pulse space-y-6">
+                    <div className="h-10 bg-slate-200 rounded w-1/3" />
+                    <div className="h-4 bg-slate-100 rounded w-2/3" />
+                    <div className="h-12 bg-slate-100 rounded-2xl w-full" />
+                </div>
+            </div>
+        }>
+            <SettingsContent />
+        </Suspense>
     );
 }
