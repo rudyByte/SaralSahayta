@@ -3,7 +3,8 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, CheckCircle, XCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { estimateImageQuality, extractTextFromImage, type OCRProgress, type OCRResult } from '@/lib/ocr/tesseract-ocr';
+import { estimateImageQuality, extractTextFromImage, preprocessImage, type OCRProgress, type OCRResult } from '@/lib/ocr/tesseract-ocr';
+import { extractAadhaarCandidate } from '@/lib/documents/groq-document-classifier';
 import useSWR, { useSWRConfig } from 'swr';
 import ProfileChangePreview from './ProfileChangePreview';
 import { detectProfileChanges } from '@/lib/profile/change-detector';
@@ -72,14 +73,60 @@ export default function OCRDocumentUpload({
 
         setOcrStatus('processing');
         setError(null);
-        setOcrProgress({ status: 'Reading document text...', progress: 0.1 });
+        setOcrProgress({ status: 'Preprocessing document image...', progress: 0.1 });
 
         try {
-            const ocrRes = await extractTextFromImage(targetFile, 'eng+hin', (prog) => {
-                setOcrProgress({ status: prog.status, progress: 0.1 + (prog.progress * 0.4) });
+            // FIX 1: Preprocess image upload before sending to OCR (preserving PDF)
+            const processedFile = targetFile.type.startsWith('image/')
+                ? await preprocessImage(targetFile)
+                : targetFile;
+
+            setOcrProgress({ status: 'Reading document text (eng+hin)...', progress: 0.2 });
+
+            // FIX 5: First OCR pass using eng+hin
+            let ocrRes = await extractTextFromImage(processedFile, 'eng+hin', (prog) => {
+                setOcrProgress({ status: prog.status, progress: 0.2 + (prog.progress * 0.35) });
             });
 
-            setOcrProgress({ status: 'AI is analyzing text...', progress: 0.6 });
+            // FIX 5: Fallback pass with eng if initial pass produced very weak Aadhaar evidence
+            const isAadhaarDoc = documentCode.toUpperCase().includes('AADHAAR') || documentCode.toUpperCase().includes('AADHAR');
+            const initialCandidate = extractAadhaarCandidate(ocrRes.text);
+
+            if (isAadhaarDoc && !initialCandidate && (ocrRes.text || '').length < 100 && targetFile.type.startsWith('image/')) {
+                console.log('[OCR] Initial eng+hin pass produced weak Aadhaar evidence. Attempting eng pass fallback...');
+                setOcrProgress({ status: 'Refining text recognition (English pass)...', progress: 0.55 });
+                try {
+                    const engRes = await extractTextFromImage(processedFile, 'eng', (prog) => {
+                        setOcrProgress({ status: prog.status, progress: 0.55 + (prog.progress * 0.1) });
+                    });
+                    const engCandidate = extractAadhaarCandidate(engRes.text);
+                    if (engCandidate || engRes.text.length > ocrRes.text.length) {
+                        console.log('[OCR] English fallback pass produced stronger text result.');
+                        ocrRes = engRes;
+                    }
+                } catch (fallbackErr) {
+                    console.warn('[OCR] Fallback eng pass failed, using initial eng+hin result:', fallbackErr);
+                }
+            }
+
+            // FIX 8: Check for insufficient text
+            if (!ocrRes.text || ocrRes.text.trim().length < 8) {
+                throw {
+                    isInsufficientText: true,
+                    message: 'Insufficient text detected in document. Please ensure the image is clear and well-lit.'
+                };
+            }
+
+            setOcrProgress({ status: 'AI is analyzing document details...', progress: 0.65 });
+
+            // FIX 7: Safe diagnostics log
+            const detectedCandidate = extractAadhaarCandidate(ocrRes.text);
+            console.log('[OCR Diagnostics]', {
+                ocrCompleted: true,
+                ocrCharacterCount: ocrRes.text.length,
+                aadhaarCandidateDetected: Boolean(detectedCandidate),
+                ocrConfidence: ocrRes.confidence
+            });
 
             const response = await fetch('/api/documents/extract', {
                 method: 'POST',
@@ -93,11 +140,10 @@ export default function OCRDocumentUpload({
             if (!response.ok) {
                 const errorData = await response.json();
                 if (errorData.expected && errorData.detected) {
-                    console.group('❌ [AI-CLASSIFICATION] Validation Failed');
+                    console.group('❌ [AI-CLASSIFICATION] Validation Mismatch');
                     console.log('Expected:', errorData.expected);
                     console.log('Detected:', errorData.detected);
-                    console.log('Classification Detail:', errorData.classification);
-                    console.log('Raw OCR Text:', ocrRes.text);
+                    console.log('Diagnostics:', errorData.diagnostics);
                     console.groupEnd();
 
                     throw {
@@ -107,7 +153,7 @@ export default function OCRDocumentUpload({
                         message: errorData.message
                     };
                 }
-                throw new Error(errorData.message || 'AI Extraction failed');
+                throw new Error(errorData.message || errorData.error || 'AI Extraction failed');
             }
 
             const result = await response.json();
@@ -116,7 +162,7 @@ export default function OCRDocumentUpload({
             console.log('Detected Document:', result.classification?.detectedType);
             console.log('Confidence:', result.classification?.confidence + '%');
             console.log('Indicators:', result.classification?.indicators);
-            console.log('Raw OCR Text:', result.text || ocrRes.text);
+            console.log('Diagnostics:', result.diagnostics);
             console.groupEnd();
             
             console.log('🚀 [AI-OCR] Extracted Data:', result.extractedData);
@@ -152,10 +198,10 @@ export default function OCRDocumentUpload({
             );
 
         } catch (err: any) {
-            console.error('OCR Error:', err);
+            console.error('OCR Process Error:', err);
             if (err.isValidationError) {
                 setError(err);
-                // Reject and delete uploaded file from state
+                // Reject and delete uploaded file from state for actual document mismatch
                 setFile(null);
                 setPreview(null);
                 setOcrStatus('idle');

@@ -106,9 +106,9 @@ export async function extractTextFromImage(
 
 /**
  * Preprocess image for better OCR accuracy
+ * - Upscale low-res images so Tesseract can read small text
  * - Resize if too large (>2000px)
- * - Convert to grayscale
- * - Increase contrast
+ * - Convert to grayscale & contrast enhancement
  */
 export async function preprocessImage(imageFile: File): Promise<File> {
     // Only preprocess images, not PDFs
@@ -116,61 +116,76 @@ export async function preprocessImage(imageFile: File): Promise<File> {
         return imageFile;
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         const img = new Image();
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
         img.onload = () => {
-            // Resize if larger than 2000px
-            let width = img.width;
-            let height = img.height;
-            const maxDim = 2000;
+            try {
+                let width = img.width;
+                let height = img.height;
+                const maxDim = 2000;
+                const minDimThreshold = 800;
 
-            if (width > maxDim || height > maxDim) {
-                if (width > height) {
-                    height = (height / width) * maxDim;
-                    width = maxDim;
-                } else {
-                    width = (width / height) * maxDim;
-                    height = maxDim;
+                // Upscale low-resolution images for better Tesseract text reading
+                const currentMin = Math.min(width, height);
+                if (currentMin < minDimThreshold && currentMin > 0) {
+                    const scale = Math.min(2.0, minDimThreshold / currentMin);
+                    width = Math.round(width * scale);
+                    height = Math.round(height * scale);
                 }
-            }
 
-            canvas.width = width;
-            canvas.height = height;
-
-            // Draw image
-            ctx!.drawImage(img, 0, 0, width, height);
-
-            // Convert to grayscale and increase contrast
-            const imageData = ctx!.getImageData(0, 0, width, height);
-            const data = imageData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                // Grayscale
-                const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-                // Increase contrast
-                const contrast = ((gray - 128) * 1.2) + 128;
-                data[i] = data[i + 1] = data[i + 2] = contrast;
-            }
-
-            ctx!.putImageData(imageData, 0, 0);
-
-            // Convert canvas to File
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const processedFile = new File([blob], imageFile.name, {
-                        type: 'image/jpeg'
-                    });
-                    resolve(processedFile);
-                } else {
-                    reject(new Error('Image preprocessing failed'));
+                // Downscale overly large images
+                if (width > maxDim || height > maxDim) {
+                    if (width > height) {
+                        height = Math.round((height / width) * maxDim);
+                        width = maxDim;
+                    } else {
+                        width = Math.round((width / height) * maxDim);
+                        height = maxDim;
+                    }
                 }
-            }, 'image/jpeg', 0.9);
+
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx!.drawImage(img, 0, 0, width, height);
+
+                const imageData = ctx!.getImageData(0, 0, width, height);
+                const data = imageData.data;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+                    const contrast = Math.min(255, Math.max(0, ((gray - 128) * 1.25) + 128));
+                    data[i] = data[i + 1] = data[i + 2] = contrast;
+                }
+
+                ctx!.putImageData(imageData, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    URL.revokeObjectURL(img.src);
+                    if (blob) {
+                        const processedFile = new File([blob], imageFile.name, {
+                            type: 'image/jpeg'
+                        });
+                        resolve(processedFile);
+                    } else {
+                        resolve(imageFile);
+                    }
+                }, 'image/jpeg', 0.92);
+            } catch (err) {
+                console.warn('[OCR Preprocessing] Failed to preprocess, falling back to original image:', err);
+                URL.revokeObjectURL(img.src);
+                resolve(imageFile);
+            }
         };
 
-        img.onerror = () => reject(new Error('Failed to load image'));
+        img.onerror = () => {
+            console.warn('[OCR Preprocessing] Failed to load image, falling back to original image');
+            resolve(imageFile);
+        };
+
         img.src = URL.createObjectURL(imageFile);
     });
 }
@@ -189,13 +204,13 @@ export async function estimateImageQuality(imageFile: File): Promise<{
     let score = 100;
 
     // Check file size
-    if (imageFile.size < 50000) { // Less than 50KB
-        warnings.push('File size is small. Image may be low quality.');
+    if (imageFile.size < 20000) { // Less than 20KB
+        warnings.push('File size is very small. Image may be low resolution.');
         score -= 10;
     }
 
     if (imageFile.size > 10000000) { // Greater than 10MB
-        warnings.push('File size is large. Upload may be slow.');
+        warnings.push('File size is large. Processing may take longer.');
         score -= 5;
     }
 
@@ -204,19 +219,21 @@ export async function estimateImageQuality(imageFile: File): Promise<{
         const img = new Image();
 
         img.onload = () => {
-            // Check resolution
-            if (img.width < 800 || img.height < 600) {
-                issues.push('Image resolution too low. Minimum 800x600 required.');
-                score -= 30;
+            // Check resolution (minimum 400px on smallest edge or total area)
+            const minDimension = Math.min(img.width, img.height);
+            if (minDimension < 350 || (img.width * img.height) < 150000) {
+                issues.push('Image resolution is low. Clearer image recommended.');
+                score -= 25;
             }
 
-            // Check aspect ratio (documents are usually portrait or landscape)
+            // Aspect ratio warning (extremely stretched images)
             const aspectRatio = img.width / img.height;
-            if (aspectRatio < 0.5 || aspectRatio > 2.5) {
+            if (aspectRatio < 0.2 || aspectRatio > 5.0) {
                 warnings.push('Unusual aspect ratio. Ensure entire document is visible.');
                 score -= 10;
             }
 
+            URL.revokeObjectURL(img.src);
             resolve({ score, issues, warnings });
         };
 

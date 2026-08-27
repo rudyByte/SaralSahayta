@@ -1,4 +1,5 @@
 import { analyzeImage } from '@/lib/ai/groq';
+import { extractAadhaarCandidate } from '@/lib/documents/groq-document-classifier';
 
 export interface ExtractedDocumentData {
     name?: string;
@@ -66,15 +67,15 @@ export async function extractDataWithAI(
 
 function fallbackLocalExtractor(
     ocrText: string,
-    documentType: string
+    _documentType: string
 ): ExtractedDocumentData {
     const data: ExtractedDocumentData = {};
     const text = ocrText || '';
 
-    // Aadhaar number match (12 digits, optional spaces or dashes)
-    const aadhaarMatch = text.match(/\b(\d{4}[\s-]?\d{4}[\s-]?\d{4})\b/);
-    if (aadhaarMatch) {
-        data.aadhaarNumber = aadhaarMatch[1];
+    // Aadhaar number match using robust candidate extractor
+    const aadhaarCandidate = extractAadhaarCandidate(text);
+    if (aadhaarCandidate) {
+        data.aadhaarNumber = aadhaarCandidate;
     }
 
     // Date of Birth match (DD-MM-YYYY or DD/MM/YYYY)

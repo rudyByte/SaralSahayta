@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { extractDataWithAI, checkImageQualityWithAI } from '@/lib/ocr/ai-extractor';
+import { extractDataWithAI } from '@/lib/ocr/ai-extractor';
 import { createClient } from '@/lib/supabase-server';
+import { classifyDocument } from '@/lib/documents/groq-document-classifier';
 
 export async function POST(request: NextRequest) {
     try {
@@ -29,7 +30,6 @@ export async function POST(request: NextRequest) {
         const expectedDocumentName = document?.document_name || documentType;
 
         // 4. Strict Validation BEFORE Extraction
-        const { classifyDocument } = await import('@/lib/documents/groq-document-classifier');
         const classification = await classifyDocument(ocrText, expectedDocumentName);
         
         console.log(`\n--- DOCUMENT CLASSIFICATION ---`);
@@ -45,16 +45,22 @@ export async function POST(request: NextRequest) {
         }
         
         console.log(`Reason: ${classification.reason}`);
+        console.log(`Diagnostics:`, JSON.stringify(classification.diagnostics));
         console.log(`Validation: ${classification.matched ? 'Passed' : 'Failed'}`);
         console.log(`-------------------------------\n`);
 
-        if (!classification.matched) {
+        // Reject ONLY if it is distinctly detected as another known document type (e.g., PAN Card uploaded under Aadhaar)
+        const isDistinctMismatch = !classification.matched && 
+            ['PAN Card', 'Passport', 'Driving Licence', 'Voter ID Card'].includes(classification.detectedType);
+
+        if (isDistinctMismatch) {
             return NextResponse.json({
                 success: false,
                 error: "Wrong document uploaded.",
                 expected: expectedDocumentName,
                 detected: classification.detectedType,
                 classification,
+                diagnostics: classification.diagnostics,
                 message: `You have uploaded a ${classification.detectedType} in the ${expectedDocumentName} upload section. Please upload your ${expectedDocumentName}.`
             }, { status: 400 });
         }
@@ -67,6 +73,7 @@ export async function POST(request: NextRequest) {
             success: true,
             extractedData: result.data,
             classification,
+            diagnostics: classification.diagnostics,
             confidence: result.confidence,
             text: result.text || ocrText
         });

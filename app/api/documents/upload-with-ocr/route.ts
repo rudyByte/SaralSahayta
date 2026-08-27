@@ -75,7 +75,10 @@ export async function POST(request: NextRequest) {
                 processingTimeMs
             }));
 
-            if (!classification.matched) {
+            const isDistinctMismatch = !classification.matched && 
+                ['PAN Card', 'Passport', 'Driving Licence', 'Voter ID Card'].includes(classification.detectedType);
+
+            if (isDistinctMismatch) {
                 console.log(`Upload rejected: Document type mismatch. Detected: ${classification.detectedType}, Expected: ${document.document_name}`);
                 return NextResponse.json(
                     {
