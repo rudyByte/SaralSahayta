@@ -31,55 +31,63 @@ export async function GET(request: Request) {
         const limit = parseInt(searchParams.get('limit') || '20');
         const sortBy = searchParams.get('sortBy') || 'relevance';
 
-        // 3. Build Supabase Query (Table: 'schemes', Columns: camelCase except timestamps)
-        let query = supabaseAdmin
-            .from('schemes')
-            .select('*', { count: 'exact' })
-            .eq('isActive', true);
+        // Helper to construct query for any Supabase client
+        const buildSchemesQuery = (client: any) => {
+            let q = client
+                .from('schemes')
+                .select('*', { count: 'exact' })
+                .eq('isActive', true);
 
-        // Apply Search
-        if (search) {
-            query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,benefitDescription.ilike.%${search}%,ministry.ilike.%${search}%`);
+            if (search) {
+                q = q.or(`name.ilike.%${search}%,description.ilike.%${search}%,benefitDescription.ilike.%${search}%,ministry.ilike.%${search}%`);
+            }
+            if (categories.length > 0) {
+                q = q.in('category', categories);
+            }
+            if (schemeType && schemeType !== 'ALL') {
+                q = q.eq('schemeType', schemeType);
+            }
+            if (state && state !== 'All States') {
+                q = q.or(`schemeType.eq.CENTRAL,stateEligible.cs.{"${state}"}`);
+            }
+            q = q.gte('benefitAmount', minBenefit).lte('benefitAmount', maxBenefit);
+            if (sortBy === 'benefit') {
+                q = q.order('benefitAmount', { ascending: false });
+            } else if (sortBy === 'deadline') {
+                q = q.order('deadline', { ascending: true, nullsFirst: false });
+            } else {
+                q = q.order('created_at', { ascending: false });
+            }
+            const from = (page - 1) * limit;
+            const to = from + limit - 1;
+            return q.range(from, to);
+        };
+
+        let { data: schemes, count: total, error: fetchError } = await buildSchemesQuery(supabaseAdmin);
+
+        if (fetchError) {
+            console.warn("⚠️ Admin client fetch error, falling back to standard client:", fetchError.message || fetchError);
+            try {
+                const standardSupabase = createClient();
+                const fallbackRes = await buildSchemesQuery(standardSupabase);
+                schemes = fallbackRes.data;
+                total = fallbackRes.count;
+                fetchError = fallbackRes.error;
+            } catch (err: any) {
+                console.error("⚠️ Fallback query error:", err);
+            }
         }
-
-        // Apply Category
-        if (categories.length > 0) {
-            query = query.in('category', categories);
-        }
-
-        // Apply Scheme Type
-        if (schemeType && schemeType !== 'ALL') {
-            query = query.eq('schemeType', schemeType);
-        }
-
-        // Apply State
-        if (state && state !== 'All States') {
-            query = query.or(`schemeType.eq.CENTRAL,stateEligible.cs.{"${state}"}`);
-        }
-
-        // Apply Benefit Range
-        query = query.gte('benefitAmount', minBenefit).lte('benefitAmount', maxBenefit);
-
-        // Apply Sorting
-        if (sortBy === 'benefit') {
-            query = query.order('benefitAmount', { ascending: false });
-        } else if (sortBy === 'deadline') {
-            query = query.order('deadline', { ascending: true, nullsFirst: false });
-        } else {
-            query = query.order('created_at', { ascending: false });
-        }
-
-        // Apply Pagination
-        const from = (page - 1) * limit;
-        const to = from + limit - 1;
-        query = query.range(from, to);
-
-        const { data: schemes, count: total, error: fetchError } = await query;
 
         if (fetchError) {
             console.error("❌ Supabase Fetch Error:", fetchError);
-            throw fetchError;
+            return NextResponse.json({
+                schemes: [],
+                total: 0,
+                page,
+                totalPages: 0,
+            });
         }
+
 
         // Final results mapping for matching
         let results = (schemes || []).map((scheme: any) => ({
@@ -91,6 +99,20 @@ export async function GET(request: Request) {
 
         if (user && schemes && schemes.length > 0) {
             const clientSupabase = createClient();
+
+            // Fetch stored scheme match scores (includes document readiness bonus)
+            const { data: storedMatches } = await supabaseAdmin
+                .from('user_scheme_matches')
+                .select('scheme_id, match_score')
+                .eq('user_id', user.id);
+
+            const storedScoreMap: Record<string, number> = {};
+            if (storedMatches) {
+                storedMatches.forEach((sm: any) => {
+                    if (sm.scheme_id) storedScoreMap[sm.scheme_id] = sm.match_score;
+                });
+            }
+
             const { data: profile } = await clientSupabase
                 .from('user_profiles')
                 .select('*')
@@ -114,16 +136,19 @@ export async function GET(request: Request) {
                 results = schemes.map((scheme: any) => {
                     try {
                         const matchResult = calculateMatchScore(scheme as any, userProfileForMatching);
+                        const storedScore = storedScoreMap[scheme.id];
+                        const finalScore = typeof storedScore === 'number' ? storedScore : (matchResult?.score ?? null);
+
                         return {
                             ...scheme,
-                            matchScore: matchResult?.score ?? null,
+                            matchScore: finalScore,
                             matchDetails: matchResult
                         };
                     } catch (err) {
                         console.error(`Error matching scheme ${scheme.id}:`, err);
                         return {
                             ...scheme,
-                            matchScore: null,
+                            matchScore: storedScoreMap[scheme.id] ?? null,
                             matchDetails: null
                         };
                     }
@@ -134,6 +159,7 @@ export async function GET(request: Request) {
                 }
             }
         }
+
 
         // Fetch document requirement counts from the normalized relational table
         // This is what the detail page uses, so the card count will now match

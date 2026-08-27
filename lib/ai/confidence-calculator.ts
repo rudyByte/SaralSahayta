@@ -35,15 +35,28 @@ export function calculateConfidence(
     const W_DOCS = 0.3;
     const W_MATCH = 0.2;
 
-    // 1. Calculate document completeness
-    const docsComplete = requiredDocs.length > 0
-        ? requiredDocs.filter(doc => userDocs.includes(doc)).length / requiredDocs.length
-        : 1.0;
+    // 1. Calculate document completeness ratio
+    const normalizedUserDocs = userDocs.map(d => d.trim().toUpperCase());
+
+    const isDocUploaded = (reqCode: string) => {
+        const reqNorm = reqCode.trim().toUpperCase();
+        return normalizedUserDocs.some(uCode => uCode === reqNorm || uCode.includes(reqNorm) || reqNorm.includes(uCode));
+    };
+
+    let docsComplete = 0.0;
+    if (requiredDocs.length > 0) {
+        const matchCount = requiredDocs.filter(reqCode => isDocUploaded(reqCode)).length;
+        docsComplete = matchCount / requiredDocs.length;
+    } else {
+        // No requirement data available — don't assume 100%, show N/A as 0
+        docsComplete = 0.0;
+    }
 
     // 2. Final Score
     const score = Math.round(
         (historicalRate * W_HIST + docsComplete * W_DOCS + (matchScore / 100) * W_MATCH) * 100
     );
+
 
     // 3. Generate Suggestions
     const suggestions: ImprovementSuggestion[] = [];

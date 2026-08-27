@@ -38,9 +38,8 @@ export async function extractDataWithAI(
     documentType: string
 ): Promise<{ data: ExtractedDocumentData; confidence: number; text?: string }> {
     try {
-        const finalPrompt = getPromptForDocument(documentType) + "\n\nOCR TEXT TO PARSE:\n" + ocrText; // Treating imageBase64 as raw text now
+        const finalPrompt = getPromptForDocument(documentType) + "\n\nOCR TEXT TO PARSE:\n" + ocrText;
         
-        // Use text model instead of vision model because Groq decommissioned vision models!
         const { generateText } = await import('@/lib/ai/groq');
         const responseText = await generateText(finalPrompt);
         // Clean markdown backticks if present
@@ -49,13 +48,66 @@ export async function extractDataWithAI(
 
         return {
             data: parsed,
-            confidence: 95, // AI extraction is generally high confidence if it returns valid JSON
-            text: responseText // Original JSON response for debugging
+            confidence: 95,
+            text: responseText
         };
     } catch (error: any) {
-        console.error("AI Extraction Error:", error);
-        throw new Error(`AI Extraction failed: ${error.message}`);
+        console.warn("Groq AI Extraction unavailable or failed, using local rule fallback:", error.message || error);
+        
+        const fallbackData = fallbackLocalExtractor(ocrText, documentType);
+
+        return {
+            data: fallbackData,
+            confidence: 85,
+            text: ocrText
+        };
     }
+}
+
+function fallbackLocalExtractor(
+    ocrText: string,
+    documentType: string
+): ExtractedDocumentData {
+    const data: ExtractedDocumentData = {};
+    const text = ocrText || '';
+
+    // Aadhaar number match (12 digits, optional spaces or dashes)
+    const aadhaarMatch = text.match(/\b(\d{4}[\s-]?\d{4}[\s-]?\d{4})\b/);
+    if (aadhaarMatch) {
+        data.aadhaarNumber = aadhaarMatch[1];
+    }
+
+    // Date of Birth match (DD-MM-YYYY or DD/MM/YYYY)
+    const dobMatch = text.match(/(?:DOB|Date of Birth|जन्म\s*तारीख)?\s*[:\-]?\s*(\d{2}[/-]\d{2}[/-]\d{4})/i);
+    if (dobMatch) {
+        data.dateOfBirth = dobMatch[1];
+    }
+
+    // Gender match
+    if (/\b(?:Male|MALE|पुरुष)\b/i.test(text)) {
+        data.gender = 'Male';
+    } else if (/\b(?:Female|FEMALE|महिला)\b/i.test(text)) {
+        data.gender = 'Female';
+    } else if (/\b(?:Transgender|TG)\b/i.test(text)) {
+        data.gender = 'Other';
+    }
+
+    // Name match: e.g. "Name: john loyal" or "नाम / Name: john loyal"
+    const nameMatch = text.match(/(?:Name|नाम|नाम\s*\/\s*Name)\s*[:\-]?\s*([A-Za-z\s]+?)(?=\r|\n|DOB|जन्म|Male|Female|\d{4}|$)/i);
+    if (nameMatch && nameMatch[1].trim()) {
+        const rawName = nameMatch[1].trim();
+        if (!/aadhaar|adhikar|government|indya|india|bharat|sarkar/i.test(rawName)) {
+            data.name = rawName;
+        }
+    }
+
+    // PAN match
+    const panMatch = text.match(/\b([A-Z]{5}\d{4}[A-Z]{1})\b/);
+    if (panMatch) {
+        data.panNumber = panMatch[1];
+    }
+
+    return data;
 }
 
 function getPromptForDocument(type: string): string {
@@ -72,6 +124,7 @@ function getPromptForDocument(type: string): string {
 
     switch (type.toUpperCase()) {
         case 'AADHAAR':
+        case 'AADHAR':
             return `${basePrompt} Return JSON: { "name": string, "aadhaarNumber": string, "dateOfBirth": string, "gender": string, "address": string }. Note: Aadhaar name is NOT the tagline at the bottom.`;
         case 'PAN':
             return `${basePrompt} Return JSON: { "name": string, "panNumber": string, "fatherName": string, "dateOfBirth": string }`;

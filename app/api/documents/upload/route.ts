@@ -1,4 +1,4 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
@@ -70,28 +70,21 @@ export async function POST(request: NextRequest) {
         console.log('[Upload API] Checking Storage Configuration...');
         const bucketName = 'documents';
 
-        // Check if bucket exists using Admin Client
-        const { data: buckets, error: bucketError } = await supabaseAdmin.storage.listBuckets();
-        if (bucketError) {
-            console.error('[Upload API] Failed to list buckets:', bucketError);
-            throw new Error('Storage configuration failure: Could not list buckets');
-        }
-
-        const bucketExists = buckets?.find(b => b.name === bucketName);
-        console.log(`[Upload API] Bucket '${bucketName}' exists?`, !!bucketExists);
-
-        if (!bucketExists) {
-            console.log(`[Upload API] Attempting to create bucket '${bucketName}'...`);
-            const { error: createError } = await supabaseAdmin.storage.createBucket(bucketName, {
-                public: false,
-                fileSizeLimit: 10485760
-            });
-            if (createError) {
-                console.error('[Upload API] Failed to create bucket:', createError);
-                throw new Error('Failed to auto-create storage bucket');
+        try {
+            const { data: buckets, error: bucketError } = await supabaseAdmin.storage.listBuckets();
+            if (!bucketError && buckets) {
+                const bucketExists = buckets.find(b => b.name === bucketName);
+                if (!bucketExists) {
+                    await supabaseAdmin.storage.createBucket(bucketName, {
+                        public: false,
+                        fileSizeLimit: 10485760
+                    });
+                }
             }
-            console.log(`[Upload API] Bucket '${bucketName}' created.`);
+        } catch (storageCheckErr: any) {
+            console.warn('[Upload API] Bucket listing check skipped due to storage auth error:', storageCheckErr.message || storageCheckErr);
         }
+
 
         // 7. Upload
         const fileToUpload: File | Buffer = file;
