@@ -5,17 +5,24 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
     const supabase = createAdminClient();
 
     try {
-        // 1. Get user profile
-        const { data: profile, error: profileError } = await supabase
+        // 1. Get user profile (with fallback for new users)
+        const { data: profile } = await supabase
             .from('user_profiles')
             .select('*')
             .eq('user_id', userId)
             .single();
 
-        if (profileError || !profile) {
-            console.error('No profile found for recalculation', profileError);
-            return { newMatchesFound: 0 };
-        }
+        const userProfile = profile || {
+            gender: 'ALL',
+            category: 'GENERAL',
+            annual_income: undefined,
+            state: 'All States',
+            education: undefined,
+            occupation: undefined,
+            profile_completion_percentage: 50,
+            date_of_birth: undefined
+        };
+
 
         // 2. Get user's uploaded document codes (any verification status)
         const { data: userDocRows } = await supabase
@@ -27,13 +34,13 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
             .map((d: any) => d.documents?.document_code)
             .filter(Boolean);
 
-        // 3. Get all active schemes (Table: 'schemes', Column: 'isActive' - Confirmed)
+        // 3. Get all active schemes
         const { data: schemes } = await supabase
             .from('schemes')
             .select('*')
             .eq('isActive', true);
 
-        if (!schemes) return { newMatchesFound: 0 };
+        if (!schemes || schemes.length === 0) return { newMatchesFound: 0 };
 
         // 4. Get scheme document requirements in bulk
         const { data: allDocReqs } = await supabase
@@ -41,7 +48,6 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
             .select(`scheme_id, is_mandatory, documents (document_code)`)
             .in('scheme_id', schemes.map(s => s.id));
 
-        // Build a map: scheme_id -> required doc codes
         const schemeDocMap: Record<string, string[]> = {};
         (allDocReqs || []).forEach((req: any) => {
             if (!req.is_mandatory || !req.documents?.document_code) return;
@@ -50,12 +56,23 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
             schemeDocMap[sId].push(req.documents.document_code);
         });
 
+        // 5. Bulk fetch all previous match scores for this user
+        const { data: previousMatches } = await supabase
+            .from('user_scheme_matches')
+            .select('scheme_id, match_score')
+            .eq('user_id', userId);
+
+        const prevMatchMap = new Map<string, number>();
+        (previousMatches || []).forEach((pm: any) => {
+            if (pm.scheme_id) prevMatchMap.set(pm.scheme_id, pm.match_score);
+        });
+
         const matchesToUpsert = [];
+        const historyToInsert = [];
         const newlyEligible = [];
 
-        // 5. Evaluate each scheme
+        // 6. Evaluate each scheme in memory
         for (const scheme of schemes) {
-            // Mapping for compatibility with matching algorithm (ensure createdAt/updatedAt are available)
             const schemeForMatching = {
                 ...scheme,
                 createdAt: scheme.created_at,
@@ -63,41 +80,35 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
             };
 
             const matchResult = calculateMatchScore(schemeForMatching as any, {
-                age: profile.date_of_birth ? new Date().getFullYear() - new Date(profile.date_of_birth).getFullYear() : undefined,
-                gender: profile.gender,
-                category: profile.category,
-                annualIncome: profile.annual_income,
-                state: profile.state,
-                education: profile.education,
-                occupation: profile.occupation,
-                profileCompletionPercentage: profile.profile_completion_percentage || 0
+                age: userProfile.date_of_birth ? new Date().getFullYear() - new Date(userProfile.date_of_birth).getFullYear() : undefined,
+                gender: userProfile.gender,
+                category: userProfile.category,
+                annualIncome: userProfile.annual_income,
+                state: userProfile.state,
+                education: userProfile.education,
+                occupation: userProfile.occupation,
+                profileCompletionPercentage: userProfile.profile_completion_percentage || 50
             });
+
 
             if (!matchResult) continue;
 
             const profileScore = matchResult.score;
             const requiredDocCodes = schemeDocMap[scheme.id] || [];
 
-            // Document readiness score (0.0 - 1.0)
             const docsComplete = requiredDocCodes.length > 0
                 ? requiredDocCodes.filter(code => userUploadedDocCodes.includes(code)).length / requiredDocCodes.length
                 : 1.0;
 
-            // Blend the two: profile + docs bonus
             const docBonus = Math.round(docsComplete * 15);
             const blendedScore = Math.min(100, profileScore + docBonus);
 
-            // Check previous match score (Using snake_case table)
-            const { data: previousMatch } = await supabase
-                .from('user_scheme_matches')
-                .select('match_score')
-                .eq('user_id', userId)
-                .eq('scheme_id', scheme.id)
-                .maybeSingle();
+            const hasPrev = prevMatchMap.has(scheme.id);
+            const prevScore = prevMatchMap.get(scheme.id);
 
-            if (!previousMatch && blendedScore >= 70) {
+            if (!hasPrev && blendedScore >= 70) {
                 newlyEligible.push(scheme);
-            } else if (previousMatch && (previousMatch.match_score || 0) < 70 && blendedScore >= 70) {
+            } else if (hasPrev && (prevScore || 0) < 70 && blendedScore >= 70) {
                 newlyEligible.push(scheme);
             }
 
@@ -108,9 +119,8 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
                 created_at: new Date().toISOString()
             });
 
-            // Log history if score changed (Using snake_case table)
-            if (!previousMatch || previousMatch.match_score !== blendedScore) {
-                await supabase.from('scheme_match_history').insert({
+            if (!hasPrev || prevScore !== blendedScore) {
+                historyToInsert.push({
                     user_id: userId,
                     scheme_id: scheme.id,
                     match_score: blendedScore,
@@ -119,15 +129,21 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
             }
         }
 
-
-        // 6. Batch upsert scores
+        // 7. Batch upsert match scores
         if (matchesToUpsert.length > 0) {
             await supabase
                 .from('user_scheme_matches')
                 .upsert(matchesToUpsert, { onConflict: 'user_id,scheme_id' });
         }
 
-        // 7. Send notification for new matches (Snake case table 'notifications')
+        // 8. Batch insert match history
+        if (historyToInsert.length > 0) {
+            await supabase
+                .from('scheme_match_history')
+                .insert(historyToInsert);
+        }
+
+        // 9. Send notification for new matches
         if (newlyEligible.length > 0) {
             await supabase.from('notifications').insert({
                 user_id: userId,
@@ -145,3 +161,4 @@ export async function recalculateSchemeMatches(userId: string, reason: string) {
         return { newMatchesFound: 0 };
     }
 }
+

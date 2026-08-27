@@ -67,8 +67,8 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-primary/10 transition-colors duration-500" />
 
             <CardHeader className="p-6 pb-2 relative z-10">
-                <div className="flex justify-between items-start mb-3">
-                    <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap justify-between items-center gap-2 mb-3">
+                    <div className="flex flex-wrap items-center gap-1.5">
                         <Badge variant="outline" className={cn("font-bold uppercase text-[10px] py-0.5", TYPE_COLORS[scheme.schemeType])}>
                             {scheme.schemeType}
                         </Badge>
@@ -78,7 +78,7 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                         </Badge>
                     </div>
                     {/* Compact circular approval chance + bookmark */}
-                    <div className="flex items-center gap-1 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0 ml-auto sm:ml-0">
                         {user && <NewlyEligibleBadge schemeId={scheme.id} userId={user.id} />}
                         <ConfidenceBadge schemeId={scheme.id} fallbackScore={scheme.matchScore} />
                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">

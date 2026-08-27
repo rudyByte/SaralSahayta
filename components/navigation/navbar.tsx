@@ -81,22 +81,25 @@ export function Navbar() {
                 <nav className="flex items-center justify-between gap-8 text-slate-900">
                     
                     {/* Brand / Context Title */}
-                    <div className="flex items-center gap-4">
-                        {!isDashboard && (
-                            <Link href="/" className="flex items-center gap-2.5 group">
-                                <div className="bg-primary text-white p-1.5 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-primary/20">
-                                    <Zap className="h-6 w-6 fill-current" />
+                    <div className="flex items-center gap-3">
+                        {!isDashboard ? (
+                            <Link href="/" className="flex items-center gap-2 group">
+                                <div className="bg-primary text-white p-1.5 rounded-xl group-hover:scale-110 transition-transform shadow-lg shadow-primary/20 shrink-0">
+                                    <Zap className="h-5 w-5 sm:h-6 sm:w-6 fill-current" />
                                 </div>
-                                <span className="text-2xl font-black tracking-tight text-slate-900 leading-none">
+                                <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-none">
                                     Saral<span className="text-primary">Sahayta</span>
                                 </span>
                             </Link>
-                        )}
-                        {isDashboard && (
-                            <div className="flex items-center gap-2">
-                                <Shield className="h-5 w-5 text-primary/40" />
-                                <span className="text-xs font-black uppercase tracking-widest text-slate-400">
-                                    Official Portal • {pathname.split('/')[1]?.replace('-', ' ')}
+                        ) : (
+                            <div className="flex items-center gap-2 min-w-0">
+                                <Link href="/dashboard" className="flex items-center gap-2 shrink-0 group">
+                                    <div className="bg-primary text-white p-1.5 rounded-xl shadow-md shadow-primary/20">
+                                        <Zap className="h-4 w-4 fill-current" />
+                                    </div>
+                                </Link>
+                                <span className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-400 truncate max-w-[140px] sm:max-w-xs">
+                                    {pathname.split('/')[1]?.replace('-', ' ') || 'Portal'}
                                 </span>
                             </div>
                         )}
@@ -166,7 +169,7 @@ export function Navbar() {
                                     {isProfileOpen && (
                                         <>
                                             <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                                            <div className="absolute right-0 mt-3 w-72 bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100 z-50 p-3 animate-in fade-in zoom-in duration-300 origin-top-right">
+                                            <div className="absolute right-0 mt-3 w-72 max-w-[90vw] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100 z-50 p-3 animate-in fade-in zoom-in duration-300 origin-top-right">
                                                 <div className="px-4 py-4 bg-slate-50 rounded-2xl mb-2 flex items-center gap-4">
                                                     <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-white font-black text-lg">
                                                         {profileName?.charAt(0).toUpperCase()}

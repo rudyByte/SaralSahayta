@@ -104,25 +104,25 @@ export const FirstLoginPopup = ({ isOpen, onClose }: FirstLoginPopupProps) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm">
             <motion.div 
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden relative"
+                className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden relative max-h-[90vh] flex flex-col"
             >
                 {/* Close Button */}
                 <button 
                     onClick={handleSkip}
-                    className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors z-10"
+                    className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors z-10"
                 >
                     <X className="h-5 w-5" />
                 </button>
 
-                <div className="flex flex-col h-[600px]">
+                <div className="flex flex-col h-full max-h-[85vh] sm:h-[600px]">
                     {/* Header Progress */}
                     {step !== 'SUCCESS' && (
-                        <div className="px-8 pt-8 flex items-center gap-2">
+                        <div className="px-5 pt-6 sm:px-8 sm:pt-8 flex items-center gap-2 shrink-0">
                              {[ 'WELCOME', 'SELECT_EVENTS', 'EVENT_DETAILS' ].map((s, i) => (
                                 <div 
                                     key={s}
@@ -136,7 +136,7 @@ export const FirstLoginPopup = ({ isOpen, onClose }: FirstLoginPopupProps) => {
                         </div>
                     )}
 
-                    <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                    <div className="flex-1 overflow-y-auto p-5 sm:p-8 custom-scrollbar">
                         <AnimatePresence mode="wait">
                             {step === 'WELCOME' && (
                                 <motion.div 
@@ -190,7 +190,7 @@ export const FirstLoginPopup = ({ isOpen, onClose }: FirstLoginPopupProps) => {
                                                 <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 ml-1">
                                                     {CATEGORY_LABELS[category as LifeEventCategory]}
                                                 </h4>
-                                                <div className="grid grid-cols-2 gap-3">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                                     {events.map(type => {
                                                         const config = LIFE_EVENT_CONFIGS[type];
                                                         const isSelected = selectedEvents.includes(type);

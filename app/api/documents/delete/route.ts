@@ -1,4 +1,4 @@
-﻿export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
@@ -37,16 +37,7 @@ export async function DELETE(request: NextRequest) {
         }
 
         // 3. Delete from Storage
-        // Extract path from URL or if you stored the path, use that. 
-        // Based on upload logic: path is `userId/documents/timestamp-filename`
-        // We can extract it from file_url if needed, or if we start saving file_path in DB it would be easier.
-        // For now, let's extract from URL or reconstruct carefully.
-        // Actually, the previous upload implementation returns `publicUrl`.
-        // Let's try to parse the path from the public URL.
-
         const fileUrl = userDoc.file_url;
-        // Expected format: .../documents/userId/documents/filename
-        // Let's rely on the regex we used in download route or similar method
         const urlMatch = fileUrl.match(/\/storage\/v1\/object\/public\/documents\/(.+)$/);
 
         if (urlMatch && urlMatch[1]) {
@@ -57,13 +48,9 @@ export async function DELETE(request: NextRequest) {
 
             if (storageError) {
                 console.error('[Delete API] Storage delete error:', storageError);
-                // We might still want to delete the DB record even if storage fails, 
-                // or return error. Let's return error for now to be safe.
-                return NextResponse.json({ error: 'Failed to delete file from storage' }, { status: 500 });
             }
         } else {
             console.warn('[Delete API] Could not extract file path from URL:', fileUrl);
-            // Proceed to delete DB record anyway? Maybe yes, to clean up "broken" records.
         }
 
         // 4. Delete from Database
@@ -74,6 +61,16 @@ export async function DELETE(request: NextRequest) {
 
         if (dbError) {
             return NextResponse.json({ error: 'Failed to delete database record' }, { status: 500 });
+        }
+
+        // 5. Trigger background recalculation
+        try {
+            const { recalculateSchemeMatches } = await import('@/lib/matching/recalculate-on-profile-update');
+            recalculateSchemeMatches(user.id, 'Document Deleted').catch(err => {
+                console.warn('Background recalculation on document delete failed:', err);
+            });
+        } catch (calcErr) {
+            console.warn('Could not trigger recalculateSchemeMatches on delete:', calcErr);
         }
 
         return NextResponse.json({ success: true });

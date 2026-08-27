@@ -13,26 +13,39 @@ export async function GET(
     try {
         const supabaseAdmin = createAdminClient();
 
-        // 1. Try finding by internal UUID first, then fallback to schemeId slug
-        let { data: scheme, error: fetchError } = await supabaseAdmin
-            .from('schemes')
-            .select('*')
-            .eq('id', params.id)
-            .maybeSingle();
+        // 1. Try finding scheme — first by UUID id (only if it looks like a UUID),
+        //    then by schemeId slug field, then by name (slugified match)
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id);
 
-        if (!scheme && !fetchError) {
-            const { data: fallback, error: fallbackError } = await supabaseAdmin
-                .from('schemes')
-                .select('*')
-                .eq('schemeId', params.id)
-                .maybeSingle();
-            scheme = fallback;
-            fetchError = fallbackError;
+        let scheme: any = null;
+        let fetchError: any = null;
+
+        if (isUUID) {
+            const res = await supabaseAdmin.from('schemes').select('*').eq('id', params.id).maybeSingle();
+            scheme = res.data;
+            fetchError = res.error;
+        }
+
+        // Fallback 1: match by schemeId field (e.g. "PMAY-U", "PM-KISAN")
+        if (!scheme) {
+            const res = await supabaseAdmin.from('schemes').select('*').eq('schemeId', params.id).maybeSingle();
+            if (!res.error) { scheme = res.data; fetchError = res.error; }
+        }
+
+        // Fallback 2: legacy slug-style id (e.g. "scheme_4") — try matching name ilike
+        if (!scheme && params.id.startsWith('scheme_')) {
+            const idx = parseInt(params.id.replace('scheme_', ''), 10);
+            if (!isNaN(idx)) {
+                const res = await supabaseAdmin.from('schemes').select('*').eq('isActive', true)
+                    .range(idx - 1, idx - 1).maybeSingle();
+                if (!res.error) { scheme = res.data; fetchError = res.error; }
+            }
         }
 
         if (fetchError || !scheme) {
             return NextResponse.json({ error: 'Scheme not found' }, { status: 404 });
         }
+
 
         // 2. Increment view count (fire and forget, non-blocking)
         void (async () => {

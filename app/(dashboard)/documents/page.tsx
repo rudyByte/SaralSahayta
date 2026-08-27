@@ -182,7 +182,7 @@ export default function DocumentsPage() {
                         className="pl-10"
                     />
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 md:pb-0">
                     <Button
                         variant={filterCategory === null ? 'default' : 'outline'}
                         onClick={() => setFilterCategory(null)}

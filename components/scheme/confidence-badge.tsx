@@ -41,8 +41,17 @@ function MiniCircle({ score, color }: { score: number; color: string }) {
 }
 
 export function ConfidenceBadge({ schemeId, fallbackScore, className }: ConfidenceBadgeProps) {
-    const { data, error, isLoading } = useSWR(`/api/schemes/${schemeId}/confidence`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(
+        `/api/schemes/${schemeId}/confidence`,
+        fetcher,
+        { revalidateOnFocus: true, revalidateOnReconnect: true, dedupingInterval: 5000 }
+    );
     const [isOpen, setIsOpen] = useState(false);
+
+    const handleOpen = (open: boolean) => {
+        setIsOpen(open);
+        if (open) mutate(); // force-refresh when user hovers
+    };
 
     // If still loading and no fallback score is provided yet, show skeleton
     if (isLoading && fallbackScore === undefined && !data) {
@@ -52,6 +61,7 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
     // Determine the active score (prefer data from API, but use fallback if not available)
     const score: number = data?.score ?? fallbackScore ?? 0;
 
+
     const config =
         score >= 80
             ? { color: '#10b981', bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-700', label: 'High', icon: <TrendingUp className="h-2.5 w-2.5" /> }
@@ -60,11 +70,11 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
             : { color: '#f43f5e', bg: 'bg-rose-50', border: 'border-rose-100', text: 'text-rose-700', label: 'Low', icon: <AlertCircle className="h-2.5 w-2.5" /> };
 
     return (
-        <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <Popover open={isOpen} onOpenChange={handleOpen}>
             <PopoverTrigger asChild>
                 <button
-                    onMouseEnter={() => setIsOpen(true)}
-                    onMouseLeave={() => setIsOpen(false)}
+                    onMouseEnter={() => handleOpen(true)}
+                    onMouseLeave={() => handleOpen(false)}
                     className={cn(
                         'relative inline-flex items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-help rounded-full',
                         className
@@ -104,19 +114,21 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
 
                 {/* Breakdown bars */}
                 <div className="p-4 space-y-3">
-                    {(!data && isLoading) ? (
+                    {(isLoading && !data) ? (
                         <div className="space-y-4 py-2">
                             <div className="h-2 bg-slate-100 rounded-full animate-pulse w-3/4" />
                             <div className="h-2 bg-slate-100 rounded-full animate-pulse w-1/2" />
                             <p className="text-[10px] font-bold text-slate-400 animate-pulse">Analysing your profile...</p>
                         </div>
+                    ) : !data ? (
+                        <p className="text-[10px] text-slate-400 py-2">Hover again to load breakdown</p>
                     ) : (
                         <>
-                            {[
-                                { label: 'Historical Success Rate', val: data?.breakdown?.historicalRate ?? 0, weight: '50%' },
-                                { label: 'Document Verification', val: data?.breakdown?.docsComplete ?? 0, weight: '30%' },
-                                { label: 'Profile Matching', val: data?.breakdown?.matchScore ?? 0, weight: '20%' },
-                            ].map(({ label, val, weight }) => (
+                            {([
+                                { label: 'Historical Success Rate', val: data.breakdown?.historicalRate ?? 0, weight: '50%' },
+                                { label: 'Document Verification', val: data.breakdown?.docsComplete ?? 0, weight: '30%' },
+                                { label: 'Profile Matching', val: data.breakdown?.matchScore ?? 0, weight: '20%' },
+                            ] as { label: string; val: number; weight: string }[]).map(({ label, val, weight }) => (
                                 <div key={label} className="space-y-1">
                                     <div className="flex justify-between text-[10px] font-bold text-slate-500">
                                         <div className="flex items-center gap-1.5">
@@ -128,13 +140,13 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
                                     <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                                         <div
                                             className="h-full rounded-full transition-all duration-700"
-                                            style={{ width: `${val * 100}%`, backgroundColor: config.color }}
+                                            style={{ width: `${Math.max(0, Math.min(1, val)) * 100}%`, backgroundColor: config.color }}
                                         />
                                     </div>
                                 </div>
                             ))}
 
-                            {data?.suggestions?.length > 0 && (
+                            {data.suggestions?.length > 0 && (
                                 <div className="pt-2 border-t border-slate-100">
                                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">
                                         How to improve
@@ -154,6 +166,7 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
                             )}
                         </>
                     )}
+
                 </div>
 
                 <div className="bg-slate-50 px-4 py-2.5 border-t border-slate-100">

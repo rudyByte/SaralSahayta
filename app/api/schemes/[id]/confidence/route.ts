@@ -12,10 +12,13 @@ export async function GET(
         const supabase = getServerClient();
         const adminSupabase = createAdminClient();
 
-        // 1. Auth Check (Server Client for Session)
-        const { data: { user }, error: authError } = await supabase.auth.getUser();
-        if (authError || !user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // 1. Auth Check (Server Client for Session - optional for confidence endpoint)
+        let userId: string | null = null;
+        try {
+            const { data: authData } = await supabase.auth.getUser();
+            userId = authData?.user?.id || null;
+        } catch (authErr) {
+            console.warn('Auth check skipped in confidence route:', authErr);
         }
 
         // 2. Fetch Scheme Details
@@ -29,25 +32,51 @@ export async function GET(
             return NextResponse.json({ error: 'Scheme not found' }, { status: 404 });
         }
 
-        // 3. Document Requirements (Normalize to uppercase for matching)
-        const requiredDocCodes: string[] = (Array.isArray(scheme.requiredDocuments) 
-            ? scheme.requiredDocuments 
-            : []).map((code: string) => code.trim().toUpperCase());
+        // 3. Document Requirements (Fetch from relational table first, fallback to scheme field)
+        let requiredDocCodes: string[] = [];
+        try {
+            const { data: docReqRows } = await adminSupabase
+                .from('scheme_document_requirements')
+                .select(`
+                    document_id,
+                    is_mandatory,
+                    documents (
+                        document_code,
+                        document_name
+                    )
+                `)
+                .eq('scheme_id', schemeId);
 
-        // 4. Fetch User's Uploaded Documents (Actual Table: 'user_documents')
-        const { data: userDocRows, error: userDocError } = await adminSupabase
-            .from('user_documents')
-            .select(`
-                verification_status,
-                document_id,
-                documents!inner (
-                    document_code,
-                    document_name
-                )
-            `)
-            .eq('user_id', user.id);
+            if (docReqRows && docReqRows.length > 0) {
+                requiredDocCodes = docReqRows
+                    .filter((r: any) => r.is_mandatory !== false && r.documents?.document_code)
+                    .map((r: any) => r.documents.document_code.trim().toUpperCase());
+            }
+        } catch (reqErr) {
+            console.warn('Could not fetch scheme_document_requirements:', reqErr);
+        }
 
-        if (userDocError) console.error('Error fetching user docs for confidence:', userDocError);
+        if (requiredDocCodes.length === 0 && Array.isArray(scheme.requiredDocuments) && scheme.requiredDocuments.length > 0) {
+            requiredDocCodes = scheme.requiredDocuments.map((code: string) => code.trim().toUpperCase());
+        }
+
+
+        // 4. Fetch User's Uploaded Documents (if logged in)
+        let userDocRows: any[] = [];
+        if (userId) {
+            const { data: docRows } = await adminSupabase
+                .from('user_documents')
+                .select(`
+                    verification_status,
+                    document_id,
+                    documents (
+                        document_code,
+                        document_name
+                    )
+                `)
+                .eq('user_id', userId);
+            userDocRows = docRows || [];
+        }
 
         const userUploadedCodes = (userDocRows || [])
             .map((d: any) => d.documents?.document_code?.trim().toUpperCase())
@@ -56,6 +85,7 @@ export async function GET(
         const userUploadedNames = (userDocRows || [])
             .map((d: any) => d.documents?.document_name?.trim().toLowerCase())
             .filter(Boolean);
+
 
         // 5. Historical Stats (Using RPC - assumed snake_case in SQL already)
         const { data: statsData } = await adminSupabase.rpc('get_scheme_stats', { target_scheme_id: schemeId });
@@ -75,15 +105,20 @@ export async function GET(
             historicalRate = categorySeeds[scheme.category] || 0.65;
         }
 
-        // 6. Fetch profile match score (Actual Table: 'user_scheme_matches')
-        const { data: matchRow } = await adminSupabase
-            .from('user_scheme_matches')
-            .select('match_score')
-            .eq('user_id', user.id)
-            .eq('scheme_id', schemeId)
-            .single();
+        // 6. Fetch profile match score (if user is logged in)
+        let matchScore = 75;
+        if (userId) {
+            const { data: matchRow } = await adminSupabase
+                .from('user_scheme_matches')
+                .select('match_score')
+                .eq('user_id', userId)
+                .eq('scheme_id', schemeId)
+                .single();
+            if (matchRow?.match_score) {
+                matchScore = matchRow.match_score;
+            }
+        }
 
-        const matchScore = matchRow?.match_score ?? 60;
 
         // 7. Calculate Confidence
         const confidence = calculateConfidence(
