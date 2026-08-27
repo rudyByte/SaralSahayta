@@ -5,6 +5,7 @@ import { Sidebar } from '@/components/navigation/sidebar';
 import { Navbar } from '@/components/navigation/navbar';
 import { LifeEventsTrigger } from '@/components/life-events/LifeEventsTrigger';
 import { SidebarProvider } from '@/lib/sidebar-context';
+import { ChatWidget } from '@/components/chat/chat-widget';
 
 export default function DashboardLayout({
     children,
@@ -28,6 +29,8 @@ export default function DashboardLayout({
                     {children}
                 </div>
             </main>
+
+            <ChatWidget />
         </div>
         </SidebarProvider>
     );
