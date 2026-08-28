@@ -157,7 +157,7 @@ export default async function MissedBenefitsReportPage() {
                                         </div>
                                         <div className="shrink-0">
                                             <Button asChild className="w-full md:w-auto px-6 h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-200 font-bold text-base transition-all active:scale-95">
-                                                <Link href={`/schemes/${alt.id}`}>
+                                                <Link href={`/schemes/${alt.id}/apply`}>
                                                     Apply Now
                                                     <ArrowRight className="ml-2 h-4 w-4" />
                                                 </Link>
@@ -229,7 +229,7 @@ export default async function MissedBenefitsReportPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
                     <Button asChild size="lg" className="h-14 px-8 rounded-2xl bg-indigo-500 hover:bg-indigo-600 font-bold text-lg shadow-lg shadow-indigo-500/20">
-                        <Link href="/schemes">
+                        <Link href="/discover">
                             Discover Schemes
                         </Link>
                     </Button>

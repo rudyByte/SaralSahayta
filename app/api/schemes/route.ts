@@ -2,8 +2,45 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { calculateMatchScore } from '@/lib/matching-algorithm';
-import { Gender, Category, Education } from '@prisma/client';
+import {
+    fetchScoringInputs,
+    normalizeRequiredDocumentRows,
+    scoreSchemeForUser,
+} from '@/lib/scoring/scheme-score';
+
+const LIFE_EVENT_CATEGORY_HINTS: Record<string, string[]> = {
+    TENTH_PASS: ['EDUCATION', 'SKILL_DEVELOPMENT'],
+    TWELFTH_PASS: ['EDUCATION', 'SKILL_DEVELOPMENT'],
+    DIPLOMA: ['EDUCATION', 'SKILL_DEVELOPMENT', 'EMPLOYMENT'],
+    COLLEGE_ADMISSION: ['EDUCATION'],
+    GRADUATION: ['EDUCATION', 'EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    POST_GRADUATION: ['EDUCATION'],
+    MASTERS: ['EDUCATION'],
+    PHD: ['EDUCATION'],
+    UNMARRIED: ['EDUCATION', 'EMPLOYMENT'],
+    MARRIAGE: ['WOMEN_CHILD', 'HOUSING'],
+    CHILDBIRTH: ['WOMEN_CHILD', 'HEALTHCARE'],
+    SINGLE_CHILD: ['EDUCATION', 'WOMEN_CHILD'],
+    GIRL_CHILD: ['EDUCATION', 'WOMEN_CHILD'],
+    SINGLE_PARENT: ['WOMEN_CHILD', 'EDUCATION', 'HOUSING'],
+    WIDOWHOOD: ['WOMEN_CHILD', 'HEALTHCARE'],
+    DIVORCE: ['WOMEN_CHILD', 'HOUSING'],
+    SEPARATION: ['WOMEN_CHILD', 'HOUSING'],
+    ORPHAN: ['EDUCATION', 'HEALTHCARE'],
+    DISABILITY: ['DISABILITY', 'HEALTHCARE', 'EDUCATION'],
+    SERIOUS_ILLNESS: ['HEALTHCARE'],
+    TURNED_60: ['SENIOR_CITIZEN', 'HEALTHCARE'],
+    TURNED_70: ['SENIOR_CITIZEN', 'HEALTHCARE'],
+    STARTING_BUSINESS: ['ENTREPRENEURSHIP'],
+    FARMING_INITIATED: ['AGRICULTURE'],
+    LOW_INCOME: ['HOUSING', 'EDUCATION', 'HEALTHCARE'],
+    CROP_LOSS: ['AGRICULTURE'],
+    FIRST_JOB: ['EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    JOB_LOSS: ['EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    UNEMPLOYED: ['EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    SKILL_UPGRADE: ['SKILL_DEVELOPMENT', 'EMPLOYMENT'],
+    RETIREMENT: ['SENIOR_CITIZEN'],
+};
 
 export async function GET(request: Request) {
     try {
@@ -24,6 +61,7 @@ export async function GET(request: Request) {
         const search = searchParams.get('search');
         const categories = searchParams.getAll('category');
         const schemeType = searchParams.get('schemeType');
+        const eventType = searchParams.get('event');
         const state = searchParams.get('state');
         const minBenefit = parseInt(searchParams.get('minBenefit') || '0');
         const maxBenefit = parseInt(searchParams.get('maxBenefit') || '500000');
@@ -31,12 +69,32 @@ export async function GET(request: Request) {
         const limit = parseInt(searchParams.get('limit') || '20');
         const sortBy = searchParams.get('sortBy') || 'relevance';
 
+        let eventSchemeIds: string[] = [];
+        if (eventType) {
+            const { data: mappedRows, error: mappingError } = await supabaseAdmin
+                .from('life_event_scheme_mapping')
+                .select('scheme_id')
+                .eq('event_type', eventType);
+            if (!mappingError) {
+                eventSchemeIds = (mappedRows || []).map((row: any) => row.scheme_id).filter(Boolean);
+            }
+        }
+
         // Helper to construct query for any Supabase client
         const buildSchemesQuery = (client: any) => {
             let q = client
                 .from('schemes')
                 .select('*', { count: 'exact' })
                 .eq('isActive', true);
+
+            if (eventType) {
+                if (eventSchemeIds.length > 0) {
+                    q = q.in('id', eventSchemeIds);
+                } else {
+                    const categoryHints = LIFE_EVENT_CATEGORY_HINTS[eventType] || [];
+                    if (categoryHints.length > 0) q = q.in('category', categoryHints);
+                }
+            }
 
             if (search) {
                 q = q.or(`name.ilike.%${search}%,description.ilike.%${search}%,benefitDescription.ilike.%${search}%,ministry.ilike.%${search}%`);
@@ -98,65 +156,63 @@ export async function GET(request: Request) {
         }));
 
         if (user && schemes && schemes.length > 0) {
-            const clientSupabase = createClient();
+            const { profile, userDocuments, requirementsByScheme, historicalByScheme } = await fetchScoringInputs(
+                supabaseAdmin,
+                user.id,
+                schemes.map((scheme: any) => scheme.id)
+            );
 
-            // Fetch stored scheme match scores (includes document readiness bonus)
-            const { data: storedMatches } = await supabaseAdmin
-                .from('user_scheme_matches')
-                .select('scheme_id, match_score')
-                .eq('user_id', user.id);
+            const now = new Date().toISOString();
+            const matchesToUpsert: Array<{ user_id: string; scheme_id: string; match_score: number; created_at: string; updated_at: string }> = [];
 
-            const storedScoreMap: Record<string, number> = {};
-            if (storedMatches) {
-                storedMatches.forEach((sm: any) => {
-                    if (sm.scheme_id) storedScoreMap[sm.scheme_id] = sm.match_score;
-                });
+            results = schemes.map((scheme: any) => {
+                try {
+                    const scoreResult = scoreSchemeForUser({
+                        scheme,
+                        profile,
+                        requiredDocuments: requirementsByScheme[scheme.id] || normalizeRequiredDocumentRows([], scheme),
+                        userDocuments,
+                        historicalRate: historicalByScheme[scheme.id],
+                    });
+
+                    matchesToUpsert.push({
+                        user_id: user.id,
+                        scheme_id: scheme.id,
+                        match_score: scoreResult.score,
+                        created_at: now,
+                        updated_at: now,
+                    });
+
+                    return {
+                        ...scheme,
+                        matchScore: scoreResult.score,
+                        matchDetails: scoreResult.matchDetails,
+                        documentScore: scoreResult.documentScore,
+                        historicalRate: scoreResult.historicalRate,
+                        requiredDocumentsCount: scoreResult.requiredDocuments.length,
+                    };
+                } catch (err) {
+                    console.error(`Error scoring scheme ${scheme.id}:`, err);
+                    return { ...scheme, matchScore: null, matchDetails: null };
+                }
+            });
+
+            if (matchesToUpsert.length > 0) {
+                let { error: syncError } = await supabaseAdmin
+                    .from('user_scheme_matches')
+                    .upsert(matchesToUpsert, { onConflict: 'user_id,scheme_id' });
+                if (syncError && String(syncError.message || '').includes('updated_at')) {
+                    const retryRows = matchesToUpsert.map(({ updated_at, ...row }) => row);
+                    const retry = await supabaseAdmin
+                        .from('user_scheme_matches')
+                        .upsert(retryRows, { onConflict: 'user_id,scheme_id' });
+                    syncError = retry.error;
+                }
+                if (syncError) console.warn('Could not sync live scheme scores:', syncError.message || syncError);
             }
 
-            const { data: profile } = await clientSupabase
-                .from('user_profiles')
-                .select('*')
-                .eq('user_id', user.id)
-                .single();
-
-            if (profile) {
-                const userProfileForMatching = {
-                    gender: profile.gender as Gender,
-                    category: profile.category as Category,
-                    annualIncome: profile.annual_income,
-                    state: profile.state,
-                    education: profile.education as Education,
-                    occupation: profile.occupation,
-                    profileCompletionPercentage: profile.profile_completion_percentage || 0,
-                    age: profile.date_of_birth ?
-                        new Date().getFullYear() - new Date(profile.date_of_birth).getFullYear() :
-                        undefined
-                };
-
-                results = schemes.map((scheme: any) => {
-                    try {
-                        const matchResult = calculateMatchScore(scheme as any, userProfileForMatching);
-                        const storedScore = storedScoreMap[scheme.id];
-                        const finalScore = typeof storedScore === 'number' ? storedScore : (matchResult?.score ?? null);
-
-                        return {
-                            ...scheme,
-                            matchScore: finalScore,
-                            matchDetails: matchResult
-                        };
-                    } catch (err) {
-                        console.error(`Error matching scheme ${scheme.id}:`, err);
-                        return {
-                            ...scheme,
-                            matchScore: storedScoreMap[scheme.id] ?? null,
-                            matchDetails: null
-                        };
-                    }
-                });
-
-                if (sortBy === 'matchScore' || sortBy === 'relevance') {
-                    results.sort((a: any, b: any) => ((b as any).matchScore || 0) - ((a as any).matchScore || 0));
-                }
+            if (sortBy === 'matchScore' || sortBy === 'relevance') {
+                results.sort((a: any, b: any) => ((b as any).matchScore || 0) - ((a as any).matchScore || 0));
             }
         }
 
@@ -184,7 +240,7 @@ export async function GET(request: Request) {
 
         // Merge normalized doc count into results
         results = results.map((s: any) => {
-            const relationalCount = docCountMap[s.id];
+            const relationalCount = s.requiredDocumentsCount ?? docCountMap[s.id];
             let rawDocs: string[] = [];
             const raw = s.requiredDocuments || s.required_documents;
             if (Array.isArray(raw)) {
@@ -217,6 +273,8 @@ export async function GET(request: Request) {
         // Add caching for non-personalized responses (guest users)
         if (!user) {
             response.headers.set('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=30');
+        } else {
+            response.headers.set('Cache-Control', 'no-store');
         }
 
         return response;

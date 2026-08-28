@@ -11,7 +11,7 @@ export async function findSimilarActiveSchemes(missedScheme: any) {
   const minBenefit = missedScheme.benefitAmount ? missedScheme.benefitAmount * 0.5 : 0;
   
   let query = supabase
-    .from('Scheme')
+    .from('schemes')
     .select('*')
     .eq('isActive', true)
     // Category match

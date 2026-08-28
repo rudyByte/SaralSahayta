@@ -26,6 +26,49 @@ const fetcher = (url: string) => fetch(url).then(r => {
   return r.json();
 });
 
+function parseMaybeJson(value: any) {
+  if (!value || typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
+
+function renderDetailValue(value: any): React.ReactNode {
+  if (value === null || value === undefined || value === '') return null;
+  if (Array.isArray(value)) {
+    return (
+      <div className="grid gap-2">
+        {value.map((item, index) => (
+          <div key={index} className="flex gap-3 text-muted-foreground text-sm">
+            <CheckCircle className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+            <span>{String(item)}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  if (typeof value === 'object') {
+    return (
+      <div className="grid gap-2">
+        {Object.entries(value).map(([key, item]) => (
+          <div key={key} className="flex gap-3 text-muted-foreground text-sm">
+            <CheckCircle className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+            <span>
+              <span className="font-semibold text-slate-700 capitalize">
+                {key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()}:
+              </span>{' '}
+              {Array.isArray(item) ? item.join(', ') : String(item)}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return <p className="text-muted-foreground text-sm">{String(value)}</p>;
+}
+
 const TYPE_COLORS: Record<string, string> = {
   CENTRAL: 'bg-indigo-50 text-indigo-700 border-indigo-200',
   STATE:   'bg-emerald-50 text-emerald-700 border-emerald-200',
@@ -103,14 +146,15 @@ export default function SchemeDetailPage({ params }: { params: { slug: string } 
     ? Math.ceil((new Date(scheme.deadline).getTime() - Date.now()) / 86400000)
     : null;
 
-  const eligibilityCriteria = scheme.eligibilityCriteria
-    ? (typeof scheme.eligibilityCriteria === 'string'
-        ? JSON.parse(scheme.eligibilityCriteria)
-        : scheme.eligibilityCriteria)
+  const rawEligibilityCriteria = scheme.eligibilityCriteria || scheme.eligibility_criteria;
+  const eligibilityCriteria = rawEligibilityCriteria
+    ? parseMaybeJson(rawEligibilityCriteria)
     : null;
   const eligibilityEntries: [string, any][] = eligibilityCriteria
     ? Object.entries(eligibilityCriteria).filter(([, v]) => v !== null && v !== undefined)
     : [];
+  const officialPortalUrl = scheme.official_website || scheme.officialWebsite || scheme.application_link || scheme.applicationLink;
+  const benefitDetails = parseMaybeJson(scheme.benefits_details || scheme.benefitsDetails);
 
   return (
     <div className="max-w-6xl mx-auto pb-32 lg:pb-12">
@@ -320,21 +364,23 @@ export default function SchemeDetailPage({ params }: { params: { slug: string } 
                 <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap text-sm sm:text-base">
                   {scheme.description_full || scheme.description}
                 </p>
-                {scheme.benefits_details && (
+                {officialPortalUrl && (
+                  <a
+                    href={officialPortalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-bold text-primary hover:bg-primary/10"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Official Portal
+                  </a>
+                )}
+                {benefitDetails && (
                   <div className="pt-4 border-t border-primary/5">
                     <h3 className="text-base font-bold flex items-center gap-2 mb-3">
                       <DollarSign className="w-4 h-4 text-emerald-500" />Key Benefits
                     </h3>
-                    <div className="grid gap-2">
-                      {Array.isArray(scheme.benefits_details)
-                        ? scheme.benefits_details.map((b: string, i: number) => (
-                            <div key={i} className="flex gap-3 text-muted-foreground text-sm">
-                              <CheckCircle className="w-4 h-4 text-primary mt-0.5 shrink-0" />{b}
-                            </div>
-                          ))
-                        : <p className="text-muted-foreground text-sm">{scheme.benefits_details}</p>
-                      }
-                    </div>
+                    {renderDetailValue(benefitDetails)}
                   </div>
                 )}
               </Card>
@@ -458,9 +504,9 @@ export default function SchemeDetailPage({ params }: { params: { slug: string } 
                   </p>
                 </div>
               </div>
-              {scheme.official_website && (
+              {officialPortalUrl && (
                 <a
-                  href={scheme.official_website}
+                  href={officialPortalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 rounded-2xl hover:bg-primary/5 transition-colors group"
@@ -564,9 +610,9 @@ export default function SchemeDetailPage({ params }: { params: { slug: string } 
                   {hasDeadline ? new Date(scheme.deadline).toLocaleDateString('en-IN') : 'Ongoing'}
                 </span>
               </div>
-              {scheme.official_website && (
+              {officialPortalUrl && (
                 <a
-                  href={scheme.official_website}
+                  href={officialPortalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 text-primary font-semibold"

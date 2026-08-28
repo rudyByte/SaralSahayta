@@ -38,13 +38,11 @@ export default function ApplicationEntryPage({ params }: { params: { slug: strin
         return;
       }
 
-      // 1. Get scheme
-      const { data: schemeData } = await supabase
-        .from('Scheme')
-        .select('*')
-        .eq('id', params.slug)
-        .single();
-      
+      // 1. Get scheme through the normalized API used by cards/detail pages.
+      const schemeRes = await fetch(`/api/schemes/${params.slug}`, { cache: 'no-store' });
+      if (!schemeRes.ok) throw new Error('Scheme not found');
+      const schemePayload = await schemeRes.json();
+      const schemeData = schemePayload.scheme;
       if (!schemeData) throw new Error('Scheme not found');
       setScheme(schemeData);
 

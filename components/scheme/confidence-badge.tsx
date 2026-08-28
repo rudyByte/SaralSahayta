@@ -13,10 +13,38 @@ import { cn } from '@/lib/utils';
 interface ConfidenceBadgeProps {
     schemeId: string;
     fallbackScore?: number | null;
+    fallbackDocumentScore?: number | null;
+    fallbackHistoricalRate?: number | null;
     className?: string;
 }
 
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+const fetcher = async (url: string) => {
+    const res = await fetch(url, { cache: 'no-store' });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body?.message || body?.error || 'Failed to load score');
+    return body;
+};
+
+function clampPercent(value: unknown): number | null {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return null;
+    return Math.max(0, Math.min(100, Math.round(numeric)));
+}
+
+function normalizeRatio(value: unknown): number | null {
+    const numeric = Number(value);
+    if (!Number.isFinite(numeric)) return null;
+    const ratio = numeric > 1 ? numeric / 100 : numeric;
+    return Math.max(0, Math.min(1, ratio));
+}
+
+function fallbackBreakdown(score: number) {
+    const inferredHistorical = score / 70;
+    return {
+        historicalRate: Math.max(0, Math.min(1, inferredHistorical)),
+        docsComplete: 0,
+    };
+}
 
 function MiniCircle({ score, color }: { score: number; color: string }) {
     const r = 16;
@@ -40,11 +68,17 @@ function MiniCircle({ score, color }: { score: number; color: string }) {
     );
 }
 
-export function ConfidenceBadge({ schemeId, fallbackScore, className }: ConfidenceBadgeProps) {
-    const { data, error, isLoading, mutate } = useSWR(
+export function ConfidenceBadge({
+    schemeId,
+    fallbackScore,
+    fallbackDocumentScore,
+    fallbackHistoricalRate,
+    className
+}: ConfidenceBadgeProps) {
+    const { data, isLoading, mutate } = useSWR(
         `/api/schemes/${schemeId}/confidence`,
         fetcher,
-        { revalidateOnFocus: true, revalidateOnReconnect: true, dedupingInterval: 5000 }
+        { revalidateOnFocus: true, revalidateOnReconnect: true, dedupingInterval: 1000 }
     );
     const [isOpen, setIsOpen] = useState(false);
 
@@ -58,8 +92,20 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
         return <div className="h-10 w-10 animate-pulse bg-slate-100 rounded-full" />;
     }
 
-    // Determine the active score (prefer data from API, but use fallback if not available)
-    const score: number = data?.score ?? fallbackScore ?? 0;
+    // Determine the active score from one normalized source.
+    const apiScore = clampPercent(data?.score ?? data?.probability ?? data?.confidence);
+    const score = apiScore ?? clampPercent(fallbackScore) ?? 0;
+    const liveBreakdown = {
+        historicalRate: normalizeRatio(data?.breakdown?.historicalRate ?? fallbackHistoricalRate),
+        docsComplete: normalizeRatio(data?.breakdown?.docsComplete ?? fallbackDocumentScore),
+    };
+    const hasLiveBreakdown = Object.values(liveBreakdown).some((value) => value !== null && value > 0);
+    const displayBreakdown = hasLiveBreakdown
+        ? {
+            historicalRate: liveBreakdown.historicalRate ?? 0,
+            docsComplete: liveBreakdown.docsComplete ?? 0,
+        }
+        : fallbackBreakdown(score);
 
 
     const config =
@@ -120,14 +166,13 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
                             <div className="h-2 bg-slate-100 rounded-full animate-pulse w-1/2" />
                             <p className="text-[10px] font-bold text-slate-400 animate-pulse">Analysing your profile...</p>
                         </div>
-                    ) : !data ? (
+                    ) : !data && fallbackScore === undefined ? (
                         <p className="text-[10px] text-slate-400 py-2">Hover again to load breakdown</p>
                     ) : (
                         <>
                             {([
-                                { label: 'Historical Success Rate', val: data.breakdown?.historicalRate ?? 0, weight: '50%' },
-                                { label: 'Document Verification', val: data.breakdown?.docsComplete ?? 0, weight: '30%' },
-                                { label: 'Profile Matching', val: data.breakdown?.matchScore ?? 0, weight: '20%' },
+                                { label: 'Historical Success Rate', val: displayBreakdown.historicalRate, weight: '70%' },
+                                { label: 'Document Verification', val: displayBreakdown.docsComplete, weight: '30%' },
                             ] as { label: string; val: number; weight: string }[]).map(({ label, val, weight }) => (
                                 <div key={label} className="space-y-1">
                                     <div className="flex justify-between text-[10px] font-bold text-slate-500">
@@ -146,7 +191,7 @@ export function ConfidenceBadge({ schemeId, fallbackScore, className }: Confiden
                                 </div>
                             ))}
 
-                            {data.suggestions?.length > 0 && (
+                            {data?.suggestions?.length > 0 && (
                                 <div className="pt-2 border-t border-slate-100">
                                     <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-2">
                                         How to improve

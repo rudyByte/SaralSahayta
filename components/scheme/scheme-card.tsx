@@ -38,6 +38,8 @@ interface SchemeCardProps {
             matched: string[];
             missing: string[];
         } | null;
+        documentScore?: number | null;
+        historicalRate?: number | null;
         // From the normalized API — matches what the detail page shows
         requiredDocumentsCount?: number | null;
     };
@@ -80,7 +82,12 @@ export const SchemeCard = React.memo(({ scheme }: SchemeCardProps) => {
                     {/* Compact circular approval chance + bookmark */}
                     <div className="flex items-center gap-1 shrink-0 ml-auto sm:ml-0">
                         {user && <NewlyEligibleBadge schemeId={scheme.id} userId={user.id} />}
-                        <ConfidenceBadge schemeId={scheme.id} fallbackScore={scheme.matchScore} />
+                        <ConfidenceBadge
+                            schemeId={scheme.id}
+                            fallbackScore={scheme.matchScore}
+                            fallbackDocumentScore={scheme.documentScore}
+                            fallbackHistoricalRate={scheme.historicalRate}
+                        />
                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all">
                             <Bookmark className="h-5 w-5" />
                         </Button>

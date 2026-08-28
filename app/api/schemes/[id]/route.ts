@@ -2,8 +2,11 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
-import { calculateMatchScore } from '@/lib/matching-algorithm';
-import { Gender, Category, Education } from '@prisma/client';
+import {
+    normalizeRequiredDocumentRows,
+    normalizeUserDocumentRows,
+    scoreSchemeForUser,
+} from '@/lib/scoring/scheme-score';
 
 // GET /api/schemes/[id] - Get a single scheme with full document requirements
 export async function GET(
@@ -12,18 +15,23 @@ export async function GET(
 ) {
     try {
         const supabaseAdmin = createAdminClient();
+        let readClient: any = supabaseAdmin;
 
         // 1. Try finding scheme — first by UUID id (only if it looks like a UUID),
         //    then by schemeId slug field, then by name (slugified match)
-        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id);
-
         let scheme: any = null;
         let fetchError: any = null;
 
-        if (isUUID) {
+        {
             const res = await supabaseAdmin.from('schemes').select('*').eq('id', params.id).maybeSingle();
             scheme = res.data;
             fetchError = res.error;
+        }
+
+        // Fallback 1: match by slug when the column exists.
+        if (!scheme) {
+            const res = await supabaseAdmin.from('schemes').select('*').eq('slug', params.id).maybeSingle();
+            if (!res.error) { scheme = res.data; fetchError = res.error; }
         }
 
         // Fallback 1: match by schemeId field (e.g. "PMAY-U", "PM-KISAN")
@@ -42,6 +50,80 @@ export async function GET(
             }
         }
 
+        // Final fallback: use the same list-style select that powers Discover,
+        // then match locally. This protects detail routes from legacy column
+        // casing or slug/id filter quirks in older Supabase schemas.
+        if (!scheme) {
+            const slugify = (value: unknown) => String(value || '')
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            const requested = decodeURIComponent(params.id);
+            const requestedSlug = slugify(requested);
+            const res = await supabaseAdmin
+                .from('schemes')
+                .select('*')
+                .limit(500);
+            if (!res.error) {
+                scheme = (res.data || []).find((candidate: any) => {
+                    const values = [
+                        candidate.id,
+                        candidate.schemeId,
+                        candidate.slug,
+                        slugify(candidate.name),
+                    ].filter(Boolean).map(String);
+                    return values.some((value) => value === requested || slugify(value) === requestedSlug);
+                }) || null;
+                fetchError = null;
+            }
+        }
+
+        if (fetchError || !scheme) {
+            try {
+                const standardSupabase = createClient();
+                readClient = standardSupabase;
+                fetchError = null;
+
+                const exactRes = await standardSupabase.from('schemes').select('*').eq('id', params.id).maybeSingle();
+                scheme = exactRes.data;
+                fetchError = exactRes.error;
+
+                if (!scheme) {
+                    const slugRes = await standardSupabase.from('schemes').select('*').eq('slug', params.id).maybeSingle();
+                    if (!slugRes.error) { scheme = slugRes.data; fetchError = slugRes.error; }
+                }
+
+                if (!scheme) {
+                    const schemeIdRes = await standardSupabase.from('schemes').select('*').eq('schemeId', params.id).maybeSingle();
+                    if (!schemeIdRes.error) { scheme = schemeIdRes.data; fetchError = schemeIdRes.error; }
+                }
+
+                if (!scheme) {
+                    const slugify = (value: unknown) => String(value || '')
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+                    const requested = decodeURIComponent(params.id);
+                    const requestedSlug = slugify(requested);
+                    const listRes = await standardSupabase.from('schemes').select('*').limit(500);
+                    if (!listRes.error) {
+                        scheme = (listRes.data || []).find((candidate: any) => {
+                            const values = [
+                                candidate.id,
+                                candidate.schemeId,
+                                candidate.slug,
+                                slugify(candidate.name),
+                            ].filter(Boolean).map(String);
+                            return values.some((value) => value === requested || slugify(value) === requestedSlug);
+                        }) || null;
+                        fetchError = null;
+                    }
+                }
+            } catch (fallbackErr) {
+                console.warn('Standard client scheme lookup fallback failed:', fallbackErr);
+            }
+        }
+
         if (fetchError || !scheme) {
             return NextResponse.json({ error: 'Scheme not found' }, { status: 404 });
         }
@@ -50,7 +132,7 @@ export async function GET(
         // 2. Increment view count (fire and forget, non-blocking)
         void (async () => {
             try {
-                await supabaseAdmin.rpc('increment_scheme_views', { target_scheme_id: scheme.id });
+                await readClient.rpc('increment_scheme_views', { target_scheme_id: scheme.id });
             } catch (err) {
                 console.warn('Could not increment view count:', err);
             }
@@ -58,7 +140,7 @@ export async function GET(
 
 
         // 3. Fetch document requirements from the normalized relational table
-        const { data: docRequirements } = await supabaseAdmin
+        const { data: docRequirements } = await readClient
             .from('scheme_document_requirements')
             .select(`
                 id,
@@ -80,18 +162,21 @@ export async function GET(
 
         // 4. If user is logged in, check their uploaded documents
         let userDocs: any[] = [];
-        let userProfile: any = null;
+        let userId: string | null = null;
 
         try {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
 
             if (user) {
-                const { data: docs } = await supabaseAdmin
+                userId = user.id;
+                const { data: docs } = await readClient
                     .from('user_documents')
                     .select(`
                         document_id,
                         verification_status,
+                        status,
+                        expiry_date,
                         documents (
                             id,
                             document_code,
@@ -102,13 +187,6 @@ export async function GET(
                     .neq('verification_status', 'REJECTED');
 
                 userDocs = docs || [];
-
-                const { data: profile } = await supabaseAdmin
-                    .from('user_profiles')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .single();
-                userProfile = profile;
             }
         } catch (authErr) {
             console.warn('Auth check skipped for scheme detail:', authErr);
@@ -117,6 +195,10 @@ export async function GET(
         // Build set of uploaded keys for flexible matching
         const uploadedKeys = new Set<string>();
         userDocs.forEach((ud: any) => {
+            const verification = String(ud.verification_status || '').toUpperCase();
+            const status = String(ud.status || '').toUpperCase();
+            const isExpiredByDate = ud.expiry_date && new Date(ud.expiry_date).getTime() < Date.now();
+            if (verification === 'REJECTED' || status === 'REJECTED' || status === 'EXPIRED' || isExpiredByDate) return;
             if (ud.document_id) uploadedKeys.add(String(ud.document_id).toLowerCase());
             if (ud.documents?.id) uploadedKeys.add(String(ud.documents.id).toLowerCase());
             if (ud.documents?.document_code) uploadedKeys.add(String(ud.documents.document_code).toLowerCase());
@@ -139,28 +221,33 @@ export async function GET(
             return false;
         };
 
-        // 5. Calculate match score if user profile is available
+        const { data: historicalRows } = await readClient
+            .from('applications')
+            .select('status')
+            .eq('scheme_id', scheme.id)
+            .in('status', ['APPROVED', 'REJECTED', 'DISBURSED']);
+        const decidedCount = historicalRows?.length || 0;
+        const successCount = (historicalRows || []).filter((row: any) =>
+            ['APPROVED', 'DISBURSED'].includes(String(row.status || '').toUpperCase())
+        ).length;
+        const historicalRate = decidedCount > 0 ? successCount / decidedCount : null;
+
+        // 5. Calculate practical live score if user is available
         let matchScore: number | null = null;
         let matchDetails: any = null;
-        if (userProfile) {
+        let documentScore: number | null = null;
+        if (userId) {
             try {
-                const result = calculateMatchScore(
-                    { ...scheme, createdAt: scheme.created_at, updatedAt: scheme.updated_at } as any,
-                    {
-                        gender: userProfile.gender as Gender,
-                        category: userProfile.category as Category,
-                        annualIncome: userProfile.annual_income,
-                        state: userProfile.state,
-                        education: userProfile.education as Education,
-                        occupation: userProfile.occupation,
-                        profileCompletionPercentage: userProfile.profile_completion_percentage || 0,
-                        age: userProfile.date_of_birth
-                            ? new Date().getFullYear() - new Date(userProfile.date_of_birth).getFullYear()
-                            : undefined,
-                    }
-                );
-                matchScore = result?.score ?? null;
-                matchDetails = result;
+                const scoreResult = scoreSchemeForUser({
+                    scheme: { ...scheme, createdAt: scheme.created_at, updatedAt: scheme.updated_at },
+                    profile: null,
+                    requiredDocuments: normalizeRequiredDocumentRows(docRequirements, scheme),
+                    userDocuments: normalizeUserDocumentRows(userDocs),
+                    historicalRate,
+                });
+                matchScore = scoreResult.score;
+                matchDetails = scoreResult.matchDetails;
+                documentScore = scoreResult.documentScore;
             } catch (matchErr) {
                 console.warn('Match score calculation failed:', matchErr);
             }
@@ -236,10 +323,14 @@ export async function GET(
         return NextResponse.json({
             scheme: {
                 ...scheme,
+                official_website: scheme.official_website || scheme.officialWebsite || scheme.application_link || scheme.applicationLink || null,
+                application_link: scheme.application_link || scheme.applicationLink || scheme.official_website || scheme.officialWebsite || null,
                 // Provide the normalized count so cards and detail show consistent numbers
                 requiredDocumentsCount: requirements.length,
                 matchScore,
                 matchDetails,
+                documentScore,
+                historicalRate,
             },
             requirements,
             documentStatus,

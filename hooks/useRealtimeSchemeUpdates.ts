@@ -25,16 +25,16 @@ export function useRealtimeSchemeUpdates(userId: string | undefined, onUpdate?: 
           event: '*',
           schema: 'public',
           table: 'user_scheme_matches',
-          filter: `user_id=eq.${userId}`
+          filter: `user_id=eq.${userId}`,
         },
         (payload) => {
           onUpdate?.();
           const data = payload.new as any;
           if (data && data.match_score >= 80 && payload.eventType === 'INSERT') {
-            setNewSchemes(prev => [...prev, data.scheme_id]);
-            toast.success('Better Match Found! 🎉', {
-              description: 'Your profile updates have significantly improved your approval chance.',
-              action: { label: 'View', onClick: () => router.push('/discover?filter=newly_eligible') }
+            setNewSchemes((prev) => [...prev, data.scheme_id]);
+            toast.success('Better match found', {
+              description: 'Your documents and eligibility data improved an approval score.',
+              action: { label: 'View', onClick: () => router.push('/discover?filter=newly_eligible') },
             });
           }
         }
@@ -45,19 +45,18 @@ export function useRealtimeSchemeUpdates(userId: string | undefined, onUpdate?: 
           event: '*',
           schema: 'public',
           table: 'user_documents',
-          filter: `user_id=eq.${userId}`
+          filter: `user_id=eq.${userId}`,
         },
         () => {
-          // Trigger update when documents change
           onUpdate?.();
         }
       )
       .subscribe();
-    
+
     return () => {
       channel.unsubscribe();
     };
   }, [userId, router, onUpdate]);
-  
+
   return { newSchemes };
 }

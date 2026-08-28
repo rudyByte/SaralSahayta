@@ -12,7 +12,7 @@ export async function GET(
 
         // Get application details with Supabase REST over HTTPS
         const { data: application, error } = await supabase
-            .from('Application')
+            .from('applications')
             .select('*')
             .eq('id', applicationId)
             .single();
@@ -21,7 +21,7 @@ export async function GET(
 
         // Fetch related entities manually to bypass PostgREST cache issues
         const { data: user } = await supabase.from('users').select('*').eq('id', application.userId || application.user_id).single();
-        const { data: scheme } = await supabase.from('Scheme').select('*').eq('id', application.schemeId || application.scheme_id).single();
+        const { data: scheme } = await supabase.from('schemes').select('*').eq('id', application.schemeId || application.scheme_id).single();
 
         // Fetch user documents (snake_case table from Supabase)
         const { data: documents } = await supabase
@@ -38,6 +38,15 @@ export async function GET(
 
         const mappedApp = {
             ...application,
+            user,
+            scheme,
+            userId: application.userId || application.user_id,
+            schemeId: application.schemeId || application.scheme_id,
+            trackingId: application.trackingId || application.tracking_id,
+            createdAt: application.createdAt || application.created_at,
+            approvedAt: application.approvedAt || application.approved_at,
+            rejectedAt: application.rejectedAt || application.rejected_at,
+            rejectionReason: application.rejectionReason || application.rejection_reason,
             application_documents: (documents || []).map((doc: any) => ({
                 ...doc,
                 userId: doc.user_id,
@@ -85,18 +94,19 @@ export async function PATCH(
 
         // Get current application to log old status
         const { data: currentApp } = await supabase
-            .from('Application')
+            .from('applications')
             .select('status')
             .eq('id', applicationId)
             .single();
 
         // Update application status with Supabase REST
         const { data: updatedApp, error } = await supabase
-            .from('Application')
+            .from('applications')
             .update({
                 status,
-                ...(status === 'APPROVED' ? { approvedAt: new Date().toISOString() } : {}),
-                ...(status === 'REJECTED' ? { rejectedAt: new Date().toISOString(), rejectionReason: remarks } : {}),
+                reviewed_at: new Date().toISOString(),
+                ...(status === 'APPROVED' ? { approved_at: new Date().toISOString() } : {}),
+                ...(status === 'REJECTED' ? { rejected_at: new Date().toISOString(), rejection_reason: remarks } : {}),
             })
             .eq('id', applicationId)
             .select()

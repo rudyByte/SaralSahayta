@@ -38,14 +38,22 @@ export async function predictFutureOpportunities(userId: string): Promise<Predic
   for (const targetAge of upcomingThresholds) {
       let targetSchemes: SimpleScheme[] = [];
       if (targetAge === 18) {
-          const { data } = await supabase.from('Scheme').select('id, name, benefitAmount').ilike('name', '%youth%').limit(2);
-          targetSchemes = (data || []) as SimpleScheme[];
+          const { data } = await supabase.from('schemes').select('id, name, benefitAmount').ilike('name', '%youth%').limit(2);
+          targetSchemes = (data || []).map((scheme: any) => ({
+              id: scheme.id,
+              name: scheme.name,
+              benefitAmount: scheme.benefitAmount || 0,
+          }));
           if (targetSchemes.length === 0) {
               targetSchemes = [{ id: 'mock1', name: 'Youth Empowerment Scheme', benefitAmount: 15000 }];
           }
       } else if (targetAge === 60) {
-          const { data } = await supabase.from('Scheme').select('id, name, benefitAmount').ilike('name', '%pension%').limit(2);
-          targetSchemes = (data || []) as SimpleScheme[];
+          const { data } = await supabase.from('schemes').select('id, name, benefitAmount').ilike('name', '%pension%').limit(2);
+          targetSchemes = (data || []).map((scheme: any) => ({
+              id: scheme.id,
+              name: scheme.name,
+              benefitAmount: scheme.benefitAmount || 0,
+          }));
           if (targetSchemes.length === 0) {
               targetSchemes = [{ id: 'mock2', name: 'Senior Citizen Pension Plan', benefitAmount: 3000 }];
           }

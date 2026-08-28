@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import ProfileForm from '@/components/profile/profile-form';
-import NotificationSettingsPage from './notifications/page';
+import { NotificationSettings } from '@/components/settings/notification-settings';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -84,7 +84,7 @@ function SettingsContent() {
 
                 {/* TAB 2: Notifications */}
                 <TabsContent value="notifications" className="mt-0">
-                    <NotificationSettingsPage />
+                    <NotificationSettings />
                 </TabsContent>
 
                 {/* TAB 3: Security & Account */}
@@ -109,7 +109,7 @@ function SettingsContent() {
                                     </div>
                                 </div>
                                 <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold self-start sm:self-center">
-                                    ✓ Verified Account
+                                    âœ“ Verified Account
                                 </Badge>
                             </div>
 
@@ -124,7 +124,7 @@ function SettingsContent() {
                                     </div>
                                 </div>
                                 <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 font-bold self-start sm:self-center">
-                                    ✓ Linked
+                                    âœ“ Linked
                                 </Badge>
                             </div>
 

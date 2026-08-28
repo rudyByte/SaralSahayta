@@ -61,10 +61,22 @@ export async function middleware(request: NextRequest) {
         }
     );
 
+    const protectedPaths = ['/dashboard', '/life-events', '/discover', '/profile', '/applications', '/premium', '/settings', '/documents', '/admin'];
+    const authPaths = ['/login', '/register'];
+    const pathname = request.nextUrl.pathname;
+
+    const isProtectedPath = protectedPaths.some(path => pathname.startsWith(path));
+    const isAuthPath = authPaths.some(path => pathname.startsWith(path));
+
+    // If requesting a public page that doesn't need auth, skip heavy DB lookups for maximum speed
+    if (!isProtectedPath && !isAuthPath && !pathname.startsWith('/suspended')) {
+        return response;
+    }
+
     // Refresh session if expired
     const { data: { user } } = await supabase.auth.getUser();
 
-    // --- OPTIMIZED: Single DB query fetches both is_suspended AND is_admin ---
+    // Single DB query fetches both is_suspended AND is_admin only when logged in
     let profile: { is_suspended: boolean; is_admin: boolean } | null = null;
 
     if (user) {
@@ -78,16 +90,10 @@ export async function middleware(request: NextRequest) {
 
     // Check for suspension — redirect to /suspended page
     if (profile?.is_suspended) {
-        if (!request.nextUrl.pathname.startsWith('/suspended')) {
+        if (!pathname.startsWith('/suspended')) {
             return NextResponse.redirect(new URL('/suspended', request.url));
         }
     }
-
-    // Protected routes - redirect to login if not authenticated
-    const protectedPaths = ['/dashboard', '/life-events', '/discover', '/profile', '/applications', '/premium', '/settings', '/documents'];
-    const isProtectedPath = protectedPaths.some(path =>
-        request.nextUrl.pathname.startsWith(path)
-    );
 
     if (isProtectedPath && !user) {
         return NextResponse.redirect(new URL('/login', request.url));
@@ -99,11 +105,6 @@ export async function middleware(request: NextRequest) {
     }
 
     // Redirect authenticated users away from auth pages (reuse cached profile)
-    const authPaths = ['/login', '/register'];
-    const isAuthPath = authPaths.some(path =>
-        request.nextUrl.pathname.startsWith(path)
-    );
-
     if (isAuthPath && user) {
         const redirectPath = profile?.is_admin ? '/admin' : '/dashboard';
         return NextResponse.redirect(new URL(redirectPath, request.url));

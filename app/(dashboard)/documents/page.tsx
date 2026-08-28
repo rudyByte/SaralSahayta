@@ -159,6 +159,11 @@ export default function DocumentsPage() {
 
             toast.success('Document deleted successfully');
             mutate('/api/documents');
+            mutate(
+                (key: any) => typeof key === 'string' && (key.includes('/confidence') || key.includes('/api/schemes')),
+                undefined,
+                { revalidate: true }
+            );
         } catch (error) {
             toast.error('Failed to delete document');
         }

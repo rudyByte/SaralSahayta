@@ -77,7 +77,7 @@ export default function ApplicationSuccessPage() {
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
                         </Button>
                     </Link>
-                    <Link href="/schemes" className="contents">
+                    <Link href="/discover" className="contents">
                         <Button variant="outline" className="h-14 rounded-2xl border-gray-200 font-bold hover:bg-gray-50 transition-all">
                             <Home className="mr-2 h-5 w-5" />
                             Explore Schemes

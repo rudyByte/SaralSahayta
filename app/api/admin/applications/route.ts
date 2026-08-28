@@ -4,7 +4,6 @@ import { createAdminClient } from '@/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
     try {
-        const { prisma } = require('@/lib/prisma');
         const { searchParams } = new URL(request.url);
 
         const page = parseInt(searchParams.get('page') || '1');
@@ -18,7 +17,7 @@ export async function GET(request: NextRequest) {
         const supabase = createAdminClient();
 
         let query = supabase
-            .from('Application')
+            .from('applications')
             .select('*', { count: 'exact' });
 
         if (status) {
@@ -26,10 +25,10 @@ export async function GET(request: NextRequest) {
         }
 
         if (search) {
-            query = query.or(`trackingId.ilike.%${search}%,id.ilike.%${search}%`);
+            query = query.or(`tracking_id.ilike.%${search}%,id.ilike.%${search}%`);
         }
 
-        query = query.order('createdAt', { ascending: false });
+        query = query.order('created_at', { ascending: false });
         query = query.range(offset, offset + limit - 1);
 
         const { data: applications, error, count } = await query;
@@ -56,7 +55,7 @@ export async function GET(request: NextRequest) {
 
         let schemesDict: any = {};
         if (schemeIds.length > 0) {
-            const { data: schemesData } = await supabase.from('Scheme').select('id, name, category').in('id', schemeIds);
+            const { data: schemesData } = await supabase.from('schemes').select('id, name, category').in('id', schemeIds);
             (schemesData || []).forEach((s: any) => {
                 schemesDict[s.id] = s;
             });

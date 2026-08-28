@@ -11,12 +11,12 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // 1. Fetch from Application table natively
+        // 1. Fetch from normalized applications table
         const { data: applications, error } = await supabase
-            .from('Application')
+            .from('applications')
             .select('*')
-            .eq('userId', user.id)
-            .order('createdAt', { ascending: false });
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
 
         if (error) {
             console.error("Supabase GET Application error:", error);
@@ -31,7 +31,7 @@ export async function GET() {
         let schemesDict: any = {};
         if (schemeIds.length > 0) {
             const { data: schemes } = await supabase
-                .from('Scheme')
+                .from('schemes')
                 .select('id, name, category, ministry')
                 .in('id', schemeIds);
                 

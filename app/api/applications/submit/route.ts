@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const headerList = headers();
     const body = await request.json();
     
-    const { schemeId, formData, attachedDocs } = body;
+    const { schemeId, formData } = body;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
@@ -33,22 +33,26 @@ export async function POST(request: Request) {
         delete sanitizedFormData[field]; // Remove from plain form_data
       }
     });
+    if (Object.keys(encryptedData).length > 0) {
+      sanitizedFormData.encrypted_fields = encryptedData;
+    }
 
     // 2. Prepare submission metadata
     const ip = headerList.get('x-forwarded-for') || '127.0.0.1';
     const userAgent = headerList.get('user-agent') || 'unknown';
 
-    // 3. Insert into "Application" table natively using Supabase REST over HTTPS 
-    // because Prisma TCP ports (5432/6543) are universally blocked on this network!
+    const trackingId = `SARAL-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+
     const { data: application, error: submitError } = await supabase
-      .from('Application')
+      .from('applications')
       .insert({
-        userId: user.id,
-        schemeId: schemeId,
-        formData: sanitizedFormData,
+        user_id: user.id,
+        scheme_id: schemeId,
+        form_data: sanitizedFormData,
         status: 'SUBMITTED',
-        createdAt: new Date().toISOString(),
-        trackingId: `SARAL-${Math.random().toString(36).substring(2, 9).toUpperCase()}`
+        submitted_at: new Date().toISOString(),
+        created_at: new Date().toISOString(),
+        tracking_id: trackingId,
       })
       .select()
       .single();
@@ -60,7 +64,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ 
       success: true, 
-      applicationNumber: application.trackingId || application.tracking_id || application.id,
+      applicationNumber: application.tracking_id || application.id,
       application
     });
 

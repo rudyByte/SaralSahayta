@@ -5,6 +5,7 @@ import { createAdminClient } from '@/lib/supabase-admin';
 import { uploadFileToSupabase } from '@/lib/supabase-storage';
 import { validateFile } from '@/lib/file-validation';
 import { getDocumentExpiryStatus } from '@/lib/documents/expiry-calculator';
+import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
 // import { optimizeImage } from '@/lib/optimize-image'; // Temporarily disabled
 
 /**
@@ -139,10 +140,13 @@ export async function POST(request: NextRequest) {
             resultData = data;
         }
 
+        const recalculation = await recalculateSchemeMatches(userId, `Document Uploaded: ${documentCode}`);
+
         return NextResponse.json({
             success: true,
             document: resultData,
             message: existing ? 'Document replaced' : 'Document uploaded',
+            recalculation,
         });
 
     } catch (error: any) {

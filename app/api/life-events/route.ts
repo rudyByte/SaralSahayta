@@ -2,6 +2,64 @@ import { createClient } from '@/lib/supabase-server';
 import { NextResponse } from 'next/server';
 import { LifeEventType, LifeEventCategory } from '@/types/life-events';
 
+const LIFE_EVENT_CATEGORY_HINTS: Record<string, string[]> = {
+    TENTH_PASS: ['EDUCATION', 'SKILL_DEVELOPMENT'],
+    TWELFTH_PASS: ['EDUCATION', 'SKILL_DEVELOPMENT'],
+    DIPLOMA: ['EDUCATION', 'SKILL_DEVELOPMENT', 'EMPLOYMENT'],
+    COLLEGE_ADMISSION: ['EDUCATION'],
+    GRADUATION: ['EDUCATION', 'EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    POST_GRADUATION: ['EDUCATION'],
+    MASTERS: ['EDUCATION'],
+    PHD: ['EDUCATION'],
+    UNMARRIED: ['EDUCATION', 'EMPLOYMENT'],
+    MARRIAGE: ['WOMEN_CHILD', 'HOUSING'],
+    CHILDBIRTH: ['WOMEN_CHILD', 'HEALTHCARE'],
+    SINGLE_CHILD: ['EDUCATION', 'WOMEN_CHILD'],
+    GIRL_CHILD: ['EDUCATION', 'WOMEN_CHILD'],
+    SINGLE_PARENT: ['WOMEN_CHILD', 'EDUCATION', 'HOUSING'],
+    WIDOWHOOD: ['WOMEN_CHILD', 'HEALTHCARE'],
+    DIVORCE: ['WOMEN_CHILD', 'HOUSING'],
+    SEPARATION: ['WOMEN_CHILD', 'HOUSING'],
+    ORPHAN: ['EDUCATION', 'HEALTHCARE'],
+    DISABILITY: ['DISABILITY', 'HEALTHCARE', 'EDUCATION'],
+    SERIOUS_ILLNESS: ['HEALTHCARE'],
+    TURNED_60: ['SENIOR_CITIZEN', 'HEALTHCARE'],
+    TURNED_70: ['SENIOR_CITIZEN', 'HEALTHCARE'],
+    STARTING_BUSINESS: ['ENTREPRENEURSHIP'],
+    FARMING_INITIATED: ['AGRICULTURE'],
+    LOW_INCOME: ['HOUSING', 'EDUCATION', 'HEALTHCARE'],
+    CROP_LOSS: ['AGRICULTURE'],
+    FIRST_JOB: ['EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    JOB_LOSS: ['EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    UNEMPLOYED: ['EMPLOYMENT', 'SKILL_DEVELOPMENT'],
+    SKILL_UPGRADE: ['SKILL_DEVELOPMENT', 'EMPLOYMENT'],
+    RETIREMENT: ['SENIOR_CITIZEN'],
+};
+
+async function countPotentialSchemes(supabase: any, eventTypes: string[]) {
+    const schemeIds = new Set<string>();
+    const { data: mappings } = await supabase
+        .from('life_event_scheme_mapping')
+        .select('scheme_id')
+        .in('event_type', eventTypes);
+
+    (mappings || []).forEach((row: any) => {
+        if (row.scheme_id) schemeIds.add(row.scheme_id);
+    });
+
+    const categoryHints = Array.from(new Set(eventTypes.flatMap((type) => LIFE_EVENT_CATEGORY_HINTS[type] || [])));
+    if (categoryHints.length > 0) {
+        const { data: schemes } = await supabase
+            .from('schemes')
+            .select('id')
+            .eq('isActive', true)
+            .in('category', categoryHints);
+        (schemes || []).forEach((scheme: any) => schemeIds.add(scheme.id));
+    }
+
+    return schemeIds.size;
+}
+
 export async function GET() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -86,11 +144,11 @@ export async function POST(req: Request) {
 
         if (updateError) throw updateError;
 
-        // 4. Return success with placeholder for schemesFound
-        // (Real calculation logic will be added in Block 3)
+        const schemesFound = await countPotentialSchemes(supabase, eventsToInsert.map((event) => event.event_type));
+
         return NextResponse.json({ 
             success: true, 
-            schemesFound: events.length * 2 // Placeholder 
+            schemesFound,
         });
 
     } catch (error: any) {

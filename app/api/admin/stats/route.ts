@@ -8,17 +8,17 @@ export async function GET() {
 
         // 1. Get Summary Stats
         const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true });
-        const { count: totalApplications } = await supabase.from('Application').select('*', { count: 'exact', head: true });
-        const { count: pendingApplications } = await supabase.from('Application').select('*', { count: 'exact', head: true }).eq('status', 'SUBMITTED');
+        const { count: totalApplications } = await supabase.from('applications').select('*', { count: 'exact', head: true });
+        const { count: pendingApplications } = await supabase.from('applications').select('*', { count: 'exact', head: true }).eq('status', 'SUBMITTED');
         
         // 2. Get Document Stats (Verification)
         const { count: verifiedDocuments } = await supabase.from('user_documents').select('*', { count: 'exact', head: true }).eq('verification_status', 'VERIFIED');
 
         // 3. Get Recent Applications 
         const { data: recentAppList, error: recentError } = await supabase
-            .from('Application')
+            .from('applications')
             .select('*')
-            .order('createdAt', { ascending: false })
+            .order('created_at', { ascending: false })
             .limit(5);
 
         if (recentError) {
@@ -37,7 +37,7 @@ export async function GET() {
 
         let schemesDict: any = {};
         if (schemeIds.length > 0) {
-            const { data: schemesData } = await supabase.from('Scheme').select('id, name').in('id', schemeIds);
+            const { data: schemesData } = await supabase.from('schemes').select('id, name').in('id', schemeIds);
             (schemesData || []).forEach((s: any) => schemesDict[s.id] = s);
         }
 
@@ -50,7 +50,7 @@ export async function GET() {
         }));
 
         // 4. Get Status Distribution
-        const { data: statusData } = await supabase.from('Application').select('status');
+        const { data: statusData } = await supabase.from('applications').select('status');
         const statusDistribution = statusData?.reduce((acc: any, curr: any) => {
             acc[curr.status] = (acc[curr.status] || 0) + 1;
             return acc;

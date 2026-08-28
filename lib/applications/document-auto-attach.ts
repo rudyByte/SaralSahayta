@@ -8,19 +8,18 @@ export async function autoAttachUserDocuments(
   try {
     // 1. Get required documents for the scheme
     const { data: requirements, error: reqError } = await supabase
-      .from('SchemeDocumentRequirement')
-      .select('Document(documentType, id), documentId, isMandatory')
-      .eq('schemeId', schemeId);
+      .from('scheme_document_requirements')
+      .select('document_id, is_mandatory')
+      .eq('scheme_id', schemeId);
 
     if (reqError) throw reqError;
     if (!requirements || requirements.length === 0) return { attached: [], missing: [] };
 
     // 2. Get user's verified documents
     const { data: userDocs, error: userDocError } = await supabase
-      .from('Document')
-      .select('id, documentType')
-      .eq('userId', userId)
-      .eq('isVerified', true);
+      .from('user_documents')
+      .select('document_id, verification_status, status')
+      .eq('user_id', userId);
 
     if (userDocError) throw userDocError;
 
@@ -29,11 +28,15 @@ export async function autoAttachUserDocuments(
 
     // 3. Match
     requirements.forEach((req: any) => {
-      const matchingDoc = userDocs?.find(ud => ud.documentType === req.Document.documentType);
+      const matchingDoc = userDocs?.find((ud: any) => (
+        ud.document_id === req.document_id &&
+        String(ud.verification_status || ud.status || '').toUpperCase() !== 'REJECTED' &&
+        String(ud.status || '').toUpperCase() !== 'EXPIRED'
+      ));
       if (matchingDoc) {
-        attached.push(req.documentId);
-      } else if (req.isMandatory) {
-        missing.push(req.documentId);
+        attached.push(req.document_id);
+      } else if (req.is_mandatory) {
+        missing.push(req.document_id);
       }
     });
 
@@ -41,7 +44,7 @@ export async function autoAttachUserDocuments(
     await supabase
       .from('applications')
       .update({ 
-        "attachedDocuments": attached,
+        attached_documents: attached,
         metadata: { missing_documents: missing } 
       })
       .eq('id', applicationId);

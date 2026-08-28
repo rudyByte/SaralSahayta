@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
 import { 
   ArrowLeft, CheckCircle, ShieldCheck, 
   Send, AlertCircle, Eye, EyeOff
@@ -39,12 +38,11 @@ export default function ApplicationReviewPage({ params }: { params: { slug: stri
       }
       setFormData(JSON.parse(draft));
 
-      const { data: schemeData } = await supabase
-        .from('Scheme')
-        .select('*')
-        .eq('id', params.slug)
-        .single();
-      
+      const schemeRes = await fetch(`/api/schemes/${params.slug}`, { cache: 'no-store' });
+      if (!schemeRes.ok) throw new Error('Scheme not found');
+      const schemePayload = await schemeRes.json();
+      const schemeData = schemePayload.scheme;
+      if (!schemeData) throw new Error('Scheme not found');
       setScheme(schemeData);
 
       const res = await fetch(`/api/applications/check-documents?schemeId=${schemeData.id}`);

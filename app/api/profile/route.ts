@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { fullProfileUpdateSchema } from '@/lib/validations';
-import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
 
 export async function GET() {
     try {
@@ -128,11 +127,6 @@ export async function PUT(request: Request) {
             console.error("Supabase Save Error:", updateError);
             return NextResponse.json({ error: updateError.message }, { status: 500 });
         }
-
-        // 3. Recalculate Scheme Matches in the background
-        recalculateSchemeMatches(user.id, 'User Profile Update').catch(err => {
-            console.error('Failed to auto-recalculate scheme matches:', err);
-        });
 
         return NextResponse.json({ profile: updatedProfile, completion: percentage });
 

@@ -1,10 +1,16 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase-admin';
 import { createClient as getServerClient } from '@/lib/supabase-server';
-import { calculateConfidence } from '@/lib/ai/confidence-calculator';
+import {
+    fetchScoringInputs,
+    normalizeRequiredDocumentRows,
+    scoreSchemeForUser,
+} from '@/lib/scoring/scheme-score';
 
 export async function GET(
-    request: NextRequest,
+    _request: NextRequest,
     { params }: { params: { id: string } }
 ) {
     try {
@@ -12,7 +18,6 @@ export async function GET(
         const supabase = getServerClient();
         const adminSupabase = createAdminClient();
 
-        // 1. Auth Check (Server Client for Session - optional for confidence endpoint)
         let userId: string | null = null;
         try {
             const { data: authData } = await supabase.auth.getUser();
@@ -21,10 +26,9 @@ export async function GET(
             console.warn('Auth check skipped in confidence route:', authErr);
         }
 
-        // 2. Fetch Scheme Details
         const { data: scheme, error: schemeError } = await adminSupabase
             .from('schemes')
-            .select('id, name, category, requiredDocuments')
+            .select('*')
             .eq('id', schemeId)
             .single();
 
@@ -32,127 +36,67 @@ export async function GET(
             return NextResponse.json({ error: 'Scheme not found' }, { status: 404 });
         }
 
-        // 3. Document Requirements (Fetch from relational table first, fallback to scheme field)
-        let requiredDocCodes: string[] = [];
-        try {
-            const { data: docReqRows } = await adminSupabase
-                .from('scheme_document_requirements')
-                .select(`
-                    document_id,
-                    is_mandatory,
-                    documents (
-                        document_code,
-                        document_name
-                    )
-                `)
-                .eq('scheme_id', schemeId);
-
-            if (docReqRows && docReqRows.length > 0) {
-                requiredDocCodes = docReqRows
-                    .filter((r: any) => r.is_mandatory !== false && r.documents?.document_code)
-                    .map((r: any) => r.documents.document_code.trim().toUpperCase());
-            }
-        } catch (reqErr) {
-            console.warn('Could not fetch scheme_document_requirements:', reqErr);
-        }
-
-        if (requiredDocCodes.length === 0 && Array.isArray(scheme.requiredDocuments) && scheme.requiredDocuments.length > 0) {
-            requiredDocCodes = scheme.requiredDocuments.map((code: string) => code.trim().toUpperCase());
-        }
-
-
-        // 4. Fetch User's Uploaded Documents (if logged in)
-        let userDocRows: any[] = [];
-        if (userId) {
-            const { data: docRows } = await adminSupabase
-                .from('user_documents')
-                .select(`
-                    verification_status,
-                    document_id,
-                    documents (
-                        document_code,
-                        document_name
-                    )
-                `)
-                .eq('user_id', userId);
-            userDocRows = docRows || [];
-        }
-
-        const userUploadedCodes = (userDocRows || [])
-            .map((d: any) => d.documents?.document_code?.trim().toUpperCase())
-            .filter(Boolean);
-        
-        const userUploadedNames = (userDocRows || [])
-            .map((d: any) => d.documents?.document_name?.trim().toLowerCase())
-            .filter(Boolean);
-
-
-        // 5. Historical Stats (Using RPC - assumed snake_case in SQL already)
         const { data: statsData } = await adminSupabase.rpc('get_scheme_stats', { target_scheme_id: schemeId });
+        const historicalRate = statsData && statsData.length > 0 ? statsData[0].historical_rate : null;
 
-        let historicalRate = 0.75;
-        if (statsData && statsData.length > 0) {
-            historicalRate = statsData[0].historical_rate;
-        } else {
-            const categorySeeds: Record<string, number> = {
-                'EDUCATION': 0.85,
-                'AGRICULTURE': 0.70,
-                'HEALTHCARE': 0.90,
-                'WOMEN_CHILD': 0.80,
-                'HOUSING': 0.55,
-                'EMPLOYMENT': 0.65,
-            };
-            historicalRate = categorySeeds[scheme.category] || 0.65;
-        }
+        const scoringInputs = userId
+            ? await fetchScoringInputs(adminSupabase, userId, [schemeId])
+            : { profile: null, userDocuments: [], requirementsByScheme: {}, historicalByScheme: {} };
 
-        // 6. Fetch profile match score (if user is logged in)
-        let matchScore = 75;
+        const scoreResult = scoreSchemeForUser({
+            scheme,
+            profile: scoringInputs.profile,
+            requiredDocuments: scoringInputs.requirementsByScheme[schemeId] || normalizeRequiredDocumentRows([], scheme),
+            userDocuments: scoringInputs.userDocuments,
+            historicalRate: scoringInputs.historicalByScheme[schemeId] ?? historicalRate,
+        });
+
         if (userId) {
-            const { data: matchRow } = await adminSupabase
+            const now = new Date().toISOString();
+            const matchRow = {
+                user_id: userId,
+                scheme_id: schemeId,
+                match_score: scoreResult.score,
+                created_at: now,
+                updated_at: now,
+            };
+            let { error: matchSyncError } = await adminSupabase
                 .from('user_scheme_matches')
-                .select('match_score')
-                .eq('user_id', userId)
-                .eq('scheme_id', schemeId)
-                .single();
-            if (matchRow?.match_score) {
-                matchScore = matchRow.match_score;
+                .upsert(matchRow, { onConflict: 'user_id,scheme_id' });
+            if (matchSyncError && String(matchSyncError.message || '').includes('updated_at')) {
+                const { updated_at, ...retryRow } = matchRow;
+                const retry = await adminSupabase
+                    .from('user_scheme_matches')
+                    .upsert(retryRow, { onConflict: 'user_id,scheme_id' });
+                matchSyncError = retry.error;
             }
+            if (matchSyncError) console.warn('Could not sync confidence score:', matchSyncError.message || matchSyncError);
         }
 
-
-        // 7. Calculate Confidence
-        const confidence = calculateConfidence(
-            historicalRate,
-            matchScore,
-            requiredDocCodes,
-            userUploadedCodes
-        );
-
-        // 8. Enrich suggestions
-        const enrichedSuggestions = confidence.suggestions.filter(s => {
-            const text = s.text.toLowerCase();
-            const isDocSuggestion = text.startsWith('upload ');
-            if (!isDocSuggestion) return true;
-
-            return !userUploadedCodes.some(code => text.includes(code.toLowerCase())) &&
-                   !userUploadedNames.some(name => text.includes(name));
-        });
-
-        return NextResponse.json({
-            ...confidence,
-            suggestions: enrichedSuggestions,
+        const response = NextResponse.json({
+            score: scoreResult.score,
+            probability: scoreResult.score,
+            confidence: scoreResult.score,
+            breakdown: scoreResult.breakdown,
+            suggestions: scoreResult.suggestions,
             _debug: {
-                requiredDocCodes,
-                userUploadedCodes,
-                matchScore
-            }
+                requiredDocCodes: scoreResult.requiredDocuments.map((doc) => doc.code),
+                userUploadedCodes: scoreResult.uploadedDocumentCodes,
+                documentScore: scoreResult.documentScore,
+                historicalRate: scoreResult.historicalRate,
+            },
         });
 
+        response.headers.set(
+            'Cache-Control',
+            userId ? 'no-store' : 'public, s-maxage=30, stale-while-revalidate=30'
+        );
+        return response;
     } catch (error: any) {
         console.error('[Confidence API] Error:', error);
-        return NextResponse.json({ 
+        return NextResponse.json({
             error: 'Internal Server Error',
-            message: error.message 
+            message: error.message,
         }, { status: 500 });
     }
 }

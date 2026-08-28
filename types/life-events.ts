@@ -13,7 +13,9 @@ import {
     Users,
     TrendingDown,
     Calendar,
-    Award
+    Award,
+    BookOpen,
+    UserRound
 } from 'lucide-react';
 
 export type LifeEventCategory = 
@@ -32,6 +34,9 @@ export type LifeEventType =
   | 'COLLEGE_ADMISSION'
   | 'GRADUATION'
   | 'POST_GRADUATION'
+  | 'MASTERS'
+  | 'PHD'
+  | 'DIPLOMA'
   // Employment
   | 'FIRST_JOB'
   | 'JOB_LOSS'
@@ -40,6 +45,12 @@ export type LifeEventType =
   | 'RETIREMENT'
   // Family
   | 'MARRIAGE'
+  | 'UNMARRIED'
+  | 'SINGLE_PARENT'
+  | 'SINGLE_CHILD'
+  | 'GIRL_CHILD'
+  | 'ORPHAN'
+  | 'SEPARATION'
   | 'CHILDBIRTH'
   | 'WIDOWHOOD'
   | 'DIVORCE'
@@ -84,7 +95,10 @@ export const LIFE_EVENT_CONFIGS: Record<LifeEventType, LifeEventConfig> = {
   TWELFTH_PASS: { icon: Award, color: 'blue', label: '12th Pass', description: 'Completed Intermediate' },
   COLLEGE_ADMISSION: { icon: School, color: 'indigo', label: 'College Admission', description: 'Started Higher Education' },
   GRADUATION: { icon: GraduationCap, color: 'indigo', label: 'Graduation', description: 'Completed Degree' },
-  POST_GRADUATION: { icon: GraduationCap, color: 'violet', label: 'Post Graduation', description: 'Masters/PhD' },
+  POST_GRADUATION: { icon: GraduationCap, color: 'violet', label: 'Post Graduation', description: 'Completed Postgraduate Study' },
+  MASTERS: { icon: BookOpen, color: 'violet', label: 'Masters', description: 'Completed or pursuing a masters degree' },
+  PHD: { icon: GraduationCap, color: 'purple', label: 'Ph.D.', description: 'Doctoral study or research fellowship stage' },
+  DIPLOMA: { icon: School, color: 'cyan', label: 'Diploma', description: 'Diploma or technical course milestone' },
   
   // Employment
   FIRST_JOB: { icon: Briefcase, color: 'green', label: 'First Job', description: 'Started Career' },
@@ -95,6 +109,12 @@ export const LIFE_EVENT_CONFIGS: Record<LifeEventType, LifeEventConfig> = {
   
   // Family
   MARRIAGE: { icon: Heart, color: 'rose', label: 'Marriage', description: 'Started Family Life' },
+  UNMARRIED: { icon: UserRound, color: 'slate', label: 'Unmarried / Bachelor', description: 'Single marital status for eligible schemes' },
+  SINGLE_PARENT: { icon: Users, color: 'orange', label: 'Single Parent', description: 'Sole parent or guardian responsibility' },
+  SINGLE_CHILD: { icon: Baby, color: 'pink', label: 'Single Child', description: 'Only child in the family' },
+  GIRL_CHILD: { icon: Heart, color: 'pink', label: 'Girl Child', description: 'Girl child education and welfare eligibility' },
+  ORPHAN: { icon: Users, color: 'slate', label: 'Orphan / No Guardian', description: 'Child without parental support' },
+  SEPARATION: { icon: Users, color: 'slate', label: 'Separated', description: 'Separated spouse or abandoned family status' },
   CHILDBIRTH: { icon: Baby, color: 'pink', label: 'Childbirth', description: 'New Family Member' },
   WIDOWHOOD: { icon: Users, color: 'slate', label: 'Widowhood', description: 'Loss of Spouse' },
   DIVORCE: { icon: Users, color: 'slate', label: 'Divorce', description: 'Legal Separation' },
@@ -130,9 +150,9 @@ export const CATEGORY_LABELS: Record<LifeEventCategory, string> = {
 };
 
 export const CATEGORY_EVENTS: Record<LifeEventCategory, LifeEventType[]> = {
-    EDUCATION: ['TENTH_PASS', 'TWELFTH_PASS', 'COLLEGE_ADMISSION', 'GRADUATION', 'POST_GRADUATION'],
+    EDUCATION: ['TENTH_PASS', 'TWELFTH_PASS', 'DIPLOMA', 'COLLEGE_ADMISSION', 'GRADUATION', 'POST_GRADUATION', 'MASTERS', 'PHD'],
     EMPLOYMENT: ['FIRST_JOB', 'JOB_LOSS', 'UNEMPLOYED', 'SKILL_UPGRADE', 'RETIREMENT'],
-    FAMILY: ['MARRIAGE', 'CHILDBIRTH', 'WIDOWHOOD', 'DIVORCE'],
+    FAMILY: ['UNMARRIED', 'MARRIAGE', 'CHILDBIRTH', 'SINGLE_CHILD', 'GIRL_CHILD', 'SINGLE_PARENT', 'WIDOWHOOD', 'DIVORCE', 'SEPARATION', 'ORPHAN'],
     ECONOMIC: ['STARTING_BUSINESS', 'FARMING_INITIATED', 'LOW_INCOME', 'CROP_LOSS'],
     HOUSING: ['BUYING_HOUSE', 'BUILDING_HOUSE', 'HOMELESS'],
     HEALTH: ['DISABILITY', 'SERIOUS_ILLNESS'],

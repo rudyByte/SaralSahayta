@@ -194,17 +194,16 @@ export async function POST(request: NextRequest) {
             resultData = data;
         }
 
-        // Trigger background scheme match recalculation so eligibility % updates immediately
-        recalculateSchemeMatches(userId, `Document Uploaded: ${documentCode}`).catch(err => {
-            console.warn('Background recalculation failed (non-critical):', err);
-        });
+        // Recalculate before responding so eligibility percentages update immediately.
+        const recalculation = await recalculateSchemeMatches(userId, `Document Uploaded: ${documentCode}`);
 
         console.log(`Upload saved: Document ${document.document_name} was successfully uploaded and saved for user ${userId}`);
 
         return NextResponse.json({
             success: true,
             document: resultData,
-            message: 'Document uploaded successfully with OCR data'
+            message: 'Document uploaded successfully with OCR data',
+            recalculation
         });
 
     } catch (error: any) {

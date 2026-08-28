@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase-server';
 import { createAdminClient } from '@/lib/supabase-admin';
+import { recalculateSchemeMatches } from '@/lib/matching/recalculate-on-profile-update';
 
 export async function DELETE(request: NextRequest) {
     try {
@@ -63,17 +64,10 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Failed to delete database record' }, { status: 500 });
         }
 
-        // 5. Trigger background recalculation
-        try {
-            const { recalculateSchemeMatches } = await import('@/lib/matching/recalculate-on-profile-update');
-            recalculateSchemeMatches(user.id, 'Document Deleted').catch(err => {
-                console.warn('Background recalculation on document delete failed:', err);
-            });
-        } catch (calcErr) {
-            console.warn('Could not trigger recalculateSchemeMatches on delete:', calcErr);
-        }
+        // 5. Recalculate before responding so downstream score refetches see fresh data.
+        const recalculation = await recalculateSchemeMatches(user.id, 'Document Deleted');
 
-        return NextResponse.json({ success: true });
+        return NextResponse.json({ success: true, recalculation });
 
     } catch (error: any) {
         console.error('[Delete API] Error:', error);

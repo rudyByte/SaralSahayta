@@ -26,7 +26,7 @@ export async function getSchemeRecommendationsForEvent(
 
     // 2. Fetch full scheme details
     const { data: schemes, error: schemeError } = await supabase
-        .from('Scheme')
+        .from('schemes')
         .select('*')
         .in('id', schemeIds);
 

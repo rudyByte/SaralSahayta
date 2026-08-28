@@ -42,6 +42,7 @@ export default function DiscoverPageContent() {
         globalMutate((key: any) => typeof key === 'string' && key.includes('/confidence'));
     });
     const isNewlyEligibleFilter = searchParams.get('filter') === 'newly_eligible';
+    const lifeEventFilter = searchParams.get('event');
 
     // -- State --
     const [page, setPage] = useState(1);
@@ -79,10 +80,11 @@ export default function DiscoverPageContent() {
         queryParams.set('minBenefit', filters.minBenefit.toString());
         queryParams.set('maxBenefit', filters.maxBenefit.toString());
         if (filters.deadline !== 'all') queryParams.set('deadline', filters.deadline);
+        if (lifeEventFilter) queryParams.set('event', lifeEventFilter);
         queryParams.set('sortBy', sortBy);
         queryParams.set('page', page.toString());
         return `/api/schemes?${queryParams.toString()}`;
-    }, [filters, sortBy, page]);
+    }, [filters, lifeEventFilter, sortBy, page]);
 
     const { data, error: swrError, isLoading: swrLoading, mutate } = useSWR(getQueryUrl);
 
@@ -126,18 +128,24 @@ export default function DiscoverPageContent() {
 
     return (
         <div className="container mx-auto px-4 pt-2">
-            {isNewlyEligibleFilter && (
+            {(isNewlyEligibleFilter || lifeEventFilter) && (
                 <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 rounded-2xl flex items-center justify-between text-orange-900 shadow-sm animate-in fade-in zoom-in duration-500">
                    <div className="flex items-center gap-3">
                        <div className="p-2 bg-orange-100 rounded-full text-orange-600">
                            <Sparkles className="h-5 w-5" />
                        </div>
                        <div>
-                           <h3 className="text-sm font-black uppercase tracking-wider">Your Profile was Updated</h3>
-                           <p className="text-xs font-medium mt-0.5 opacity-80">Showing the {schemes.length} schemes you uniquely qualify for based on your new details.</p>
+                           <h3 className="text-sm font-black uppercase tracking-wider">
+                               {lifeEventFilter ? 'Life Event Recommendations' : 'Your Profile was Updated'}
+                           </h3>
+                           <p className="text-xs font-medium mt-0.5 opacity-80">
+                               {lifeEventFilter
+                                   ? `Showing schemes related to ${lifeEventFilter.replace(/_/g, ' ').toLowerCase()}.`
+                                   : `Showing the ${schemes.length} schemes you uniquely qualify for based on your new details.`}
+                           </p>
                        </div>
                    </div>
-                   <Button variant="ghost" className="shrink-0 text-orange-700 hover:text-orange-900 hover:bg-orange-100" onClick={() => router.push('/schemes')}>
+                   <Button variant="ghost" className="shrink-0 text-orange-700 hover:text-orange-900 hover:bg-orange-100" onClick={() => router.push('/discover')}>
                        View All Schemes
                    </Button>
                 </div>

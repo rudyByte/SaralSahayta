@@ -130,7 +130,10 @@ export default async function DocumentReadinessDashboard() {
                                     )}
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <Progress value={((sc.totalRequired - sc.missingCount) / Math.max(1, sc.totalRequired)) * 100} className="h-1.5" />
+                                    <Progress
+                                        value={sc.totalRequired === 0 ? 100 : ((sc.totalRequired - sc.missingCount) / sc.totalRequired) * 100}
+                                        className="h-1.5"
+                                    />
                                 </div>
                             </div>
                             <Button asChild variant="outline" className="w-full justify-between h-10 rounded-xl group hover:bg-primary hover:text-white transition-colors border-slate-200">
